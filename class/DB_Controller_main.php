@@ -10,7 +10,7 @@ class DB_Controller_main extends DB_Controller {
      * mainテーブル操作用のメソッド
      **********************************************************************/
     // 
-    public function insert_an_article($title, $memo, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id) {
+    public function insert_an_record($title, $memo, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id) {
         if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('INSERT INTO articles(title, memo, payment, payment_at, user_id, type_id, category_id, group_id) VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
