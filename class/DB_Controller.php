@@ -10,7 +10,7 @@ class DB_Controller {
     
 
     // 対象テーブルを選択
-    function __construct() {
+    function __construct($target_table) {
         $this->target_table = $target_table;
     }
 
@@ -37,7 +37,7 @@ class DB_Controller {
     // select * from 対象テーブル where = 指定したid
     public function fetch_a_record($target_id) {
         if($this->connect_DB()) {
-            $sql = 'select * from ' . $this->pdo . 'where id=:id'
+            $sql = 'select * from ' . $this->pdo . 'where id=:id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
