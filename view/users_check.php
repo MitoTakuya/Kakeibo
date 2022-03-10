@@ -1,6 +1,5 @@
 <?php 
-require_once dirname(__FILE__) . "/../dbconnect.php";
-require_once dirname(__FILE__) . "/../encode.php";
+require_once dirname(__FILE__) . "encode.php";
 session_start();
 
 // ユーザー情報が送られてきているかチェック

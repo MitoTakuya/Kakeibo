@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 
 <!doctype html>
 <html lang="ja">
@@ -29,7 +32,7 @@
 					<div class="form-group">
 						<p><i class="fas fa-pen"></i>
 							<label for="name">ニックネーム</label>
-							<input type="text" id="name" name="name" class="form-control" required>
+							<input type="text" id="name" name="user_name" class="form-control" required>
 						</p>
 					</div>
 
@@ -37,7 +40,7 @@
 					<div class="form-group">
 						<p><i class="far fa-envelope"></i>
 							<label for="email">メールアドレス</label>
-							<input type="email" id="email" name="email" class="form-control">
+							<input type="email" id="mail" name="email" class="form-control">
 						</p>
 					</div>
 
@@ -52,8 +55,8 @@
 					<div class="divider-form"></div>
 					<div class="form-group">
 						<p><i class="fa fa-image"></i>
-							<label for="image">アイコン写真</label>
-							<p><input type="file" name="image"></p>
+							<label for="user_image">アイコン写真</label>
+							<p><input type="file" name="user_image"></p>
 						</p>
 					</div>
 					<div class="divider-form"></div>
