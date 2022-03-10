@@ -1,10 +1,9 @@
 <?php
 class DB_Controller {
-    private static $dsn = 'mysql:dbname=bbs;host=localhost';
+    private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost';
     private static $DB_user = 'root';
     private static $DB_password = '';
 
-    private String $sql;
     private String $target_table;
     private $pdo;
     
@@ -37,7 +36,7 @@ class DB_Controller {
     // select * from 対象テーブル where = 指定したid
     public function fetch_a_record($target_id) {
         if($this->connect_DB()) {
-            $sql = 'select * from ' . $this->pdo . 'where id=:id';
+            $sql = 'select * from ' . $this->target_table . ' where id=:id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
@@ -45,7 +44,7 @@ class DB_Controller {
 
             //クエリ結果を格納する
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
-            $pdo = null;
+            $this->pdo = null;
             return $results;
         }
     }
@@ -54,20 +53,20 @@ class DB_Controller {
     public function fetch_all_records() {
         if($this->connect_DB()) {
             //echo $this->target_table;
-            $sql = 'select * from articles order by id desc';
+            $sql = 'select * from ' . $this->target_table . ' order by id desc';
             foreach ($this->pdo->query($sql) as $row) {
                 $results[] = $row;
             }
-            $pdo = null;
+            $this->pdo = null;
             return $results;
         }
     }
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('delete from articles where id=:id');
+            $stmt = $this->pdo->prepare('delete from ' . $this->target_table . ' where id=:id');
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             $stmt->execute();
-            $pdo = null;
+            $this->pdo = null;
         }
     }
 }
