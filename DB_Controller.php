@@ -60,6 +60,7 @@ class DB_Controller {
             return $results;
         }
     }
+    // delete from 対象テーブル
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
             $sql = 'delete from ' . $this->target_table . ' where id=:id';
