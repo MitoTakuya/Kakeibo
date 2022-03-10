@@ -4,8 +4,8 @@ class DB_Controller {
     private static $DB_user = 'root';
     private static $DB_password = '';
 
-    private String $target_table;
-    private $pdo;
+    protected String $target_table;
+    protected $pdo;
     
 
     // 対象テーブルを選択
