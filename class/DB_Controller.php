@@ -61,6 +61,7 @@ class DB_Controller {
             return $results;
         }
     }
+    // delete from 対象テーブル
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('delete from ' . $this->target_table . ' where id=:id');
