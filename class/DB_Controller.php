@@ -4,8 +4,8 @@ class DB_Controller {
     private static $DB_user = 'root';
     private static $DB_password = '';
 
-    private String $target_table;
-    private $pdo;
+    protected String $target_table;
+    protected $pdo;
     
 
     // 対象テーブルを選択
@@ -61,6 +61,7 @@ class DB_Controller {
             return $results;
         }
     }
+    // delete from 対象テーブル
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('delete from ' . $this->target_table . ' where id=:id');
