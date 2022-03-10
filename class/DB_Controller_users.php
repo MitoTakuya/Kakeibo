@@ -27,7 +27,6 @@ class DB_Controller_users extends DB_Controller {
     // 論理的削除を行うメソッド
     public function disable_a_user($target_id) {
         if($this->connect_DB()) {
-            echo "delete_a_user";
             $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
@@ -38,7 +37,15 @@ class DB_Controller_users extends DB_Controller {
     // 論理的削除を取り消すメソッド
     public function delete_a_user($target_id) {
         if($this->connect_DB()) {
-            echo "delete_a_user";
+            $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
+            //SQL文中の プレース部を 定義しておいた変数に置き換える
+            $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
+            //sqlを 実行
+            $stmt->execute();
+        }
+    }
+    public function fetch_an_image($target_id) {
+        if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
