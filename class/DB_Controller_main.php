@@ -1,6 +1,7 @@
 <?php
 require_once('DB_Controller.php');
 class DB_Controller_main extends DB_Controller {
+
     // 対象テーブルを選択
     function __construct() {
         parent::__construct('main');
@@ -48,8 +49,31 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
         }
     }
+    // 今までの合計支出を返す
+    public function calculate_group_total_balance($group_id) {
+        if($this->connect_DB()) {
+
+            // sql文を定義する。
+            $sql = 'select type_id, sum(`payment`) AS `sum` from `main` where `group_id` = :group_id GROUP BY type_id;';
+
+            $stmt = $this->pdo->prepare($sql);
+            //SQL文中の プレース部を 定義しておいた変数に置き換える
+            $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
+
+            //sqlを 実行
+            $stmt->execute();
+
+            // $resultにsql実行結果を代入する
+            $query_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // [0]['sum] = 収入合計、[1]['sum'] = 支出合計
+            $result = $query_result[0]['sum'] - $query_result[1]['sum'];
+
+            $this->pdo = null;
+            return $result; //格納されていなければ false を返す
+        }
+    }
     // グループごとの合計支出を計算する
-    // $conditionには条件式を格納し、$sqlの後ろに文字列結合する
     public function fetch_group_records($group_id) {
         if($this->connect_DB()) {
 
@@ -64,14 +88,13 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             //print_r($results); 
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
         }
     }
 
-    /***** 複数条件で行うselect文を1つのメソッドにまとめる案 ******/
     // カテゴリでfilterする条件式を生成する 
     public function filter_by_a_category($group_id, $category_id) {
         if($this->connect_DB()) {
@@ -85,7 +108,7 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             //print_r($results); 
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
@@ -104,7 +127,7 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             //print_r($results); 
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
