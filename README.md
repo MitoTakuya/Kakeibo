@@ -21,7 +21,7 @@
 - 目標貯金額までの金額
 
 # テーブル設計
-![image](https://user-images.githubusercontent.com/100895347/157384222-cda7d81f-1545-44a3-9498-1045fd08e328.png)
+![image](https://user-images.githubusercontent.com/100895347/157813222-39ab5407-268f-43cb-93ba-a3dde23543a3.png)
 
 
 # なぜこのサービスを作りたいのか
