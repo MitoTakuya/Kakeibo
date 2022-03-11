@@ -37,7 +37,7 @@ class DB_Controller {
     // select * from 対象テーブル where = 指定したid
     public function fetch_a_record($target_id) {
         if($this->connect_DB()) {
-            $sql = 'select * from ' . $this->target_table . ' where id=:id';
+            $sql = 'select * from `' . $this->target_table . '` where `id`=:id';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
@@ -57,7 +57,7 @@ class DB_Controller {
     public function fetch_all_records() {
         if($this->connect_DB()) {
             //echo $this->target_table;
-            $sql = 'select * from ' . $this->target_table . ' order by id desc';
+            $sql = 'select * from `' . $this->target_table . '` order by `id` desc';
             foreach ($this->pdo->query($sql) as $row) {
                 $results[] = $row;
             }
@@ -71,7 +71,7 @@ class DB_Controller {
     // delete from 対象テーブル
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('delete from ' . $this->target_table . ' where id=:id');
+            $stmt = $this->pdo->prepare('delete from `' . $this->target_table . '` where `id`=:id');
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             $stmt->execute();
             $this->pdo = null;
