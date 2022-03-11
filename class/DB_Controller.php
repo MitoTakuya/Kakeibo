@@ -3,6 +3,7 @@ class DB_Controller {
     private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost';
     private static $DB_user = 'root';
     private static $DB_password = '';
+    protected static $connect_error = 'データベースへの削除に失敗しました';
 
     protected String $target_table;
     protected $pdo;
@@ -46,6 +47,9 @@ class DB_Controller {
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             $this->pdo = null;
             return $results;
+        } else {
+            // 接続失敗時はstringでエラーメッセージを返す
+            return self::$connect_error;
         }
     }
 
@@ -59,6 +63,9 @@ class DB_Controller {
             }
             $this->pdo = null;
             return $results;
+        } else {
+            // 接続失敗時はstringでエラーメッセージを返す
+            return self::$connect_error;
         }
     }
     // delete from 対象テーブル
@@ -68,6 +75,9 @@ class DB_Controller {
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             $stmt->execute();
             $this->pdo = null;
+        } else {
+            // 接続失敗時はstringでエラーメッセージを返す
+            return self::$connect_error;
         }
     }
 }
