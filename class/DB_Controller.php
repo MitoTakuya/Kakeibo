@@ -3,7 +3,7 @@ class DB_Controller {
     private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost';
     private static $DB_user = 'root';
     private static $DB_password = '';
-    protected static $connect_error = 'データベースへの削除に失敗しました';
+    protected static $connect_error = 'データベースへの接続に失敗しました';
 
     protected String $target_table;
     protected $pdo;
