@@ -1,7 +1,6 @@
 <?php
-session_start();
+require_once ("../users_do.php");
 ?>
-
 <!doctype html>
 <html lang="ja">
 	<head>
@@ -17,8 +16,8 @@ session_start();
 	</head>
 	<body>
 	<nav class="navbar navbar-dark bg-dark">
-		<a href="#" class="navbar-brand">ログイン</a>
-		<a href="#" class="navbar-brand text-right">新規登録</a>
+		<a href="login.php" class="navbar-brand">ログイン</a>
+		<a href="users_new.php" class="navbar-brand text-right">新規登録</a>
 	</nav>
 	<div class="container">
 		<div class="mt-4"></div>
@@ -31,16 +30,22 @@ session_start();
 					<div class="divider-form"></div>
 					<div class="form-group">
 						<p><i class="fas fa-pen"></i>
-							<label for="name">ニックネーム</label>
-							<input type="text" id="name" name="user_name" class="form-control" required>
+							<label for="user_name">ニックネーム</label>
+							<input type="text" id="user_name" name="user_name" class="form-control" required>
+              <?php if(!empty($user_errors['user_name'])): ?>
+                <span class="text-danger"><?php echo $user_errors['user_name']; ?></span>
+              <?php endif; ?>
 						</p>
 					</div>
 
 					<div class="divider-form"></div>
 					<div class="form-group">
 						<p><i class="far fa-envelope"></i>
-							<label for="email">メールアドレス</label>
-							<input type="email" id="mail" name="email" class="form-control">
+							<label for="mail">メールアドレス</label>
+							<input type="email" id="mail" name="mail" class="form-control">
+              <?php if(!empty($user_errors['mail'])): ?>
+                <span class="text-danger"><?php echo $user_errors['mail']; ?></span>
+              <?php endif; ?>
 						</p>
 					</div>
 
@@ -49,6 +54,9 @@ session_start();
 						<p><i class="fa fa-lock"></i>
 							<label for="password">パスワード</label>
 							<input type="password" id="password" name="password" class="form-control">
+              <?php if(!empty($user_errors['password'])): ?>
+                <span class="text-danger"><?php echo $user_errors['password']; ?></span>
+              <?php endif; ?>
 						</p>
 					</div>
 
@@ -57,6 +65,9 @@ session_start();
 						<p><i class="fa fa-image"></i>
 							<label for="user_image">アイコン写真</label>
 							<p><input type="file" name="user_image"></p>
+              <?php if(!empty($user_errors['password'])): ?>
+                <span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
+              <?php endif; ?>
 						</p>
 					</div>
 					<div class="divider-form"></div>
