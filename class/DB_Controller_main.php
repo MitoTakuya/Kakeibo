@@ -77,17 +77,13 @@ class DB_Controller_main extends DB_Controller {
 
             // sql文を定義する。
             $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id order by id desc limit {$limit} offset {$offset};";
-
             $stmt = $this->pdo->prepare($sql);
-            //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
-
-            //sqlを 実行
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            //print_r($results); 
+
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
         }
