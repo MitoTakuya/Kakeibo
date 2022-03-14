@@ -76,9 +76,11 @@ class DB_Controller_main extends DB_Controller {
         if($this->connect_DB()) {
 
             // sql文を定義する。
-            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id order by id desc limit {$limit} offset {$offset};";
+            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id order by id desc limit :limit offset :offset;";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
+            $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT);
+            $stmt->bindParam( ':limit',    $limit,    PDO::PARAM_INT);
+            $stmt->bindParam( ':offset',    $offset,    PDO::PARAM_INT);
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
