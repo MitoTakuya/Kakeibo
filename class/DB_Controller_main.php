@@ -80,8 +80,8 @@ class DB_Controller_main extends DB_Controller {
             // sql文を定義する。
             $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id order by id desc limit :limit offset :offset;";
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT);
-            $stmt->bindParam( ':limit',    $limit,    PDO::PARAM_INT);
+            $stmt->bindParam( ':group_id',  $group_id,  PDO::PARAM_INT);
+            $stmt->bindParam( ':limit',     $limit,     PDO::PARAM_INT);
             $stmt->bindParam( ':offset',    $offset,    PDO::PARAM_INT);
             $stmt->execute();
 
@@ -150,68 +150,73 @@ class DB_Controller_main extends DB_Controller {
         }
     }
 
-    // あるグループの月別、週別の支出合計を出力する
+    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する
     /*
         使用例：get_filtered_outgo(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の合計支出を出力)
     */
     public function get_filtered_outgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
         if($this->connect_DB()) {
-            // 月別、週別の指定
-            $period = $this->select_a_period($period_param);
+            $period = $this->select_a_period($period_param);    // 月別、週別の指定
+            $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
             if(is_null($category_id)) {
                 // 期間のみでfilterする場合
-                $results = $this->get_filtered_outgo_by_a_date(group_id:$group_id, target_date:$target_date, period_param:$period_param);
+                $results = $this->get_filtered_outgo_by_a_date(
+                                group_id:   $group_id,
+                                target_date:$target_date,
+                                period:     $period
+                            );
             } else {
                 // 期間とカテゴリでfilterする場合
-                if(is_null($target_date)) {
-                    
-                    $target_date = 'SYSDATE()';
-                }
-                $sql = "select sum(payment) as `sum`
-                        from main
-                        where group_id = :group_id
-                        and type_id = :type_id
-                        and category_id = :category_id
-                        and {$period}(payment_at) = {$period}({$target_date})
-                        and Year(payment_at) = Year({$target_date})";
-
-                $stmt = $this->pdo->prepare($sql);
-                $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
-                $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
-                $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
-                $stmt->execute();
-                $results = $stmt->fetch(PDO::FETCH_ASSOC);
+                $results = $this->get_filtered_outgo_by_date_and_category(
+                                group_id:       $group_id,
+                                category_id:    $category_id,
+                                target_date:    $target_date,
+                                period:         $period
+                            );
             }
             // $resultにsql実行結果を代入する
             $this->pdo = null;
             return $results['sum']; //格納されていなければ false を返す
         }
     }
+
     // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
-    private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period_param = 0) {
+    private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period) {
         if($this->connect_DB()) {
-            // 月別、週別の指定
-            $period = $this->select_a_period($period_param);
-
-            if(is_null($target_date)) {
-                $target_date = 'SYSDATE()';
-            }
-
             $sql = "select sum(payment) as `sum`
                     from main
                     where group_id = :group_id
                     and type_id = :type_id
                     and {$period}(payment_at) = {$period}({$target_date})
-                    and Year(payment_at) = Year({$target_date})";
+                    and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
             // var_dump($stmt);
             $stmt->execute();
-            
+            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $results;
+        }
+    }
+
+    private function get_filtered_outgo_by_date_and_category($group_id, $category_id, $target_date, $period) {
+        if($this->connect_DB()) {
+            $sql = "select sum(payment) as `sum`
+                    from main
+                    where group_id = :group_id
+                    and type_id = :type_id
+                    and category_id = :category_id
+                    and {$period}(payment_at) = {$period}({$target_date})
+                    and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+            $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
+            $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
+            $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             return $results;
         }
@@ -229,5 +234,13 @@ class DB_Controller_main extends DB_Controller {
                 break;
         }
         return $period;
+    }
+
+    // 日付が渡されなければ、実行時点の日付を返す。
+    private function select_a_date($target_date = null) {
+        if(is_null($target_date)){
+            $target_date = "NOW()";
+        }
+        return $target_date;
     }
 }
