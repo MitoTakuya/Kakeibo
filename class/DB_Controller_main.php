@@ -31,6 +31,8 @@ class DB_Controller_main extends DB_Controller {
             //sqlを 実行
             $stmt->execute();
             $this->pdo = null;
+        } else {
+            return self::$connect_error;
         }
     }
     // レコードの更新
@@ -52,6 +54,8 @@ class DB_Controller_main extends DB_Controller {
             //sqlを 実行
             $stmt->execute();
             $this->pdo = null;
+        } else {
+            return self::$connect_error;
         }
     }
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
@@ -67,6 +71,8 @@ class DB_Controller_main extends DB_Controller {
 
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
 
@@ -85,6 +91,8 @@ class DB_Controller_main extends DB_Controller {
 
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
 
@@ -96,6 +104,10 @@ class DB_Controller_main extends DB_Controller {
         $outgo = $this->group_total_outgo($group_id);
         $income = $this->group_total_income($group_id);
 
+        if(!is_numeric($outgo) || !is_numeric($income)) {
+            return self::$connect_error;    // DB接続失敗時の処理
+        }
+        
         if($outgo == false) {
             $outgo = 0;
         }
@@ -115,31 +127,31 @@ class DB_Controller_main extends DB_Controller {
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$outgo_type_id,   PDO::PARAM_INT);
-            $stmt->execute();
 
-            // $resultにsql実行結果を代入する
+            $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);        
 
             $this->pdo = null;
             return $result['outgo']; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
     // 今までの合計収入を返す ダッシュボードに表示する
     public function group_total_income($group_id) {
         if($this->connect_DB()) {
-
-            // sql文を定義する。
             $sql = 'select `type_id`, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and `type_id` = :type_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$income_type_id,  PDO::PARAM_INT);
-            $stmt->execute();
 
-            // $resultにsql実行結果を代入する
+            $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);        
 
             $this->pdo = null;
             return $result['income']; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
 
@@ -169,9 +181,10 @@ class DB_Controller_main extends DB_Controller {
                                 period:         $period
                             );
             }
-            // $resultにsql実行結果を代入する
             $this->pdo = null;
             return $results['sum']; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
     
@@ -206,6 +219,8 @@ class DB_Controller_main extends DB_Controller {
             }
             $this->pdo = null;
             return $results; //格納されていなければ false を返す
+        } else {
+            return self::$connect_error;
         }
     }
 
