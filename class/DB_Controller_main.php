@@ -146,6 +146,10 @@ class DB_Controller_main extends DB_Controller {
     }
 
     // あるグループの月別、週別の支出合計を出力する
+    /*
+        使用例：get_filtered_outgo(group_id:1, target_date:'20220301', period_param:1)
+        (グループid1番の「2022年3月1日」の週の合計支出を出力)
+    */
     public function get_filtered_outgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
         if($this->connect_DB()) {
             // 月別、週別の指定
