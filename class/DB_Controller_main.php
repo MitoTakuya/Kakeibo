@@ -16,7 +16,9 @@ class DB_Controller_main extends DB_Controller {
     // （nullはそのままstringにバインドできないため）
     public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
-            $sql = 'INSERT INTO `articles`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`) VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
+            $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
+                    VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
+            
             $stmt = $this->pdo->prepare($sql);
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
@@ -38,7 +40,9 @@ class DB_Controller_main extends DB_Controller {
     // レコードの更新
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
-            $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id where `id`=:id;';
+            $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
+                    where `id`=:id;';
+            
             $stmt = $this->pdo->prepare($sql);
 
             $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
@@ -76,11 +80,13 @@ class DB_Controller_main extends DB_Controller {
         }
     }
 
-    // あるグループのレコードを一定数取り出す（画面に収まる数など）
-    public function fetch_group_records_to_display($group_id, $limit, $offset = 0) {
+    // あるグループのレコードを一定数取り出す（画面に収まる数など）*要order切り替え
+    public function fetch_group_records_to_display($group_id, $limit, $offset = 0, $order) {
         if($this->connect_DB()) {
+            // 昇順・降順を選択する
+            $order_clause = $this->select_order($order);
 
-            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id order by id desc limit :limit offset :offset;";
+            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id {$order_clause} limit :limit offset :offset;";
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,  PDO::PARAM_INT);
             $stmt->bindParam( ':limit',     $limit,     PDO::PARAM_INT);
@@ -191,7 +197,7 @@ class DB_Controller_main extends DB_Controller {
     /**********************************************************
      * 詳細画面で表示するためのレコードを取り出すメソッド
      **********************************************************/
-    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する
+    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する *要order切り替え
     /*
         使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の全レコードを出力)
