@@ -118,7 +118,6 @@ class DB_Controller_main extends DB_Controller {
     public function group_total_outgo($group_id) {
         if($this->connect_DB()) {
 
-            // sql文を定義する。 支出のtype_idは2
             $sql = 'select type_id, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and type_id = :type_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
@@ -136,7 +135,7 @@ class DB_Controller_main extends DB_Controller {
     public function group_total_income($group_id) {
         if($this->connect_DB()) {
 
-            // sql文を定義する。 収入のtype_idは1
+            // sql文を定義する。
             $sql = 'select type_id, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and type_id = :type_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
