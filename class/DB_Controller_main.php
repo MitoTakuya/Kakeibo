@@ -20,7 +20,6 @@ class DB_Controller_main extends DB_Controller {
                     VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
             
             $stmt = $this->pdo->prepare($sql);
-            //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
             $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
             $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
@@ -30,7 +29,6 @@ class DB_Controller_main extends DB_Controller {
             $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
             $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
-            //sqlを 実行
             $stmt->execute();
             $this->pdo = null;
         } else {
@@ -55,7 +53,6 @@ class DB_Controller_main extends DB_Controller {
             $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
             $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
-            //sqlを 実行
             $stmt->execute();
             $this->pdo = null;
         } else {
@@ -65,7 +62,6 @@ class DB_Controller_main extends DB_Controller {
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
     public function fetch_all_group_records($group_id) {
         if($this->connect_DB()) {
-
             $sql = 'SELECT * FROM `full_records` WHERE `group_id`=:group_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
@@ -86,7 +82,9 @@ class DB_Controller_main extends DB_Controller {
             // 昇順・降順を選択する
             $order_clause = $this->select_order($order);
 
-            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id {$order_clause} limit :limit offset :offset;";
+            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id
+                    {$order_clause} limit :limit offset :offset;";
+            
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,  PDO::PARAM_INT);
             $stmt->bindParam( ':limit',     $limit,     PDO::PARAM_INT);
@@ -122,7 +120,6 @@ class DB_Controller_main extends DB_Controller {
         }
 
         $result = $income - $outgo;
-
         return $result;
     }
     
@@ -202,8 +199,9 @@ class DB_Controller_main extends DB_Controller {
         使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の全レコードを出力)
     */
-    public function fetch_filtered_records($group_id, $target_date = null, $category_id = null, $period_param = 0) {
+    public function fetch_filtered_records($group_id, $target_date = null, $category_id = null, $period_param = 0, $order = 0) {
         if($this->connect_DB()) {
+            $order_clause = $this->select_order($order);        // 昇順・降順を選択する
             $period = $this->select_a_period($period_param);    // 月別、週別の指定
             $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
@@ -212,7 +210,8 @@ class DB_Controller_main extends DB_Controller {
                 $results = $this->fetch_filtered_records_by_a_date(
                                 group_id:       $group_id,
                                 target_date:    $target_date,
-                                period:         $period
+                                period:         $period,
+                                order_clause:   $order_clause
                             );
             } else {
                 // 期間とカテゴリでfilterする場合
@@ -220,7 +219,8 @@ class DB_Controller_main extends DB_Controller {
                                 group_id:       $group_id,
                                 category_id:    $category_id,
                                 target_date:    $target_date,
-                                period:         $period
+                                period:         $period,
+                                order_clause:   $order_clause
                             );
             }
             $this->pdo = null;
@@ -270,13 +270,14 @@ class DB_Controller_main extends DB_Controller {
         return $results;
     }
     // あるグループの月別、週別のレコードを取り出すメソッド
-    private function fetch_filtered_records_by_a_date($group_id, $target_date = null, $period) {
+    private function fetch_filtered_records_by_a_date($group_id, $target_date = null, $period, $order_clause) {
         $sql = "select *
                 from `full_records`
                 where `group_id` = :group_id
                 and `type_id` = :type_id
                 and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+                and Year(payment_at) = Year({$target_date})
+                {$order_clause}";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
@@ -288,14 +289,15 @@ class DB_Controller_main extends DB_Controller {
     }
 
     // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド
-    private function fetch_filtered_records_by_date_and_category($group_id, $target_date = null, $category_id, $period) {
+    private function fetch_filtered_records_by_date_and_category($group_id, $target_date = null, $category_id, $period, $order_clause) {
         $sql = "select *
                 from `full_records`
                 where `group_id` = :group_id
                 and `type_id` = :type_id
                 and `category_id` = :category_id
                 and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+                and Year(payment_at) = Year({$target_date})
+                {$order_clause}";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
