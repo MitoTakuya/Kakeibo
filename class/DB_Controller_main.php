@@ -16,7 +16,7 @@ class DB_Controller_main extends DB_Controller {
     // （nullはそのままstringにバインドできないため）
     public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
-            $sql = 'INSERT INTO articles(title, memo, payment, payment_at, user_id, type_id, category_id, group_id) VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
+            $sql = 'INSERT INTO `articles`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`) VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
             $stmt = $this->pdo->prepare($sql);
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
@@ -35,7 +35,7 @@ class DB_Controller_main extends DB_Controller {
     // レコードの更新
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
-            $sql = 'UPDATE `main` SET title =:title, memo = :memo, payment = :payment, payment_at = :payment_at, user_id = :user_id, type_id = :type_id, category_id = :category_id, group_id = :group_id where id=:id;';
+            $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id where `id`=:id;';
             $stmt = $this->pdo->prepare($sql);
 
             $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
@@ -119,7 +119,7 @@ class DB_Controller_main extends DB_Controller {
     public function group_total_outgo($group_id) {
         if($this->connect_DB()) {
 
-            $sql = 'select type_id, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and type_id = :type_id;';
+            $sql = 'select `type_id`, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and `type_id` = :type_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$outgo_type_id,   PDO::PARAM_INT);
@@ -137,7 +137,7 @@ class DB_Controller_main extends DB_Controller {
         if($this->connect_DB()) {
 
             // sql文を定義する。
-            $sql = 'select type_id, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and type_id = :type_id;';
+            $sql = 'select `type_id`, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and `type_id` = :type_id;';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$income_type_id,  PDO::PARAM_INT);
@@ -187,9 +187,9 @@ class DB_Controller_main extends DB_Controller {
     private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period) {
         if($this->connect_DB()) {
             $sql = "select sum(payment) as `sum`
-                    from main
-                    where group_id = :group_id
-                    and type_id = :type_id
+                    from `main`
+                    where `group_id` = :group_id
+                    and `type_id` = :type_id
                     and {$period}(payment_at) = {$period}({$target_date})
                     and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
 
@@ -206,10 +206,10 @@ class DB_Controller_main extends DB_Controller {
     private function get_filtered_outgo_by_date_and_category($group_id, $category_id, $target_date, $period) {
         if($this->connect_DB()) {
             $sql = "select sum(payment) as `sum`
-                    from main
-                    where group_id = :group_id
-                    and type_id = :type_id
-                    and category_id = :category_id
+                    from `main`
+                    where `group_id` = :group_id
+                    and `type_id` = :type_id
+                    and `category_id` = :category_id
                     and {$period}(payment_at) = {$period}({$target_date})
                     and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
 
