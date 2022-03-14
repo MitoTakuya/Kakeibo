@@ -1,6 +1,8 @@
 <?php
 require_once('DB_Controller.php');
 class DB_Controller_main extends DB_Controller {
+    protected static $outgo_type_id = 1;
+    protected static $income_type_id = 2;
 
     // 対象テーブルを選択
     function __construct() {
@@ -117,9 +119,10 @@ class DB_Controller_main extends DB_Controller {
         if($this->connect_DB()) {
 
             // sql文を定義する。 支出のtype_idは2
-            $sql = 'select type_id, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and type_id = 2;';
+            $sql = 'select type_id, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and type_id = :type_id;';
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
+            $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
+            $stmt->bindParam( ':type_id',   self::$outgo_type_id,   PDO::PARAM_INT);
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
@@ -134,9 +137,10 @@ class DB_Controller_main extends DB_Controller {
         if($this->connect_DB()) {
 
             // sql文を定義する。 収入のtype_idは1
-            $sql = 'select type_id, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and type_id = 1;';
+            $sql = 'select type_id, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and type_id = :type_id;';
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
+            $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
+            $stmt->bindParam( ':type_id',   self::$income_type_id,  PDO::PARAM_INT);
             $stmt->execute();
 
             // $resultにsql実行結果を代入する
@@ -169,14 +173,15 @@ class DB_Controller_main extends DB_Controller {
                 $sql = "select sum(payment) as `sum`
                         from main
                         where group_id = :group_id
-                        and type_id = 2
+                        and type_id = :type_id
                         and category_id = :category_id
                         and {$period}(payment_at) = {$period}({$target_date})
                         and Year(payment_at) = Year({$target_date})";
 
                 $stmt = $this->pdo->prepare($sql);
-                $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
-                $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
+                $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+                $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
+                $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
                 $stmt->execute();
                 $results = $stmt->fetch(PDO::FETCH_ASSOC);
             }
@@ -198,12 +203,13 @@ class DB_Controller_main extends DB_Controller {
             $sql = "select sum(payment) as `sum`
                     from main
                     where group_id = :group_id
-                    and type_id = 2
+                    and type_id = :type_id
                     and {$period}(payment_at) = {$period}({$target_date})
                     and Year(payment_at) = Year({$target_date})";
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
+            $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+            $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
             // var_dump($stmt);
             $stmt->execute();
             
@@ -215,7 +221,6 @@ class DB_Controller_main extends DB_Controller {
     private function select_a_period($period_param = 0) {
         switch ($period_param) {
             case 1:
-                // 引数で週を選択しなければ週別。
                 $period = "WEEK";
                 break;
             
