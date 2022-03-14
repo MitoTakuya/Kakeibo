@@ -39,7 +39,7 @@ class DB_Controller_main extends DB_Controller {
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
             $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
-                    where `id`=:id;';
+                    WHERE `id`=:id;';
             
             $stmt = $this->pdo->prepare($sql);
 
@@ -62,7 +62,10 @@ class DB_Controller_main extends DB_Controller {
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
     public function fetch_all_group_records($group_id) {
         if($this->connect_DB()) {
-            $sql = 'SELECT * FROM `full_records` WHERE `group_id`=:group_id;';
+            $sql = 'SELECT *
+                    FROM `full_records`
+                    WHERE `group_id`=:group_id;';
+            
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
 
@@ -79,11 +82,13 @@ class DB_Controller_main extends DB_Controller {
     // あるグループのレコードを一定数取り出す（画面に収まる数など）*要order切り替え
     public function fetch_group_records_to_display($group_id, $limit, $offset = 0, $order) {
         if($this->connect_DB()) {
-            // 昇順・降順を選択する
-            $order_clause = $this->select_order($order);
+            $order_clause = $this->select_order($order);    // 昇順・降順を選択する
 
-            $sql = "SELECT * FROM `full_records` WHERE `group_id`=:group_id
-                    {$order_clause} limit :limit offset :offset;";
+            $sql = "SELECT * FROM `full_records`
+                    WHERE `group_id`=:group_id
+                    {$order_clause}
+                    LIMIT :limit
+                    OFFSET :offset;";
             
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,  PDO::PARAM_INT);
@@ -126,7 +131,11 @@ class DB_Controller_main extends DB_Controller {
     // 今までの合計支出を返す ダッシュボードに表示する
     public function group_total_outgo($group_id) {
         if($this->connect_DB()) {
-            $sql = 'select `type_id`, sum(`payment`) AS `outgo` from `main` where `group_id` = :group_id and `type_id` = :type_id;';
+            $sql = 'SELECT `type_id`, SUM(`payment`) AS `outgo`
+                    FROM `main`
+                    WHERE `group_id` = :group_id
+                    AND `type_id` = :type_id;';
+            
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$outgo_type_id,   PDO::PARAM_INT);
@@ -143,7 +152,11 @@ class DB_Controller_main extends DB_Controller {
     // 今までの合計収入を返す ダッシュボードに表示する
     public function group_total_income($group_id) {
         if($this->connect_DB()) {
-            $sql = 'select `type_id`, sum(`payment`) AS `income` from `main` where `group_id` = :group_id and `type_id` = :type_id;';
+            $sql = 'SELECT `type_id`, SUM(`payment`) AS `income`
+                    FROM `main`
+                    WHERE `group_id` = :group_id
+                    AND `type_id` = :type_id;';
+            
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$income_type_id,  PDO::PARAM_INT);
@@ -236,12 +249,12 @@ class DB_Controller_main extends DB_Controller {
      *******************************************/
     // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
     private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period) {
-        $sql = "select sum(payment) as `sum`
-                from `main`
-                where `group_id` = :group_id
-                and `type_id` = :type_id
-                and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+        $sql = "SELECT sum(payment) AS `sum`
+                FROM `main`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
@@ -252,14 +265,15 @@ class DB_Controller_main extends DB_Controller {
         return $results;
     }
 
+    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する * 直接呼び出さない
     private function get_filtered_outgo_by_date_and_category($group_id, $category_id, $target_date, $period) {
-        $sql = "select sum(payment) as `sum`
-                from `main`
-                where `group_id` = :group_id
-                and `type_id` = :type_id
-                and `category_id` = :category_id
-                and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+        $sql = "SELECT sum(payment) AS `sum`
+                FROM `main`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id
+                AND `category_id` = :category_id
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
@@ -269,14 +283,14 @@ class DB_Controller_main extends DB_Controller {
         $results = $stmt->fetch(PDO::FETCH_ASSOC);
         return $results;
     }
-    // あるグループの月別、週別のレコードを取り出すメソッド
+    // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
     private function fetch_filtered_records_by_a_date($group_id, $target_date = null, $period, $order_clause) {
-        $sql = "select *
-                from `full_records`
-                where `group_id` = :group_id
-                and `type_id` = :type_id
-                and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})
+        $sql = "SELECT *
+                FROM `full_records`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})
                 {$order_clause}";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
@@ -288,15 +302,15 @@ class DB_Controller_main extends DB_Controller {
         return $results;
     }
 
-    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド
+    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
     private function fetch_filtered_records_by_date_and_category($group_id, $target_date = null, $category_id, $period, $order_clause) {
-        $sql = "select *
-                from `full_records`
-                where `group_id` = :group_id
-                and `type_id` = :type_id
-                and `category_id` = :category_id
-                and {$period}(payment_at) = {$period}({$target_date})
-                and Year(payment_at) = Year({$target_date})
+        $sql = "SELECT *
+                FROM `full_records`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id
+                AND `category_id` = :category_id
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})
                 {$order_clause}";           //$target_date には関数も入るためバインドしない
 
         $stmt = $this->pdo->prepare($sql);
@@ -309,7 +323,7 @@ class DB_Controller_main extends DB_Controller {
         return $results;
     }
 
-    // 月別か週別か期間を選ぶ
+    // 月別か週別か期間を選ぶ * 直接呼び出さない
     private function select_a_period($period_param = 0) {
         switch ($period_param) {
             case 1:
@@ -324,7 +338,7 @@ class DB_Controller_main extends DB_Controller {
         return $period;
     }
 
-    // 日付が渡されなければ、実行時点の日付を返す。
+    // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
     private function select_a_date($target_date = null) {
         if(is_null($target_date)){
             $target_date = "NOW()";
