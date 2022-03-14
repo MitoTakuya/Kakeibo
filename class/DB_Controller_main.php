@@ -49,7 +49,7 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
         }
     }
-    // あるグループの全レコードを取り出す
+    // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
     public function fetch_all_group_records($group_id) {
         if($this->connect_DB()) {
 
@@ -145,32 +145,6 @@ class DB_Controller_main extends DB_Controller {
         }
     }
 
-    // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
-    private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period_param = 0) {
-        if($this->connect_DB()) {
-            // 月別、週別の指定
-            $period = $this->select_a_period($period_param);
-
-            if(is_null($target_date)) {
-                $target_date = 'SYSDATE()';
-            }
-
-            $sql = "select sum(payment) as `sum`
-                    from main
-                    where group_id = :group_id
-                    and type_id = 2
-                    and {$period}(payment_at) = {$period}({$target_date})
-                    and Year(payment_at) = Year({$target_date})";
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
-            // var_dump($stmt);
-            $stmt->execute();
-            
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
-            return $results;
-        }
-    }
     // あるグループの月別、週別の支出合計を出力する
     public function get_filtered_outgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
         if($this->connect_DB()) {
@@ -203,6 +177,32 @@ class DB_Controller_main extends DB_Controller {
             // $resultにsql実行結果を代入する
             $this->pdo = null;
             return $results['sum']; //格納されていなければ false を返す
+        }
+    }
+    // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
+    private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period_param = 0) {
+        if($this->connect_DB()) {
+            // 月別、週別の指定
+            $period = $this->select_a_period($period_param);
+
+            if(is_null($target_date)) {
+                $target_date = 'SYSDATE()';
+            }
+
+            $sql = "select sum(payment) as `sum`
+                    from main
+                    where group_id = :group_id
+                    and type_id = 2
+                    and {$period}(payment_at) = {$period}({$target_date})
+                    and Year(payment_at) = Year({$target_date})";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
+            // var_dump($stmt);
+            $stmt->execute();
+            
+            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $results;
         }
     }
     // 月別か週別か期間を選ぶ
