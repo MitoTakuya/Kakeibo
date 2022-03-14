@@ -71,7 +71,7 @@ require_once ("../users_do.php");
 						</p>
 					</div>
 					<div class="divider-form"></div>
-					<input type="submit" class="btn btn-block btn-lg btn-primary" value="確認する">
+					<input type="submit" name="new_user" class="btn btn-block btn-lg btn-primary" value="確認する">
 					<p class="text-center">すでにアカウントをお持ちですか？</p>
 					<a href="login.php" class="nav-item nav-link text-center">ログインする</a>
 				</form>
