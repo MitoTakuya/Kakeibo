@@ -182,7 +182,44 @@ class DB_Controller_main extends DB_Controller {
             return $results['sum']; //格納されていなければ false を返す
         }
     }
+    
+    /**********************************************************
+     * 詳細画面で表示するためのレコードを取り出すメソッド
+     **********************************************************/
+    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する
+    /*
+        使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
+        (グループid1番の「2022年3月1日」の週の全レコードを出力)
+    */
+    public function fetch_filtered_records($group_id, $target_date = null, $category_id = null, $period_param = 0) {
+        if($this->connect_DB()) {
+            $period = $this->select_a_period($period_param);    // 月別、週別の指定
+            $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
+            if(is_null($category_id)) {
+                // 期間のみでfilterする場合
+                $results = $this->fetch_filtered_records_by_a_date(
+                                group_id:       $group_id,
+                                target_date:    $target_date,
+                                period:         $period
+                            );
+            } else {
+                // 期間とカテゴリでfilterする場合
+                $results = $this->fetch_filtered_records_by_date_and_category(
+                                group_id:       $group_id,
+                                category_id:    $category_id,
+                                target_date:    $target_date,
+                                period:         $period
+                            );
+            }
+            $this->pdo = null;
+            return $results; //格納されていなければ false を返す
+        }
+    }
+
+    /*****************************************
+     * メソッド内部からのみ呼び出されるメソッド
+     *******************************************/
     // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
     private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period) {
         if($this->connect_DB()) {
@@ -222,6 +259,44 @@ class DB_Controller_main extends DB_Controller {
             return $results;
         }
     }
+    // あるグループの月別、週別のレコードを取り出すメソッド
+    private function fetch_filtered_records_by_a_date($group_id, $target_date = null, $period) {
+        $sql = "select *
+                from `full_records`
+                where `group_id` = :group_id
+                and `type_id` = :type_id
+                and {$period}(payment_at) = {$period}({$target_date})
+                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+        $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
+        // var_dump($stmt);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }
+
+    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド
+    private function fetch_filtered_records_by_date_and_category($group_id, $target_date = null, $category_id, $period) {
+        $sql = "select *
+                from `full_records`
+                where `group_id` = :group_id
+                and `type_id` = :type_id
+                and `category_id` = :category_id
+                and {$period}(payment_at) = {$period}({$target_date})
+                and Year(payment_at) = Year({$target_date})";           //$target_date には関数も入るためバインドしない
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+        $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
+        $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
+        // var_dump($stmt);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }
+
     // 月別か週別か期間を選ぶ
     private function select_a_period($period_param = 0) {
         switch ($period_param) {
