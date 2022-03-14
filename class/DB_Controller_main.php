@@ -35,8 +35,9 @@ class DB_Controller_main extends DB_Controller {
     // レコードの更新
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('UPDATE main SET main(title, memo, payment, payment_at, user_id, type_id, category_id, group_id) VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id) WHERE id=:id;');
-            //SQL文中の プレース部を 定義しておいた変数に置き換える
+            $sql = 'UPDATE `main` SET title =:title, memo = :memo, payment = :payment, payment_at = :payment_at, user_id = :user_id, type_id = :type_id, category_id = :category_id, group_id = :group_id where id=:id;';
+            $stmt = $this->pdo->prepare($sql);
+
             $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
             $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
