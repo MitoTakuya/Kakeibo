@@ -40,6 +40,25 @@ class DB_Controller_users extends DB_Controller {
             }
         }
 
+        // ユーザーグループ
+        // 新規グループ選択時
+        if($_POST['user_group'] == "new_group") {
+            if(!isset($_POST['group_form']) || !strlen($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
+                self::$user_errors['group_form'] = '入力してください';
+            } else if(mb_strlen($_POST['group_form']) > 30) {
+                self::$user_errors['group_form'] = '30文字以内で入力してください';
+            } else {
+                $group_name = $_POST['group_form'];
+                // ユニークキー作成方法は検討
+                $key =  uniqid();
+            }
+            // 既存グループ選択時
+        } elseif($_POST['user_group'] == "existing_group") {
+            echo "jkj";
+        }
+
+
+        // エラーがなければユーザー情報登録
         if (count(self::$user_errors) == 0) {
             // パスワードを暗号化
             $hash = password_hash($password, PASSWORD_DEFAULT);
@@ -47,6 +66,8 @@ class DB_Controller_users extends DB_Controller {
             // 画像をアップロード
             // move_uploaded_file($_FILES['image']['tmp_name'], '../images/'. $image);
             move_uploaded_file($user_image, '../images/'. $user_image);
+            // ユーザーグループ登録
+            $this->insert_user_group($group_name, $key);
             // ユーザー情報登録
             $this->insert_an_user($user_name, $hash, $mail, $user_image);
             return "ok";
@@ -54,7 +75,6 @@ class DB_Controller_users extends DB_Controller {
             return self::$user_errors;
         }
     }
-
     // ログイン入力確認
     public function login_confirmation() {
 
@@ -107,6 +127,19 @@ class DB_Controller_users extends DB_Controller {
             } else {
                 return self::$user_errors;
             }
+        }
+    }
+
+    // ユーザーグループ登録
+    public function insert_user_group($group_name, $key) {
+        if($this->connect_DB()) {
+            $stmt = $this->pdo->prepare('INSERT INTO `user_groups`(`group_name`, `key`) VALUES(:group_name, :key);');
+            //SQL文中の プレース部を 定義しておいた変数に置き換える
+            $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
+            $stmt->bindParam( ':key', $key, PDO::PARAM_STR);
+
+            //sqlを 実行
+            $stmt->execute();
         }
     }
 
