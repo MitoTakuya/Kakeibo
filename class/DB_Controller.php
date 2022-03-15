@@ -37,14 +37,16 @@ class DB_Controller {
     // select * from 対象テーブル where = 指定したid
     public function fetch_a_record($target_id) {
         if($this->connect_DB()) {
-            $sql = 'select * from `' . $this->target_table . '` where `id`=:id';
+            $sql = "SELECT *
+                    FROM `{$this->target_table}`
+                    WHERE `id`=:id";
+            
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-            //sqlを 実行
+            
             $stmt->execute();
-
-            //クエリ結果を格納する
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            
             $this->pdo = null;
             return $results;
         } else {
@@ -54,15 +56,21 @@ class DB_Controller {
     }
 
     // select * from 対象テーブル
-    public function fetch_all_records() {
+    public function fetch_all_records($order = 0) {
         if($this->connect_DB()) {
-            //echo $this->target_table;
-            $sql = 'select * from `' . $this->target_table . '` order by `id` desc';
-            foreach ($this->pdo->query($sql) as $row) {
-                $results[] = $row;
-            }
+            // 昇順・降順を選択する
+            $order_clause = $this->select_order($order);
+
+            $sql = "SELECT *
+                    FROM  `{$this->target_table}` " . $order_clause;
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             $this->pdo = null;
             return $results;
+
         } else {
             // 接続失敗時はstringでエラーメッセージを返す
             return self::$connect_error;
@@ -71,13 +79,30 @@ class DB_Controller {
     // delete from 対象テーブル
     public function delete_a_record($target_id) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('delete from `' . $this->target_table . '` where `id`=:id');
+            $sql = "DELETE FROM
+                    ` {$this->target_table} `
+                    FROM `id`=:id";
+            
+            $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             $stmt->execute();
+
             $this->pdo = null;
         } else {
             // 接続失敗時はstringでエラーメッセージを返す
             return self::$connect_error;
         }
+    }
+    //order by句を返す
+    protected function select_order($order = 0, $culmun = 'id') {
+        switch($order){
+            case 1:
+                $order_clause = "order by `{$culmun}` asc";
+                break;
+
+            default:
+                $order_clause = "order by `{$culmun}` desc";
+        }
+        return $order_clause;
     }
 }
