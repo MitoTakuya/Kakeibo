@@ -14,7 +14,7 @@ class DB_Controller_main extends DB_Controller {
      **********************************************************************/
     // $memo は引数を無い場合があるため、デフォルト値として''を設定する。
     // （nullはそのままstringにバインドできないため）
-    public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
+    public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
         if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
                     VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
@@ -36,7 +36,7 @@ class DB_Controller_main extends DB_Controller {
         }
     }
     // レコードの更新
-    public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
+    public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
         if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
                     WHERE `id`=:id;';

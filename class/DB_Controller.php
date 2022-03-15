@@ -14,7 +14,8 @@ class DB_Controller {
         $this->target_table = $target_table;
         self::connect_DB(); //PDOオブジェクトを生成
         // 以下でPDOの設定を行う
-        #...
+        self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
+
     }
 
     /****************************************************************************
