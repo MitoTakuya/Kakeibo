@@ -94,7 +94,7 @@ class DB_Controller_users extends DB_Controller {
     // ログイン用メソッド
     public function login_user($mail, $password) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT * FROM users WHERE mail=:mail');
+            $stmt = $this->pdo->prepare('SELECT `id`, `password`, `mail` FROM users WHERE mail=:mail');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->execute();
@@ -103,7 +103,6 @@ class DB_Controller_users extends DB_Controller {
             if(password_verify($password, $user['password'])) {
                 // ユーザー情報をセッションに保存
                 $_SESSION['id'] = $user['id'];
-                $_SESSION['user_name'] = $user['user_name'];
                 return "login_ok";
             } else {
                 return self::$user_errors;
@@ -160,27 +159,4 @@ class DB_Controller_users extends DB_Controller {
             $stmt->execute();
         }
     }
-
-    // ログインメソッド
-    public function login($mail, $password) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT * FROM `users` WHERE mail=:mail');
-            //SQL文中の プレース部を 定義しておいた変数に置き換える
-            $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
-            //sqlを 実行
-            $stmt->execute();
-            $user = $stmt->fetch();
-
-            // 指定したハッシュにパスワードが一致しているか
-            if(password_verify($password, $user['password'])) {
-                $_SESSION['id'] = $user['id'];
-                $_SESSION['name'] = $user['name'];
-                header('Location: ../view/index.php');
-                exit();
-            } else {
-                header('Location: ../view/login.php');
-                exit();
-            }
-        }
-}
 }
