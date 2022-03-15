@@ -17,7 +17,7 @@ class DB_Controller {
 
         // 以下でPDOの設定を行う
         self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
-        self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
+        self::$pdo->setAttribute(PDO::ATTR_ERRMODE,      PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
     }
 
     /****************************************************************************
@@ -58,7 +58,6 @@ class DB_Controller {
             $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            
             return $results;
         } else {
             // 接続失敗時はstringでエラーメッセージを返す
@@ -91,13 +90,13 @@ class DB_Controller {
         if(isset(self::$pdo) || self::connect_DB()) {
             try {
                 self::$pdo->beginTransaction();
-                $sql = "DELETE FROM
-                        ` {$this->target_table} `
-                        FROM `id`=:id";
+                $sql = "DELETE FROM `{$this->target_table}`
+                        WHERE `id`=:id";
                 
                 $stmt = self::$pdo->prepare($sql);
                 $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
                 $stmt->execute();
+                self::$pdo->commit();
 
             } catch (PDOException $e) {
                 self::$pdo->rollBack();

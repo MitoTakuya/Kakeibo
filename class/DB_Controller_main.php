@@ -65,7 +65,7 @@ class DB_Controller_main extends DB_Controller {
                 $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
                 $stmt->execute();
-                
+                self::$pdo->commit();
             } catch (PDOException $e) {
                 self::$pdo->rollBack();
                 return self::$transaction_error;
