@@ -1,8 +1,8 @@
 <?php
 class DB_Controller {
-    private static string $dsn = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
-    private static string $DB_user = 'root';
-    private static string $DB_password = '';
+    private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
+    private const DB_USER = 'root';
+    private const DB_PASSWORD = '';
     protected static ?PDO $pdo;    //PDO か nullでなければいけない
     protected static string $connect_error = 'データベースへの接続に失敗しました';
     protected static string $transaction_error = '処理に失敗しました';
@@ -27,7 +27,7 @@ class DB_Controller {
     public static function connect_DB() {
         if(!isset(self::$pdo)) {
             try{
-                self::$pdo = new PDO(self::$dsn, self::$DB_user, self::$DB_password);
+                self::$pdo = new PDO(self::DNS, self::DB_USER, self::DB_PASSWORD);
                 //print('接続に成功しました。<br>');
                 return true;
             }catch (PDOException $e){
