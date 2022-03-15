@@ -257,6 +257,27 @@ class DB_Controller_main extends DB_Controller {
             return self::$connect_error;
         }
     }
+    // 1列分の値だけを取り出す
+    public function fetch_category_column($order = 1) {
+        if(isset(self::$pdo) || self::connect_DB()) {
+            // 昇順・降順を選択する
+            $order_clause = $this->select_order($order);
+
+            $sql = "SELECT `type_id`, `category_name`
+                    FROM  `categories` " . $order_clause;
+
+            $stmt = self::$pdo->prepare($sql);
+            // $stmt->bindParam( ':column', $column, PDO::PARAM_STR);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+
+            return $results;
+
+        } else {
+            // 接続失敗時はstringでエラーメッセージを返す
+            return self::$connect_error;
+        }
+    }
 
     /*****************************************
      * メソッド内部からのみ呼び出されるメソッド
