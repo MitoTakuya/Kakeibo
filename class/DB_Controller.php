@@ -1,6 +1,6 @@
 <?php
 class DB_Controller {
-    private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost';
+    private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
     private static $DB_user = 'root';
     private static $DB_password = '';
     protected static $connect_error = 'データベースへの接続に失敗しました';
@@ -22,7 +22,6 @@ class DB_Controller {
         try{
             $this->pdo = new PDO(self::$dsn, self::$DB_user, self::$DB_password);
             //print('接続に成功しました。<br>');
-            $this->pdo->query('SET NAMES utf8');  //DB に文字コードを指定するSQL文を送る
             return true;
         }catch (PDOException $e){
             print('Error:'.$e->getMessage());
