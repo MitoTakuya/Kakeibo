@@ -16,21 +16,30 @@ class DB_Controller_main extends DB_Controller {
     // （nullはそのままstringにバインドできないため）
     public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
         if(isset(self::$pdo) || self::connect_DB()) {
-            $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
-                    VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
+            try {
+                self::$pdo->beginTransaction();
+
+                $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
+                        VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
             
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
-            $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
-            $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
-            $stmt->bindParam( ':payment_at',    $payment_at,    PDO::PARAM_STR);
-            $stmt->bindParam( ':user_id',       $user_id,       PDO::PARAM_INT);
-            $stmt->bindParam( ':type_id',       $type_id,       PDO::PARAM_INT);
-            $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
-            $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
+                $stmt = self::$pdo->prepare($sql);
+                $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
+                $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
+                $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
+                $stmt->bindParam( ':payment_at',    $payment_at,    PDO::PARAM_STR);
+                $stmt->bindParam( ':user_id',       $user_id,       PDO::PARAM_INT);
+                $stmt->bindParam( ':type_id',       $type_id,       PDO::PARAM_INT);
+                $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
+                $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
-            $stmt->execute();
+                $stmt->execute();
 
+                self::$pdo->commit();
+
+            } catch (PDOException $e) {
+                self::$pdo->rollBack();
+                return self::$transaction_error;
+            }
         } else {
             return self::$connect_error;
         }
@@ -38,23 +47,29 @@ class DB_Controller_main extends DB_Controller {
     // レコードの更新
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
         if(isset(self::$pdo) || self::connect_DB()) {
-            $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
-                    WHERE `id`=:id;';
-            
-            $stmt = self::$pdo->prepare($sql);
+            try {
+                self::$pdo->beginTransaction();
+                $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
+                        WHERE `id`=:id;';
+                
+                $stmt = self::$pdo->prepare($sql);
 
-            $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
-            $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
-            $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
-            $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
-            $stmt->bindParam( ':payment_at',    $payment_at,    PDO::PARAM_STR);
-            $stmt->bindParam( ':user_id',       $user_id,       PDO::PARAM_INT);
-            $stmt->bindParam( ':type_id',       $type_id,       PDO::PARAM_INT);
-            $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
-            $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
+                $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
+                $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
+                $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
+                $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
+                $stmt->bindParam( ':payment_at',    $payment_at,    PDO::PARAM_STR);
+                $stmt->bindParam( ':user_id',       $user_id,       PDO::PARAM_INT);
+                $stmt->bindParam( ':type_id',       $type_id,       PDO::PARAM_INT);
+                $stmt->bindParam( ':category_id',   $category_id,   PDO::PARAM_INT);
+                $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
-            $stmt->execute();
-            
+                $stmt->execute();
+                
+            } catch (PDOException $e) {
+                self::$pdo->rollBack();
+                return self::$transaction_error;
+            }
         } else {
             return self::$connect_error;
         }

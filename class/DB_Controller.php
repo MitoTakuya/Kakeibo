@@ -5,6 +5,7 @@ class DB_Controller {
     private static string $DB_password = '';
     protected static ?PDO $pdo;    //PDO か nullでなければいけない
     protected static string $connect_error = 'データベースへの接続に失敗しました';
+    protected static string $transaction_error = '処理に失敗しました';
 
     protected String $target_table;
     
@@ -13,9 +14,10 @@ class DB_Controller {
     function __construct(string $target_table) {
         $this->target_table = $target_table;
         self::connect_DB(); //PDOオブジェクトを生成
+
         // 以下でPDOの設定を行う
         self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
-
+        self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
     }
 
     /****************************************************************************
@@ -29,7 +31,7 @@ class DB_Controller {
                 //print('接続に成功しました。<br>');
                 return true;
             }catch (PDOException $e){
-                print('Error:'.$e->getMessage());
+                // print('Error:'.$e->getMessage());
                 die();
                 return false;
             }
@@ -87,16 +89,21 @@ class DB_Controller {
     // delete from 対象テーブル
     public function delete_a_record(int $target_id) {
         if(isset(self::$pdo) || self::connect_DB()) {
-            $sql = "DELETE FROM
-                    ` {$this->target_table} `
-                    FROM `id`=:id";
-            
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-            $stmt->execute();
+            try {
+                self::$pdo->beginTransaction();
+                $sql = "DELETE FROM
+                        ` {$this->target_table} `
+                        FROM `id`=:id";
+                
+                $stmt = self::$pdo->prepare($sql);
+                $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
+                $stmt->execute();
 
-        } else {
-            // 接続失敗時はstringでエラーメッセージを返す
+            } catch (PDOException $e) {
+                self::$pdo->rollBack();
+                return self::$transaction_error;
+            }
+        }else {
             return self::$connect_error;
         }
     }
