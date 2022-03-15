@@ -1,8 +1,8 @@
 <?php
 require_once('DB_Controller.php');
 class DB_Controller_main extends DB_Controller {
-    protected static $outgo_type_id = 1;
-    protected static $income_type_id = 2;
+    protected static int $outgo_type_id = 1;
+    protected static int $income_type_id = 2;
 
     // 対象テーブルを選択
     function __construct() {
@@ -15,11 +15,11 @@ class DB_Controller_main extends DB_Controller {
     // $memo は引数を無い場合があるため、デフォルト値として''を設定する。
     // （nullはそのままstringにバインドできないため）
     public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
                     VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
             $stmt->bindParam( ':memo',          $memo,          PDO::PARAM_STR);
             $stmt->bindParam( ':payment',       $payment,       PDO::PARAM_STR);
@@ -30,18 +30,18 @@ class DB_Controller_main extends DB_Controller {
             $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
             $stmt->execute();
-            $this->pdo = null;
+
         } else {
             return self::$connect_error;
         }
     }
     // レコードの更新
     public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = '') {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
                     WHERE `id`=:id;';
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
 
             $stmt->bindParam( ':id',            $id,            PDO::PARAM_INT);
             $stmt->bindParam( ':title',         $title,         PDO::PARAM_STR);
@@ -54,25 +54,25 @@ class DB_Controller_main extends DB_Controller {
             $stmt->bindParam( ':group_id',      $group_id,      PDO::PARAM_INT);
 
             $stmt->execute();
-            $this->pdo = null;
+            
         } else {
             return self::$connect_error;
         }
     }
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
     public function fetch_all_group_records($group_id) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'SELECT *
                     FROM `full_records`
                     WHERE `group_id`=:group_id;';
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':group_id',   $group_id,   PDO::PARAM_INT);
 
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $this->pdo = null;
+            
             return $results; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -81,7 +81,7 @@ class DB_Controller_main extends DB_Controller {
 
     // あるグループのレコードを一定数取り出す（画面に収まる数など）*要order切り替え
     public function fetch_group_records_to_display($group_id, $limit, $offset = 0, $order) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $order_clause = $this->select_order($order);    // 昇順・降順を選択する
 
             $sql = "SELECT * FROM `full_records`
@@ -90,7 +90,7 @@ class DB_Controller_main extends DB_Controller {
                     LIMIT :limit
                     OFFSET :offset;";
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,  PDO::PARAM_INT);
             $stmt->bindParam( ':limit',     $limit,     PDO::PARAM_INT);
             $stmt->bindParam( ':offset',    $offset,    PDO::PARAM_INT);
@@ -98,7 +98,7 @@ class DB_Controller_main extends DB_Controller {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $this->pdo = null;
+            
             return $results; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -130,20 +130,20 @@ class DB_Controller_main extends DB_Controller {
     
     // 今までの合計支出を返す ダッシュボードに表示する
     public function group_total_outgo($group_id) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'SELECT `type_id`, SUM(`payment`) AS `outgo`
                     FROM `main`
                     WHERE `group_id` = :group_id
                     AND `type_id` = :type_id;';
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$outgo_type_id,   PDO::PARAM_INT);
 
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);        
 
-            $this->pdo = null;
+            
             return $result['outgo']; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -151,20 +151,20 @@ class DB_Controller_main extends DB_Controller {
     }
     // 今までの合計収入を返す ダッシュボードに表示する
     public function group_total_income($group_id) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = 'SELECT `type_id`, SUM(`payment`) AS `income`
                     FROM `main`
                     WHERE `group_id` = :group_id
                     AND `type_id` = :type_id;';
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':group_id',  $group_id,              PDO::PARAM_INT);
             $stmt->bindParam( ':type_id',   self::$income_type_id,  PDO::PARAM_INT);
 
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);        
 
-            $this->pdo = null;
+            
             return $result['income']; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -177,7 +177,7 @@ class DB_Controller_main extends DB_Controller {
         (グループid1番の「2022年3月1日」の週の合計支出を出力)
     */
     public function get_filtered_outgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $period = $this->select_a_period($period_param);    // 月別、週別の指定
             $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
@@ -197,7 +197,7 @@ class DB_Controller_main extends DB_Controller {
                                 period:         $period
                             );
             }
-            $this->pdo = null;
+            
             return $results['sum']; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -213,7 +213,7 @@ class DB_Controller_main extends DB_Controller {
         (グループid1番の「2022年3月1日」の週の全レコードを出力)
     */
     public function fetch_filtered_records($group_id, $target_date = null, $category_id = null, $period_param = 0, $order = 0) {
-        if($this->connect_DB()) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $order_clause = $this->select_order($order);        // 昇順・降順を選択する
             $period = $this->select_a_period($period_param);    // 月別、週別の指定
             $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
@@ -236,7 +236,7 @@ class DB_Controller_main extends DB_Controller {
                                 order_clause:   $order_clause
                             );
             }
-            $this->pdo = null;
+            
             return $results; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
@@ -256,7 +256,7 @@ class DB_Controller_main extends DB_Controller {
                 AND {$period}(payment_at) = {$period}({$target_date})
                 AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
         $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
         // var_dump($stmt);
@@ -275,7 +275,7 @@ class DB_Controller_main extends DB_Controller {
                 AND {$period}(payment_at) = {$period}({$target_date})
                 AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
         $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
         $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
@@ -293,7 +293,7 @@ class DB_Controller_main extends DB_Controller {
                 AND YEAR(payment_at) = YEAR({$target_date})
                 {$order_clause}";           //$target_date には関数も入るためバインドしない
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
         $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
         // var_dump($stmt);
@@ -313,7 +313,7 @@ class DB_Controller_main extends DB_Controller {
                 AND YEAR(payment_at) = YEAR({$target_date})
                 {$order_clause}";           //$target_date には関数も入るためバインドしない
 
-        $stmt = $this->pdo->prepare($sql);
+        $stmt = self::$pdo->prepare($sql);
         $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
         $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
         $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
