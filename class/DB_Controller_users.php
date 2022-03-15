@@ -9,10 +9,8 @@ class DB_Controller_users extends DB_Controller {
         parent::__construct('users');
     }
 
-    // 入力内容チェック
+    // ユーザー登録入力内容チェック
     public function input_confirmation() {
-
-        // 入力情報確認
         if(!isset($_POST['user_name']) || !strlen($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
             self::$user_errors['user_name'] = '名前を入力してください';
         } else if(mb_strlen($_POST['user_name']) > 30) {
@@ -43,13 +41,46 @@ class DB_Controller_users extends DB_Controller {
         }
 
         if (count(self::$user_errors) == 0) {
+            // パスワードを暗号化
+            $hash = password_hash($password, PASSWORD_DEFAULT);
             $user_image = date('YmdHis') . $_FILES['user_image']['name'];
             // 画像をアップロード
             // move_uploaded_file($_FILES['image']['tmp_name'], '../images/'. $image);
             move_uploaded_file($user_image, '../images/'. $user_image);
             // ユーザー情報登録
-            $this->insert_an_user($user_name, $password, $mail, $user_image);
+            $this->insert_an_user($user_name, $hash, $mail, $user_image);
             return "ok";
+        } else {
+            return self::$user_errors;
+        }
+    }
+
+    // ログイン入力確認
+    public function login_confirmation() {
+
+        // POSTされていないときは処理を中断する
+        if(!filter_input_array(INPUT_POST)) {
+            return;
+        }
+        
+        // メールアドレスが入力されているか確認
+        if(trim($_POST['mail']) === "") {
+            self::$user_errors['login_mail'] = "メールアドレスを入力してください";
+        } else {
+            $mail = $_POST['mail'];
+        }
+
+        // パスワードが入力されているか確認
+        if(trim($_POST['password']) === "") {
+            self::$user_errors['login_password'] = "パスワードを入力してください";
+        } else {
+            $password = $_POST['password'];
+        }
+
+        // エラーがなければ保存
+        if(count(self::$user_errors) == 0) {
+            $this->login_user($mail, $password);
+            return "login";
         } else {
             return self::$user_errors;
         }
@@ -60,7 +91,24 @@ class DB_Controller_users extends DB_Controller {
         header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).$url);
     }
 
-
+    // ログイン用メソッド
+    public function login_user($mail, $password) {
+        if($this->connect_DB()) {
+            $stmt = $this->pdo->prepare('SELECT `id`, `password`, `mail` FROM users WHERE mail=:mail');
+            //SQL文中の プレース部を 定義しておいた変数に置き換える
+            $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
+            $stmt->execute();
+            $user = $stmt->fetch();
+            // 指定したハッシュがパスワードにマッチしているか
+            if(password_verify($password, $user['password'])) {
+                // ユーザー情報をセッションに保存
+                $_SESSION['id'] = $user['id'];
+                return "login_ok";
+            } else {
+                return self::$user_errors;
+            }
+        }
+    }
 
     /**************************************************************************
      * userテーブル操作用のメソッド
@@ -81,6 +129,7 @@ class DB_Controller_users extends DB_Controller {
             $stmt->execute();
         }
     }
+
     // 論理的削除を行うメソッド
     public function disable_a_user($target_id) {
         if($this->connect_DB()) {

@@ -1,3 +1,6 @@
+<?php
+require_once ("../users_do.php");
+?>
 <!doctype html>
 <html lang="ja">
   <head>
@@ -13,8 +16,8 @@
   </head>
   <body>
   <nav class="navbar navbar-dark bg-dark">
-    <a href="#" class="navbar-brand">ログイン</a>
-    <a href="#" class="navbar-brand text-right">新規登録</a>
+    <a href="login.php" class="navbar-brand">ログイン</a>
+    <a href="users_new.php" class="navbar-brand text-right">新規登録</a>
   </nav>
   <div class="container">
     <div class="mt-4"></div>
@@ -27,10 +30,10 @@
           <div class="divider-form"></div>
           <div class="form-group">
             <p><i class="far fa-envelope"></i>
-              <label for="email">メールアドレス</label>
-              <input type="email" id="email" name="email" class="form-control">
-              <?php if(!empty($errors['email'])): ?>
-                <span class="text-danger"><?php echo $errors['email']; ?></span>
+              <label for="mail">メールアドレス</label>
+              <input type="email" id="mail" name="mail" class="form-control">
+              <?php if(!empty($user_errors['login_mail'])): ?>
+                <span class="text-danger"><?php echo $user_errors['login_mail']; ?></span>
               <?php endif; ?>
           </div>
 
@@ -39,14 +42,14 @@
             <p><i class="fa fa-lock"></i>
               <label for="password">パスワード</label>
               <input type="password" id="password" name="password" class="form-control">
-              <?php if(!empty($errors['password'])): ?>
-                <span class="text-danger"><?php echo $errors['password']; ?></span>
+              <?php if(!empty($user_errors['login_password'])): ?>
+                <span class="text-danger"><?php echo $user_errors['login_password']; ?></span>
               <?php endif; ?>
           </div>
           <div class="divider-form"></div>
-          <input type="submit" class="btn btn-block btn-lg btn-primary" value="送信">
+          <input type="submit" name="login_user" class="btn btn-block btn-lg btn-primary" value="送信">
           <p class="text-center">登録はお済みですか？</p>
-          <a href="index.php" class="nav-item nav-link text-center">登録する</a>
+          <a href="users_new.php" class="nav-item nav-link text-center">登録する</a>
         </form>
       </div>
     </div>
