@@ -31,6 +31,7 @@ class DB_Controller_users extends DB_Controller {
             self::$user_errors['mail'] = "メールアドレスを入力してください";
         } else {
             $mail = $_POST['mail'];
+            $this->check_duplicate($mail);
         }
 
         if(trim($_POST['password']) === "") {
@@ -80,7 +81,6 @@ class DB_Controller_users extends DB_Controller {
             }
         }
 
-
         // エラーがなければユーザー情報登録
         if (count(self::$user_errors) == 0) {
             // パスワードを暗号化
@@ -102,6 +102,7 @@ class DB_Controller_users extends DB_Controller {
             return self::$user_errors;
         }
     }
+    
     // ログイン入力確認
     public function login_confirmation() {
 
@@ -167,6 +168,21 @@ class DB_Controller_users extends DB_Controller {
         }
     }
 
+    // メールアドレス重複確認
+    public function check_duplicate($mail) {
+        if($this->connect_DB()) {
+            $stmt = $this->pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail');
+            $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
+            //sqlを 実行
+            $stmt->execute();
+            // メールアドレスをカウント
+            $record = $stmt->fetch();
+            if($record['cnt'] > 0) {
+                self::$user_errors['mail'] = "登録済みのメールアドレスです。";
+            }
+        }
+    }
+
     // ユーザーグループ登録
     public function insert_user_group($group_name, $group_password) {
         if($this->connect_DB()) {
@@ -189,7 +205,7 @@ class DB_Controller_users extends DB_Controller {
             //sqlを 実行
             $stmt->execute();
             $id = $stmt->fetch();
-            return isset($id['id']);
+            return isset($id['id']); //パスワードが違っていればfalseが返る
         }
     } 
 
