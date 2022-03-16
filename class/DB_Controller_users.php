@@ -41,11 +41,13 @@ class DB_Controller_users extends DB_Controller {
             $password = $_POST['password'];
         }
 
-        if(!empty($user_image)) {
-            $ext = substr($user_image, -3);
+        if(!empty($_FILES['user_image']['name'])) {
+            $ext = substr($_FILES['user_image']['name'], -3);
             if($ext != 'jpg' && $ext != 'gif' && $ext != 'png') {
                 self::$user_errors['user_image'] = '画像の形式は[jpg],[gif],[png]のみです。';
             }
+        } else if (empty($_FILES['user_image']['name'])) {
+            self::$user_errors['user_image'] = '画像を選択してください';
         }
 
         // ユーザーグループ
@@ -85,8 +87,8 @@ class DB_Controller_users extends DB_Controller {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $user_image = date('YmdHis') . $_FILES['user_image']['name'];
             // 画像をアップロード
-            move_uploaded_file($user_image, '../images/'. $user_image);
-
+            move_uploaded_file($_FILES['user_image']['tmp_name'], '../images/'. $user_image);
+            
             if($_POST['user_group'] ==  "new_group") {
                 // ユーザー、新規グループ登録
                 $this->create_user_with_group($group_name, $group_password, $user_name, $hash, $mail, $user_image);
