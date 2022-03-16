@@ -18,7 +18,8 @@
     <!-- 画面上部分 -->
     <header class="header">
         <nav class="navbar navbar-dark bg-dark">
-            <a href="#" class="navbar-brand">家計簿(グループ名)</a>
+        <a href="#" class="navbar-brand">家計簿(グループ名)</a>
+        <a href="#" class="navbar-brand text-right">ログアウト</a>
         </nav>
     </header>
 
@@ -30,28 +31,30 @@
         <!-- メイン部分（グラフとカテゴリーごとの支出テーブル） -->
         <section class="body_layout">
             <!-- グラフ部 -->
-            <div class="graph_area jumbotron">
-                <p>(ここにグラフを作成する)</p>
-                <div class="card">
-                        <svg class="bd-placeholder-img card-img-top" width="320" height="50" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
-                            <rect width="100%" height="100%" fill="#87CEEB"/>
-                            <text class="mx-auto" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">何か文字入れられる</text>
-                        </svg>
-                        <div class="outgo_chart card-body mx-auto">
-                                <img src="https://www.illustkit.com/wp/wp-content/uploads/2021/05/IK-2021-0228-69.png" width="500" height="500">
-                        </div>
-                        <p>(これは仮置きの画像)</p>
+            <div class="body">
+                <div class="graph_area jumbotron">
+                    <p>(ここにグラフを作成する)</p>
+                    <div class="card">
+                            <svg class="bd-placeholder-img card-img-top" width="320" height="50" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
+                                <rect width="100%" height="100%" fill="#87CEEB"/>
+                                <text class="mx-auto" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">何か文字入れられる</text>
+                            </svg>
+                            <div class="outgo_chart card-body mx-auto">
+                                    <img src="https://www.illustkit.com/wp/wp-content/uploads/2021/05/IK-2021-0228-69.png" width="500" height="500">
+                            </div>
+                            <p>(これは仮置きの画像)</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- テーブル部 -->
-            <div class="outgo_area jumbotron">
-                <div class="card">
-                    <p>ここにカテゴリーごとにまとめた支出のテーブルを作る</p>
-                        <div class="outgo_chart card-body mx-auto">
-                                <img src="https://shop.woodworks-marutoku.com/kanri/wp-content/uploads/2019/09/190926_ta_top.jpg" width="720" height="400">
-                        </div>
-                    <p>(これは仮置きの画像)</p>
+                <!-- テーブル部 -->
+                <div class="outgo_area jumbotron">
+                    <div class="card">
+                        <p>ここにカテゴリーごとにまとめた支出のテーブルを作る</p>
+                            <div class="outgo_chart card-body mx-auto">
+                                    <img src="https://shop.woodworks-marutoku.com/kanri/wp-content/uploads/2019/09/190926_ta_top.jpg" width="720" height="400">
+                            </div>
+                        <p>(これは仮置きの画像)</p>
+                    </div>
                 </div>
             </div>
         </section>
