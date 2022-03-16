@@ -18,7 +18,7 @@
 
         <header>
             <nav class="navbar navbar-dark bg-dark">
-                <a href="#" class="navbar-brand">家計簿(グループ名)</a> 
+                <a href="#" class="navbar-brand">家計簿(グループ名)phpで実装</a> 
                 <div class="btn-group" role="group">
                     <button id="header_menu" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Menu
@@ -37,15 +37,15 @@
                 <div class="card card_property">
                     <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                         <rect width="100%" height="100%" fill="#87CEEB"/>
-                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">{{current_period}}月の支出</text>
+                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">{{selected_period.month}}月の支出</text>
                     </svg> <!-- フォントを後で変えたい -->
-                        <div class="form-group"> <!-- 可能なら右に寄せたい -->
-                        <select class="w-25 form-control select_period">
-                            <option value="">--月を選択--</option>
+                        <div class="style={direction: rtl;}"> <!-- 可能なら右に寄せたい -->
+                        
+                        <select class="w-25 form-control select_period" name="year_month" v-model="selected_period">
+                            <option disabled value="">--月を選択--</option> <!-- 最新月をデフォルト値にする -->
                             <!-- vue.jsで実装する -->
-                            <option value="hamster">vue.jsで実装する</option>
                             <option value="dog">登録月から</option>
-                            <option v-for="month in sample_month" :value="month">{{month}}月</option>
+                            <option v-for="date in sample_dates" :value="date">{{date.year}}年{{date.month}}月</option>
                         </select>
                         </div>
                     <div class="outgo_chart card-body mx-auto">
@@ -69,10 +69,10 @@
                                     </thead>
                                     <tr v-for="category in sample_category_array">
                                         <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
-                                            <a :href="detail_link + category[2]" target="_blank" rel="noopener noreferrer">{{category[0]}}</a>
+                                            <a :href="detail_link + category.category_id" target="_blank" rel="noopener noreferrer">{{category.category_name}}</a>
                                         </td>
-                                        <td>{{category[1]}}</td>
-                                        <td>tbl_test</td>
+                                        <td>{{category.outgo}}</td>
+                                        <td>なにかしらのデータ</td>
                                     </tr>
                                 </table>
                         </div>
@@ -101,12 +101,32 @@
             let app = new Vue({
             el :'#dashboard',
             data : {
-                current_period : "今",
-                test : 'test',
+                selected_period : '', // phpから直に最新月の直接を代入する
                 detail_link : 'outgo_detail.php?ctg=',
                 outgo_table_columns : ["カテゴリー",  "支出額", "(前月比とか？)"],
-                sample_month : [1,2,3,4,5,6,7], // phpで先に読み込ませておく データは降順
-                sample_category_array : [["食費", 50000, 1], ["交通費", 30000, 2], ["娯楽費", 10000, 3]], // JSONとどっちがいいか後で検討
+                sample_dates : [// phpで先に読み込ませておく データは降順
+                    { year : '2021', month : 12, year_month : 20211201},
+                    { year : '2022', month : 1,  year_month : 20220101},
+                    { year : '2022', month : 2,  year_month : 20220201},
+                    { year : '2022', month : 3,  year_month : 20220301}
+                ], 
+                sample_category_array :// phpで先に読み込ませておく データは昇順
+                    [{
+                        category_name : "食費",
+                        outgo : 50000,
+                        category_id : 1
+                    },
+                    {
+                        category_name : "交通費",
+                        outgo : 30000,
+                        category_id : 2
+                    },
+                    {
+                        category_name : "娯楽費",
+                        outgo : 10000,
+                        category_id : 3
+                    }],
+                    // sample_category_array : [["食費", 50000], ["交通費", 30000]],
                 target_flat_score_url : null
             },
             methods : {
@@ -132,7 +152,13 @@
                     if (this.target_flat_score_url == "") {
                         this.add_score_btn = "btn btn-primary";
                     }
+                },
+                test_input : function (event) {
+                    this.test = "";
                 }
+            }, mounted : function(){
+                // 読み込み時の処理を書く
+                // 
             }
         })
         </script>
