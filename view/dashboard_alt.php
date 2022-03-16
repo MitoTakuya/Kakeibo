@@ -35,19 +35,17 @@
         <div class="container">
             <div class="mx-auto">
                 <div class="card card_property">
-                    <svg class="card-img-top" width="320" height="50" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
+                    <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                         <rect width="100%" height="100%" fill="#87CEEB"/>
-                        <text class="mx-auto" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">何か文字入れられる</text>
-                    </svg>
-                    <p>(ここに「〇月の支出」と表示する)</p>
+                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">{{current_period}}月の支出</text>
+                    </svg> <!-- フォントを後で変えたい -->
                         <div class="form-group"> <!-- 可能なら右に寄せたい -->
                         <select class="w-25 form-control select_period">
                             <option value="">--月を選択--</option>
                             <!-- vue.jsで実装する -->
                             <option value="hamster">vue.jsで実装する</option>
-                            <option value="dog">登録月</option>
-                            <option value="cat">次月</option>
-                            <option value="hamster">次々月</option>
+                            <option value="dog">登録月から</option>
+                            <option v-for="month in sample_month" :value="month">{{month}}月</option>
                         </select>
                         </div>
                     <div class="outgo_chart card-body mx-auto">
@@ -67,23 +65,13 @@
                                 <table class="table">
                                     <!-- 後で colの属性を指定する -->
                                     <thead>
-                                        <th>カテゴリー</th>
-                                        <th>支出額</th>
-                                        <th>(前月比とか？)</th>
+                                        <th v-for="columns in outgo_table_columns">{{columns}}</th>
                                     </thead>
-                                    <tr>
-                                        <td>食費</td>
-                                        <td>50,000 円</td>
-                                        <td>tbl_test</td>
-                                    </tr>
-                                    <tr>
-                                        <td>交通費</td>
-                                        <td>tbl_test</td>
-                                        <td>tbl_test</td>
-                                    </tr>
-                                    <tr>
-                                        <td>娯楽費</td>
-                                        <td>tbl_test</td>
+                                    <tr v-for="category in sample_category_array">
+                                        <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
+                                            <a :href="detail_link + category[2]" target="_blank" rel="noopener noreferrer">{{category[0]}}</a>
+                                        </td>
+                                        <td>{{category[1]}}</td>
                                         <td>tbl_test</td>
                                     </tr>
                                 </table>
@@ -106,17 +94,19 @@
         <!-- Vue.js下書き -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <script>
+            // サンプルデータ
+            let sample_data;
+
+
             let app = new Vue({
             el :'#dashboard',
             data : {
-                v_content : '', // これがセットされ直しててしまう？ 入力しなおしても vueで内部的に「content + response.data」が保存されてしまっている？
-                placeholder : "content ...\n...\nURLs",
-                add_vid_btn : "btn btn-primary",
-                add_score_btn : "btn btn-primary",
-                video_id : null,
-                flat_score_url : null,
-                target_url_input : null,
-                target_video_url : null,
+                current_period : "今",
+                test : 'test',
+                detail_link : 'outgo_detail.php?ctg=',
+                outgo_table_columns : ["カテゴリー",  "支出額", "(前月比とか？)"],
+                sample_month : [1,2,3,4,5,6,7], // phpで先に読み込ませておく データは降順
+                sample_category_array : [["食費", 50000, 1], ["交通費", 30000, 2], ["娯楽費", 10000, 3]], // JSONとどっちがいいか後で検討
                 target_flat_score_url : null
             },
             methods : {
