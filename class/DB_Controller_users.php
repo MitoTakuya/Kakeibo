@@ -1,7 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/DB_Controller.php';
 class DB_Controller_users extends DB_Controller {
-    
     public static $user_errors = array();
     private $group_id = 0;
 
@@ -73,10 +72,10 @@ class DB_Controller_users extends DB_Controller {
                 $group_password = $_POST['group_form'];
                 // パスワードからuser_groupのidを検索
                 $error = $this->search_group_id($group_password);
-                if(!$error) {
+                if(!is_array($error)) {
                     self::$user_errors['group_form'] = 'グループパスワードが違います。';
                 } else {
-                    $this->setGroupId($error);
+                    $this->setGroupId($error['id']);
                 }
             }
         }
@@ -142,17 +141,24 @@ class DB_Controller_users extends DB_Controller {
     // ユーザー・新規グループ登録
     public function create_user_with_group($group_name, $group_password, $user_name, $hash, $mail, $user_image)
     {
-        // transaction開始 後で記入
-        $this->insert_user_group($group_name, $group_password);
-        $group_id = $this->getGroupId();
-        $this->insert_an_user($user_name, $hash, $mail, $user_image, $group_id);
-        // commit　後で記入
+        try {
+            self::$pdo->beginTransaction();
+
+            $this->insert_user_group($group_name, $group_password);
+            $group_id = $this->getGroupId();
+            $this->insert_an_user($user_name, $hash, $mail, $user_image, $group_id);
+
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::$transaction_error;
+        }
     }
 
     // ログイン用メソッド
     public function login_user($mail, $password) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT `id`, `password`, `mail` FROM users WHERE mail=:mail');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('SELECT `id`, `password`, `mail` FROM users WHERE mail=:mail');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->execute();
@@ -165,13 +171,16 @@ class DB_Controller_users extends DB_Controller {
             } else {
                 return self::$user_errors;
             }
+
+        } else {
+            return self::$connect_error;
         }
     }
 
     // メールアドレス重複確認
     public function check_duplicate($mail) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail');
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             //sqlを 実行
             $stmt->execute();
@@ -180,32 +189,39 @@ class DB_Controller_users extends DB_Controller {
             if($record['cnt'] > 0) {
                 self::$user_errors['mail'] = "登録済みのメールアドレスです。";
             }
+        } else {
+            return self::$connect_error;
         }
     }
 
     // ユーザーグループ登録
     public function insert_user_group($group_name, $group_password) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
             $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
             //sqlを 実行
             $stmt->execute();
-            $this->setGroupId($this->pdo->lastInsertId());
+            $this->setGroupId(self::$pdo->lastInsertId());
+        } else {
+            return self::$connect_error;
         }
     }
 
     // ユーザーグループ検索
     public function search_group_id($group_password) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
             $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
 
             //sqlを 実行
             $stmt->execute();
             $id = $stmt->fetch();
-            return isset($id['id']); //パスワードが違っていればfalseが返る
+            return $id; //パスワードが違っていればfalseが返る
+
+        } else {
+            return self::$connect_error;
         }
     } 
 
@@ -214,8 +230,8 @@ class DB_Controller_users extends DB_Controller {
      **********************************************************************/
     // 
     public function insert_an_user($user_name, $password, $mail, $user_image, $group_id) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) VALUES(:user_name, :password, :mail, :user_image, :group_id);');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) VALUES(:user_name, :password, :mail, :user_image, :group_id);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':user_name', $user_name, PDO::PARAM_STR);
             $stmt->bindParam( ':password', $password, PDO::PARAM_STR);
@@ -225,36 +241,44 @@ class DB_Controller_users extends DB_Controller {
 
             //sqlを 実行
             $stmt->execute();
+        } else {
+            return self::$connect_error;
         }
     }
 
     // 論理的削除を行うメソッド
     public function disable_a_user($target_id) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
             $stmt->execute();
+        } else {
+            return self::$connect_error;
         }
     }
     // 論理的削除を取り消すメソッド
     public function delete_a_user($target_id) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
             $stmt->execute();
+        } else {
+            return self::$connect_error;
         }
     }
     public function fetch_an_image($target_id) {
-        if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
+        if(isset(self::$pdo) || self::connect_DB()) {
+            $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             //sqlを 実行
             $stmt->execute();
+        } else {
+            return self::$connect_error;
         }
     }
 }
