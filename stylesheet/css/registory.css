@@ -1,0 +1,59 @@
+
+.tab-group{
+    padding: 0;
+    margin: 0;
+    font-size: 24px;
+    /* display: inline-block; */
+    display: flex;
+    /* justify-content: center; */
+  }
+
+  /* 収支タブ */
+  .tab{
+    flex-grow: 1;
+    padding:5px;
+    list-style:none;
+    border-radius: 10px 10px 0 0 ;
+    text-align:center;
+    cursor:pointer;
+  }
+
+  /* 収支ごとのフォーム部分 */
+  .panel-group{
+    height:520px;
+    /* border:solid 1px #CCC; */
+    /* border-top:none; */
+    background:#eee;
+  }
+
+  .panel{
+    display:none;
+  }
+  .tab-A.is-active{
+    background:rgb(245, 195, 195);
+    color:#FFF;
+    transition: all 0.2s ease-out;
+  }
+
+  .panel.tab-A.is-show{
+    background:rgb(245, 195, 195);
+    display:block;
+  }
+
+  .tab-B.is-active{
+    background:rgb(149, 213, 230);
+    color:#FFF;
+    transition: all 0.2s ease-out;
+  }
+  .panel.tab-B.is-show{
+    display:block;
+    background:rgb(149, 213, 230);
+  }
+
+
+
+/* 金額を入力する項目 */
+  .amount input {
+    text-align: right;
+    width: 150px;
+  }
