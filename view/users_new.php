@@ -65,7 +65,7 @@ require_once ("../users_do.php");
 						<p><i class="fa fa-image"></i>
 							<label for="user_image">アイコン写真</label>
 							<p><input type="file" name="user_image"></p>
-              <?php if(!empty($user_errors['password'])): ?>
+              <?php if(!empty($user_errors['user_image'])): ?>
                 <span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
               <?php endif; ?>
 						</p>

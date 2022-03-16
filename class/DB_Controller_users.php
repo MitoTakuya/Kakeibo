@@ -1,12 +1,20 @@
 <?php
 require_once dirname(__FILE__) . '/DB_Controller.php';
 class DB_Controller_users extends DB_Controller {
-
+    
     public static $user_errors = array();
+    public $last_id = 0;
 
     // 対象テーブルを選択
     function __construct() {
         parent::__construct('users');
+    }
+
+    public function setLastId($last_id) {
+        $this->last_id = $last_id;
+    }
+    public function getName() {
+        return $this->last_id;
     }
 
     // ユーザー登録入力内容チェック
@@ -67,9 +75,12 @@ class DB_Controller_users extends DB_Controller {
             // move_uploaded_file($_FILES['image']['tmp_name'], '../images/'. $image);
             move_uploaded_file($user_image, '../images/'. $user_image);
             // ユーザーグループ登録
-            $this->insert_user_group($group_name, $key);
+            $this->create_user_with_group($group_name, $key, $user_name, $hash, $mail, $user_image);
+            // $this->insert_user_group($group_name, $key);
+            // ユーザーid取得
+            // $this->select_user_group();
             // ユーザー情報登録
-            $this->insert_an_user($user_name, $hash, $mail, $user_image);
+            // $this->insert_an_user($user_name, $hash, $mail, $user_image);
             return "ok";
         } else {
             return self::$user_errors;
@@ -111,6 +122,17 @@ class DB_Controller_users extends DB_Controller {
         header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).$url);
     }
 
+    // ユーザー・新規グループ登録
+    public function create_user_with_group($group_name, $key, $user_name, $hash, $mail, $user_image)
+    {
+        // transaction開始
+        $this->insert_user_group($group_name, $key);
+        // $this->select_user_group();
+        $last_id = $this->last_id;
+        $this->insert_an_user($user_name, $hash, $mail, $user_image, $last_id);
+        // commit
+    }
+
     // ログイン用メソッド
     public function login_user($mail, $password) {
         if($this->connect_DB()) {
@@ -137,26 +159,36 @@ class DB_Controller_users extends DB_Controller {
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
             $stmt->bindParam( ':key', $key, PDO::PARAM_STR);
-
             //sqlを 実行
             $stmt->execute();
+            $this->setLastId($this->pdo->lastInsertId());
         }
     }
+
+
+    // 最新のユーザーグループIDを取得
+    public function select_user_group() {
+        if($this->connect_DB()) {
+            $stmt = $this->pdo->prepare('SELECT `id` FROM `user_groups` order by id desc limit 1;');
+            $stmt->execute();
+            $last_id = $stmt->fetch();
+        }
+    }
+
 
     /**************************************************************************
      * userテーブル操作用のメソッド
      **********************************************************************/
     // 
-    public function insert_an_user($user_name, $password, $mail, $user_image) {
+    public function insert_an_user($user_name, $password, $mail, $user_image, $last_id) {
         if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) VALUES(:user_name, :password, :mail, :user_image, :group_id);');
-            $group_id = 1;
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':user_name', $user_name, PDO::PARAM_STR);
             $stmt->bindParam( ':password', $password, PDO::PARAM_STR);
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->bindParam( ':user_image', $user_image, PDO::PARAM_STR); 
-            $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT); 
+            $stmt->bindParam( ':group_id', $last_id, PDO::PARAM_INT); 
 
             //sqlを 実行
             $stmt->execute();
