@@ -3,18 +3,18 @@ require_once dirname(__FILE__) . '/DB_Controller.php';
 class DB_Controller_users extends DB_Controller {
     
     public static $user_errors = array();
-    public $last_id = 0;
+    private $group_id = 0;
 
     // 対象テーブルを選択
     function __construct() {
         parent::__construct('users');
     }
 
-    public function setLastId($last_id) {
-        $this->last_id = $last_id;
+    public function setGroupId($group_id) {
+        $this->group_id = $group_id;
     }
-    public function getName() {
-        return $this->last_id;
+    public function getGroupId() {
+        return $this->group_id;
     }
 
     // ユーザー登録入力内容チェック
@@ -52,17 +52,30 @@ class DB_Controller_users extends DB_Controller {
         // 新規グループ選択時
         if($_POST['user_group'] == "new_group") {
             if(!isset($_POST['group_form']) || !strlen($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
-                self::$user_errors['group_form'] = '入力してください';
+                self::$user_errors['group_form'] = '家計簿名を入力してください';
             } else if(mb_strlen($_POST['group_form']) > 30) {
                 self::$user_errors['group_form'] = '30文字以内で入力してください';
             } else {
                 $group_name = $_POST['group_form'];
                 // ユニークキー作成方法は検討
-                $key =  uniqid();
+                $group_password =  uniqid();
             }
             // 既存グループ選択時
         } elseif($_POST['user_group'] == "existing_group") {
-            echo "jkj";
+            if(!isset($_POST['group_form']) || !strlen($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
+                self::$user_errors['group_form'] = 'グループパスワードを入力してください';
+            } else if(mb_strlen($_POST['group_form']) > 30) {
+                self::$user_errors['group_form'] = '30文字以内で入力してください';
+            } else {
+                $group_password = $_POST['group_form'];
+                // パスワードからuser_groupのidを検索
+                $error = $this->search_group_id($group_password);
+                if(!$error) {
+                    self::$user_errors['group_form'] = 'グループパスワードが違います。';
+                } else {
+                    $this->setGroupId($error);
+                }
+            }
         }
 
 
@@ -72,15 +85,16 @@ class DB_Controller_users extends DB_Controller {
             $hash = password_hash($password, PASSWORD_DEFAULT);
             $user_image = date('YmdHis') . $_FILES['user_image']['name'];
             // 画像をアップロード
-            // move_uploaded_file($_FILES['image']['tmp_name'], '../images/'. $image);
             move_uploaded_file($user_image, '../images/'. $user_image);
-            // ユーザーグループ登録
-            $this->create_user_with_group($group_name, $key, $user_name, $hash, $mail, $user_image);
-            // $this->insert_user_group($group_name, $key);
-            // ユーザーid取得
-            // $this->select_user_group();
-            // ユーザー情報登録
-            // $this->insert_an_user($user_name, $hash, $mail, $user_image);
+
+            if($_POST['user_group'] ==  "new_group") {
+                // ユーザー、新規グループ登録
+                $this->create_user_with_group($group_name, $group_password, $user_name, $hash, $mail, $user_image);
+            } else {
+                // ユーザー登録
+                $group_id = $this->getGroupId();
+                $this->insert_an_user($user_name, $hash, $mail, $user_image, $group_id);
+            }
             return "ok";
         } else {
             return self::$user_errors;
@@ -123,14 +137,13 @@ class DB_Controller_users extends DB_Controller {
     }
 
     // ユーザー・新規グループ登録
-    public function create_user_with_group($group_name, $key, $user_name, $hash, $mail, $user_image)
+    public function create_user_with_group($group_name, $group_password, $user_name, $hash, $mail, $user_image)
     {
-        // transaction開始
-        $this->insert_user_group($group_name, $key);
-        // $this->select_user_group();
-        $last_id = $this->last_id;
-        $this->insert_an_user($user_name, $hash, $mail, $user_image, $last_id);
-        // commit
+        // transaction開始 後で記入
+        $this->insert_user_group($group_name, $group_password);
+        $group_id = $this->getGroupId();
+        $this->insert_an_user($user_name, $hash, $mail, $user_image, $group_id);
+        // commit　後で記入
     }
 
     // ログイン用メソッド
@@ -153,34 +166,36 @@ class DB_Controller_users extends DB_Controller {
     }
 
     // ユーザーグループ登録
-    public function insert_user_group($group_name, $key) {
+    public function insert_user_group($group_name, $group_password) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('INSERT INTO `user_groups`(`group_name`, `key`) VALUES(:group_name, :key);');
+            $stmt = $this->pdo->prepare('INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
-            $stmt->bindParam( ':key', $key, PDO::PARAM_STR);
+            $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
             //sqlを 実行
             $stmt->execute();
-            $this->setLastId($this->pdo->lastInsertId());
+            $this->setGroupId($this->pdo->lastInsertId());
         }
     }
 
-
-    // 最新のユーザーグループIDを取得
-    public function select_user_group() {
+    // ユーザーグループ検索
+    public function search_group_id($group_password) {
         if($this->connect_DB()) {
-            $stmt = $this->pdo->prepare('SELECT `id` FROM `user_groups` order by id desc limit 1;');
-            $stmt->execute();
-            $last_id = $stmt->fetch();
-        }
-    }
+            $stmt = $this->pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
+            $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
 
+            //sqlを 実行
+            $stmt->execute();
+            $id = $stmt->fetch();
+            return isset($id['id']);
+        }
+    } 
 
     /**************************************************************************
      * userテーブル操作用のメソッド
      **********************************************************************/
     // 
-    public function insert_an_user($user_name, $password, $mail, $user_image, $last_id) {
+    public function insert_an_user($user_name, $password, $mail, $user_image, $group_id) {
         if($this->connect_DB()) {
             $stmt = $this->pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) VALUES(:user_name, :password, :mail, :user_image, :group_id);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
@@ -188,7 +203,7 @@ class DB_Controller_users extends DB_Controller {
             $stmt->bindParam( ':password', $password, PDO::PARAM_STR);
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->bindParam( ':user_image', $user_image, PDO::PARAM_STR); 
-            $stmt->bindParam( ':group_id', $last_id, PDO::PARAM_INT); 
+            $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT); 
 
             //sqlを 実行
             $stmt->execute();
