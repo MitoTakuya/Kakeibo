@@ -38,41 +38,54 @@ function addComma(inputNum){
 // 非同期でレコード削除
 ///////////////////////////////////////////
 // 記帳ページ全て読み込まれた後に実行される
-window.onload = function(){
+// window.onload = function(){
+  window.addEventListener('DOMContentLoaded',function() {
 
   $('.delete-btn').on('click', function() {
-    var delete_confirm = confirm('マジで消しちゃっていいですか？');
+    // var delete_confirm = confirm('マジで消しちゃっていいですか？');
 
-    if(delete_confirm === true) {
+    // if(delete_confirm === true) {
       //ボタンの親の親要素（tr）のid値を取得
-      let id = $(this).parent().parent().attr("id");
-      let record_id = 'id='+ id;
+      let record_id = $(this).parent().parent().attr("id");
+      record_id = 'id='+ record_id;
+      console.log(record_id);
+      
       //削除対象のレコード行を取得
       let element = $(this).parent().parent();
       element = element[0];
+      console.log(element);
 
       // 非同期処理
       $.ajax({
         
-        url: 'http://localhost/kakeibo/ajax_registory.php',
         type: 'POST',
+        url: 'http://localhost/kakeibo/ajax_registory.php',
         data: record_id,
-        
+
       })
+
+      .then(
+        function (data) {
+          console.log(data);
+          element.remove();
+        }
+      );
+
       
-      .done(function() {
-        // 通信が成功したら、対象レコード行削除
-        element.remove();
-      })
+      // .done(function() {
+      //   // 通信が成功したら、対象レコード行削除
+      //   element.remove();
+      // })
       
-      .fail(function() {
-        alert('エラーが発生しました。');
-      });
-    }
+      // .fail(function() {
+      //   alert('エラーが発生しました。');
+      // });
+    // }
 
   });
 
-}
+}, false);
+
 
 
 
