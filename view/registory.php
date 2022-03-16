@@ -34,7 +34,7 @@ for ($i=0; $i < count($categories); $i++) {
 #############################################################
 require_once __DIR__.'/../class/DB_Controller_main.php';
 
-    //仮置き★
+    //★仮置き sessionのグループIDを使用する予定
     $group_id = 1;
 
     //インスタンス作成
