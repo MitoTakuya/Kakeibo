@@ -1,53 +1,63 @@
 <?php
 class DB_Controller {
-    private static $dsn = 'mysql:dbname=kakeibo_db;host=localhost';
-    private static $DB_user = 'root';
-    private static $DB_password = '';
-    protected static $connect_error = 'データベースへの接続に失敗しました';
+    private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
+    private const DB_USER = 'root';
+    private const DB_PASSWORD = '';
+    protected static ?PDO $pdo;    //PDO か nullでなければいけない
+    protected static string $connect_error = 'データベースへの接続に失敗しました';
+    protected static string $transaction_error = '処理に失敗しました';
 
     protected String $target_table;
-    protected $pdo;
     
 
     // 対象テーブルを選択
-    function __construct($target_table) {
+    function __construct(string $target_table) {
         $this->target_table = $target_table;
+        self::connect_DB(); //PDOオブジェクトを生成
+
+        // 以下でPDOの設定を行う
+        self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
+        self::$pdo->setAttribute(PDO::ATTR_ERRMODE,      PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
     }
 
     /****************************************************************************
-    * DBに接続するメソッド 接続成功時にtrue を返す。それぞれのメソッドの開始時に呼び出す
-    * 切断（= PDO オブジェクトへの null の代入）は下記のそれぞれのメソッドの終わりに行う
+    * DBへの接続関連メソッド
     *****************************************************************************/
-    public function connect_DB() {
-        try{
-            $this->pdo = new PDO(self::$dsn, self::$DB_user, self::$DB_password);
-            //print('接続に成功しました。<br>');
-            $this->pdo->query('SET NAMES utf8');  //DB に文字コードを指定するSQL文を送る
-            return true;
-        }catch (PDOException $e){
-            print('Error:'.$e->getMessage());
-            die();
-            return false;
+    // DBとの接続処理を行う (基本的に内部で呼び出す)
+    public static function connect_DB() {
+        if(!isset(self::$pdo)) {
+            try{
+                self::$pdo = new PDO(self::DNS, self::DB_USER, self::DB_PASSWORD);
+                //print('接続に成功しました。<br>');
+                return true;
+            }catch (PDOException $e){
+                // print('Error:'.$e->getMessage());
+                die();
+                return false;
+            }
         }
+    }
+    // DBとの切断処理を行う
+    public static function disconnect_DB() {
+        self::$pdo = null;
     }
 
     /**************************************************************************
      * 基本メソッド（idのみで行えるDB操作）
      **********************************************************************/
     // select * from 対象テーブル where = 指定したid
-    public function fetch_a_record($target_id) {
-        if($this->connect_DB()) {
+    public function fetch_a_record(int $target_id) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             $sql = "SELECT *
                     FROM `{$this->target_table}`
                     WHERE `id`=:id";
             
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
             
             $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            $this->pdo = null;
             return $results;
         } else {
             // 接続失敗時はstringでエラーメッセージを返す
@@ -56,19 +66,18 @@ class DB_Controller {
     }
 
     // select * from 対象テーブル
-    public function fetch_all_records($order = 0) {
-        if($this->connect_DB()) {
+    public function fetch_all_records(int $order = 0) {
+        if(isset(self::$pdo) || self::connect_DB()) {
             // 昇順・降順を選択する
             $order_clause = $this->select_order($order);
 
             $sql = "SELECT *
                     FROM  `{$this->target_table}` " . $order_clause;
 
-            $stmt = $this->pdo->prepare($sql);
+            $stmt = self::$pdo->prepare($sql);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $this->pdo = null;
             return $results;
 
         } else {
@@ -77,24 +86,28 @@ class DB_Controller {
         }
     }
     // delete from 対象テーブル
-    public function delete_a_record($target_id) {
-        if($this->connect_DB()) {
-            $sql = "DELETE FROM
-                    ` {$this->target_table} `
-                    FROM `id`=:id";
-            
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-            $stmt->execute();
+    public function delete_a_record(int $target_id) {
+        if(isset(self::$pdo) || self::connect_DB()) {
+            try {
+                self::$pdo->beginTransaction();
+                $sql = "DELETE FROM `{$this->target_table}`
+                        WHERE `id`=:id";
+                
+                $stmt = self::$pdo->prepare($sql);
+                $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
+                $stmt->execute();
+                self::$pdo->commit();
 
-            $this->pdo = null;
-        } else {
-            // 接続失敗時はstringでエラーメッセージを返す
+            } catch (PDOException $e) {
+                self::$pdo->rollBack();
+                return self::$transaction_error;
+            }
+        }else {
             return self::$connect_error;
         }
     }
     //order by句を返す
-    protected function select_order($order = 0, $culmun = 'id') {
+    protected function select_order(int $order = 0, string $culmun = 'id') {
         switch($order){
             case 1:
                 $order_clause = "order by `{$culmun}` asc";
