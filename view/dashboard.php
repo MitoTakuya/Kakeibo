@@ -44,13 +44,16 @@ include('../dashboard_process.php');
                         <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">(phpでfetchしたデータ)月の支出</text>
                     </svg> <!-- フォントを後で変えたい -->
                         <div class="style={direction: rtl;}"> <!-- 可能なら右に寄せたい -->
-                        
-                        <select class="w-25 form-control select_period" name="year_month" v-model="selected_period">
-                            <option disabled value="">--月を選択--</option> <!-- 最新月をデフォルト値にする -->
-                            <!-- vue.jsで実装する -->
-                            <option value="dog">登録月から</option>
-                            <option v-for="date in sample_dates" :value="date">{{date.year}}年{{date.month}}月</option>
-                        </select>
+
+                        <!-- 日付選択 -->
+                        <form action="#" method="post" id="selecting_date" :ref="selecting_date">
+                            <select class="w-25 form-control select_period" name="year_month" v-model="selected_date" @input="selfPostDate">
+                                <option disabled value="">--月を選択--</option> <!-- 最新月をデフォルト値にする -->
+                                <!-- vue.jsで実装する -->
+                                <option value="dog">登録月から</option>
+                                <option v-for="date in sample_dates" :value="date.year_month">{{date.year}}年{{date.month}}月</option>
+                            </select>
+                        </form>
                         </div>
                     <div class="outgo_chart card-body mx-auto">
                             <img src="https://www.illustkit.com/wp/wp-content/uploads/2021/05/IK-2021-0228-69.png" width="500" height="500">
@@ -73,6 +76,7 @@ include('../dashboard_process.php');
                                         <th>支出額</th>
                                         <th>前月比とか？</th>
                                     </thead>
+                                    <?php foreach(): ?>
                                     <tr>
                                         <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
                                             <a href="" target="_blank" rel="noopener noreferrer">a</a>
@@ -80,6 +84,7 @@ include('../dashboard_process.php');
                                         <td>a</td>
                                         <td>なにかしらのデータ</td>
                                     </tr>
+                                    <?php endforeach; ?>
                                 </table>
                         </div>
                 </div>
@@ -100,14 +105,11 @@ include('../dashboard_process.php');
         <!-- Vue.js下書き -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <script>
-            // サンプルデータ
-            let sample_data;
-
-
+            var selecting_date = document.getElementById("selecting_date");
             let app = new Vue({
             el :'#dashboard',
             data : {
-                selected_period : '', // phpから直に最新月の直接を代入する
+                selected_date : '', // phpから直に最新月の直接を代入する
                 detail_link : 'outgo_detail.php?ctg=',
                 outgo_table_columns : ["カテゴリー",  "支出額", "(前月比とか？)"],
                 sample_dates : [// phpで先に読み込ませておく データは降順
@@ -115,8 +117,8 @@ include('../dashboard_process.php');
                     { year : '2022', month : 1,  year_month : 20220101},
                     { year : '2022', month : 2,  year_month : 20220201},
                     { year : '2022', month : 3,  year_month : 20220301}
-                ], 
-                target_flat_score_url : null
+                ],
+                selecting_date : "selecting_date"
             },
             methods : {
                 add_video : function(event) {
@@ -132,18 +134,11 @@ include('../dashboard_process.php');
                     this.add_vid_btn = "btn btn-success";
                     //console.log("-----end of function shorten_url-----------------------------");
                 },
-                reset_add_vid_btn : function (event) {
-                    if (this.target_video_url == "") {
-                        this.add_vid_btn = "btn btn-primary";
-                    }
-                },
-                reset_add_score_btn : function (event) {
-                    if (this.target_flat_score_url == "") {
-                        this.add_score_btn = "btn btn-primary";
-                    }
-                },
-                test_input : function (event) {
-                    this.test = "";
+                
+                selfPostDate : function (event) {
+                    //$ref['selecting_date'].submit();
+                    console.log(this.$refs['selecting_date']);
+                    this.$refs['selecting_date'].submit();
                 }
             }, mounted : function(){
                 // 読み込み時の処理を書く
