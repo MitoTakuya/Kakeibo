@@ -87,6 +87,7 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
             // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
             if(count($results) == 0) {
                 return false;
@@ -116,6 +117,7 @@ class DB_Connector_main extends DB_Connector {
             
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
             // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
             if(count($results) == 0) {
@@ -279,6 +281,7 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
 
+
             // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
             if(count($results) == 0) {
                 return false;
@@ -348,6 +351,7 @@ class DB_Connector_main extends DB_Connector {
         // var_dump($stmt);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
         if(count($results) == 0) {
@@ -375,6 +379,7 @@ class DB_Connector_main extends DB_Connector {
         // var_dump($stmt);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
         if(count($results) == 0) {
