@@ -194,8 +194,8 @@ class DB_Connector_main extends DB_Connector {
     */
     public function fetchFilteredOutgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
         if(isset(self::$pdo) || self::connectDB()) {
-            $period = $this->select_a_period($period_param);    // 月別、週別の指定
-            $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
+            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
 
             if(is_null($category_id)) {
                 // 期間のみでfilterする場合
@@ -231,8 +231,8 @@ class DB_Connector_main extends DB_Connector {
     public function fetchFilteredRecords($group_id, $target_date = null, $category_id = null, $period_param = 0, $order = 0) {
         if(isset(self::$pdo) || self::connectDB()) {
             $order_clause = $this->selectOrder($order);        // 昇順・降順を選択する
-            $period = $this->select_a_period($period_param);    // 月別、週別の指定
-            $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
+            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
 
             if(is_null($category_id)) {
                 // 期間のみでfilterする場合
@@ -370,7 +370,7 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 月別か週別か期間を選ぶ * 直接呼び出さない
-    private function select_a_period($period_param = 0) {
+    private function selectPeriod($period_param = 0) {
         switch ($period_param) {
             case 1:
                 $period = "WEEK";
@@ -385,7 +385,7 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
-    private function select_a_date($target_date = null) {
+    private function selectDate($target_date = null) {
         if(is_null($target_date)){
             $target_date = "NOW()";
         }
