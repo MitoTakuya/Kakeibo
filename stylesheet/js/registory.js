@@ -85,15 +85,13 @@ window.addEventListener('DOMContentLoaded',function() {
 window.addEventListener('DOMContentLoaded',function() {
     $('.edit-btn').on('click',function(){
 
-
-      // if(result1 !== "" && result2 !== "" && result3 !== "") {
-      //     if (result1 === result2 && result2 === result3) {
-      //         $('.content').html('<p>結果：チャレンジ成功</p><p>１本サービス！！！</p>');
-      //     }else {
-      //         $('.content').html('<p>結果：チャレンジ失敗</p><p>残念。。。</p>');
-      //     }
-      //     $('.popup').addClass('show').fadeIn();
-      // }
+      if (result1 === result2 && result2 === result3) {
+          $('.content').html('<p>結果：チャレンジ成功</p><p>１本サービス！！！</p>');
+      }else {
+          $('.content').html('<p>結果：チャレンジ失敗</p><p>残念。。。</p>');
+      }
+      $('.popup').addClass('show').fadeIn();
+      
   });
   //モーダルを閉じる
   // $('.popup').on('click',function(){

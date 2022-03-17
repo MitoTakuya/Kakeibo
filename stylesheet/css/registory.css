@@ -50,7 +50,7 @@
 .amount input {
   text-align: right;
   width: 150px;
-}
+  }
 
 /* モーダルウィンドウの表示 */
 .popup {
@@ -65,7 +65,15 @@
   }
   
 .content{
-background-color: #fff;
-padding: 30px;
-width: 300px;
-}
+  background-color: #fff;
+  padding: 30px;
+  width: 300px;
+  }
+
+.show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+
+  
