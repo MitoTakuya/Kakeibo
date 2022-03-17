@@ -26,38 +26,31 @@ $error_messages = array();
 #############################################################
 #メインTBLよりグループIDを条件にデータ取得する処理だよ！！
 #############################################################
-require_once __DIR__.'/../class/DB_Controller_main.php';
+require_once __DIR__.'/../class/DB_Connector_main.php';
 
     //★仮置き sessionのグループIDを使用する予定
     $group_id = 1;
 
     //インスタンス作成
-    $db_connect = new DB_Controller_main;
+    $db_connect = new DB_Connector_main;
 
-    //メインTBLより特定グループのデータを多次元連想配列で取得
-    $records = $db_connect->fetch_all_group_records($group_id);
-    $categories = $db_connect->fetch_category_column();
-    var_dump($categories);
-    exit;
-    //エラーの場合
-    if(!is_array($records)) {
-        $error_messages = $records;
-        exit;
-    }
-    if(!is_array($categories)) {
+    //メインTBLより特定グループのレコード取得する
+    $records = $db_connect->fetchGroupRecords($group_id);
+    //カテゴリTBLよりカテゴリ名を取得する
+    $categories = $db_connect->fetchCategoryColumns();
+
+    //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
+    if(!$categories) {
         $error_messages = $categories;
+        var_dump($error_messages);
         exit;
     }
+    
+    //収支別カテゴリに分ける
+    $category_outgoes = $categories[1];
+    $category_incomes = $categories[2];
 
-    //３月17日はここから始める。
-    for ($i=1; $i < count($categories); $i++) {  
 
-        if ($categories[$i][0] === 1) {
-            $category_outgoes[] = $categories[$i]["category_name"];
-        }else {
-            $category_incomes[] = $categories[$i]["category_name"];
-        }
-    }
 ?>
 
 
