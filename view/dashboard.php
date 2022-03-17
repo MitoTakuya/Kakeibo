@@ -1,3 +1,7 @@
+<?php
+include('../dashboard_process.php');
+?>
+
 <!doctype html>
     <html lang="ja">
     <head>
@@ -37,7 +41,7 @@
                 <div class="card card_property">
                     <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                         <rect width="100%" height="100%" fill="#87CEEB"/>
-                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">{{selected_period.month}}月の支出</text>
+                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle">(phpでfetchしたデータ)月の支出</text>
                     </svg> <!-- フォントを後で変えたい -->
                         <div class="style={direction: rtl;}"> <!-- 可能なら右に寄せたい -->
                         
@@ -65,13 +69,15 @@
                                 <table class="table">
                                     <!-- 後で colの属性を指定する -->
                                     <thead>
-                                        <th v-for="columns in outgo_table_columns">{{columns}}</th>
+                                        <th>カテゴリー</th>
+                                        <th>支出額</th>
+                                        <th>前月比とか？</th>
                                     </thead>
-                                    <tr v-for="category in sample_category_array">
+                                    <tr>
                                         <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
-                                            <a :href="detail_link + category.category_id" target="_blank" rel="noopener noreferrer">{{category.category_name}}</a>
+                                            <a href="" target="_blank" rel="noopener noreferrer">a</a>
                                         </td>
-                                        <td>{{category.outgo}}</td>
+                                        <td>a</td>
                                         <td>なにかしらのデータ</td>
                                     </tr>
                                 </table>
@@ -110,23 +116,6 @@
                     { year : '2022', month : 2,  year_month : 20220201},
                     { year : '2022', month : 3,  year_month : 20220301}
                 ], 
-                sample_category_array :// phpで先に読み込ませておく データは昇順
-                    [{
-                        category_name : "食費",
-                        outgo : 50000,
-                        category_id : 1
-                    },
-                    {
-                        category_name : "交通費",
-                        outgo : 30000,
-                        category_id : 2
-                    },
-                    {
-                        category_name : "娯楽費",
-                        outgo : 10000,
-                        category_id : 3
-                    }],
-                    // sample_category_array : [["食費", 50000], ["交通費", 30000]],
                 target_flat_score_url : null
             },
             methods : {
