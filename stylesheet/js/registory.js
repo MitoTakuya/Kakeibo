@@ -39,12 +39,13 @@ function addComma(inputNum){
 ///////////////////////////////////////////
 // 記帳ページ全て読み込まれた後に実行される
 // window.onload = function(){
-  window.addEventListener('DOMContentLoaded',function() {
+
+window.addEventListener('DOMContentLoaded',function() {
 
   $('.delete-btn').on('click', function() {
-    // var delete_confirm = confirm('マジで消しちゃっていいですか？');
+    var delete_confirm = confirm('マジで消しちゃっていいですか？');
 
-    // if(delete_confirm === true) {
+    if(delete_confirm === true) {
       //ボタンの親の親要素（tr）のid値を取得
       let record_id = $(this).parent().parent().attr("id");
       record_id = 'id='+ record_id;
@@ -64,24 +65,16 @@ function addComma(inputNum){
 
       })
 
-      .then(
-        function (data) {
-          console.log(data);
-          element.remove();
-        }
-      );
+      .done(function() {
+        // 通信が成功したらレコード削除
+        element.remove();
+      })
 
-      
-      // .done(function() {
-      //   // 通信が成功したら、対象レコード行削除
-      //   element.remove();
-      // })
-      
-      // .fail(function() {
-      //   alert('エラーが発生しました。');
-      // });
-    // }
-
+      .fail(function() {
+        //★仮置き。ヘッダー直下にエラー内容を表示する予定
+        alert('エラーが発生しました。');
+      });
+    }
   });
 
 }, false);
@@ -92,86 +85,3 @@ function addComma(inputNum){
 
 
 
-
-
-
-
-
-
-
-  // var num = document.querySelectorAll( "[data-type='amount']" );
-  // /* イベント操作 */
-  // for(var i=0; i < num.length; i++){ 
-  //   //対象のinputに対して関数を代入
-  //   //何か入力されたらイベント処理（numInput関数）が発生
-  //   num[i].oninput = numInput 
-  // }
-  
-  // /* 入力時に実行する処理 */
-  // function numInput(event){
-  //   var target = event.target;
-  //   var data = target.value[ target.value.length-1 ];
-  //   console.log(data);
-  //   if( data.match( /[0-9]/ ) ){
-  //     target.value = target.value
-  //     .replace( /,/g, '' )
-  //     .replace( /(\d)(?=(\d\d\d)+(?!\d))/g, '$1,' );
-  //   // target.value = target.value.slice( 0, target.value.length-1 );
-  //   }
-  
-  // }
-  
-  
-  
-  
-  // window.addEventListener('DOMContentLoaded',function() {
-  
-  // 	// buttonがクリックされたときに実行
-  // 	$("delete-btn").click(function() {
-  
-  // 		// buttonの記事IDを取得する
-  // 		let id = $(this).attr("id");
-  //         console.log(id);
-  
-  // 		// POST用のデータ準備：id=をつけないと、$_POST['id']で取得できない
-  // 		let record = 'id='+ id;
-  
-  // 		// span内の投票数を書き換える
-  // 		let thisButton = $(this).prev('tr');
-  
-  // 		$.ajax({
-  
-  // 			 type: "POST",
-  // 			 url: "change_record.php",
-  // 			 data: record,
-  
-  // 			 success: function(data) {
-  // 			 	// 処理が成功したら、thisButton内部を書き換える
-  // 				thisButton.html(data);
-  // 			}
-  // 		});
-  
-  // 		return false;
-  // 	});
-  
-  //   $(".delete-btn").click(function(){
-  //     var btnid = $(this).data("id");
-  //     deleteData(btnid);
-  //   });
-  //   function deleteData(btnid){
-  //     $.ajax({
-  //         type: 'POST',
-  //         dataType:'json',
-  //         url:'change_record.php',
-  //         data:{
-  //             btnid:btnid,
-  //         },
-  //         success:function(data) {
-  //             console.log("成功");
-  //         },
-  //         error:function(XMLHttpRequest, textStatus, errorThrown) {
-  //             alert(errorThrown);
-  //         }
-  //     });
-  // };
-  
