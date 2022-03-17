@@ -171,7 +171,6 @@ class DB_Controller_users extends DB_Controller {
             } else {
                 return self::$user_errors;
             }
-
         } else {
             return self::$connect_error;
         }
@@ -214,12 +213,10 @@ class DB_Controller_users extends DB_Controller {
         if(isset(self::$pdo) || self::connect_DB()) {
             $stmt = self::$pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
             $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
-
             //sqlを 実行
             $stmt->execute();
             $id = $stmt->fetch();
             return $id; //パスワードが違っていればfalseが返る
-
         } else {
             return self::$connect_error;
         }
@@ -231,14 +228,14 @@ class DB_Controller_users extends DB_Controller {
     // 
     public function insert_an_user($user_name, $password, $mail, $user_image, $group_id) {
         if(isset(self::$pdo) || self::connect_DB()) {
-            $stmt = self::$pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) VALUES(:user_name, :password, :mail, :user_image, :group_id);');
+            $stmt = self::$pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) 
+                VALUES(:user_name, :password, :mail, :user_image, :group_id);');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':user_name', $user_name, PDO::PARAM_STR);
             $stmt->bindParam( ':password', $password, PDO::PARAM_STR);
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->bindParam( ':user_image', $user_image, PDO::PARAM_STR); 
             $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT); 
-
             //sqlを 実行
             $stmt->execute();
         } else {
