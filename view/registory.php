@@ -2,33 +2,9 @@
 
 $error_messages = array();
 
-#############################################################
-#DB_Controllerクラスを使ってカテゴリーデータ取得する処理
-#############################################################
-// require_once __DIR__.'/../class/DB_Controller.php';
-
-// //カテゴリTBL
-// $target_table = "categories";
-
-// //インスタンス作成
-// $db_connect = new DB_Controller($target_table);
-
-// //カテゴリTBLより全データを連想配列で取得
-// $categories = $db_connect->fetch_all_records();
-
-// if(!is_array($categories)) {
-//     $error_messages = "データ取得に失敗しました。";
-// }
-
-// // 「支出」と「収入」別にカテゴリーを分ける。
-
-
-#############################################################
-#メインTBLよりグループIDを条件にデータ取得する処理だよ！！
-#############################################################
 require_once __DIR__.'/../class/DB_Connector_main.php';
 
-    //★仮置き sessionのグループIDを使用する予定
+    //★仮置き sessionグループIDを使用する予定
     $group_id = 1;
 
     //インスタンス作成
@@ -36,6 +12,7 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
 
     //メインTBLより特定グループのレコード取得する
     $records = $db_connect->fetchGroupRecords($group_id);
+
     //カテゴリTBLよりカテゴリ名を取得する
     $categories = $db_connect->fetchCategoryColumns();
 
@@ -61,6 +38,7 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../stylesheet/css/registory.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" integrity="sha512-cp9JSDyi0CDCvBfFKYLWXevb3r8hRv5JxcxLkUq/LEtAmOg7X0yzR3p0x/g+S3aWcZw18mhxsCXyelKWmXgzzg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/flat-ui.min.css"> -->
 
@@ -192,7 +170,6 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/flat-ui.min.js" integrity="sha512-GG/1z6B4MVJdQOw35lE4otrbjd2WYV+zhXgjUR+DTeaAc7s/ijgWsexEScSOIo8J4RlhC28CVerDjYQSH89ekQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/vendor/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/vendor/respond.min.js" integrity="sha512-qWVvreMuH9i0DrugcOtifxdtZVBBL0X75r9YweXsdCHtXUidlctw7NXg5KVP3ITPtqZ2S575A0wFkvgS2anqSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" integrity="sha512-cp9JSDyi0CDCvBfFKYLWXevb3r8hRv5JxcxLkUq/LEtAmOg7X0yzR3p0x/g+S3aWcZw18mhxsCXyelKWmXgzzg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 </body>
 </html>
