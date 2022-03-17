@@ -124,7 +124,7 @@ class DB_Connector_main extends DB_Connector {
      * ダッシュボードで集計を表示するための関数
      **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
-    public function getBalance($group_id) {
+    public function fetchBalance($group_id) {
         $outgo = $this->fetchOutgo($group_id);
         $income = $this->fetchIncome($group_id);
 
