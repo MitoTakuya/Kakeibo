@@ -1,6 +1,6 @@
-///////////////////////////////////////////
-// 入力フォームの収支タブ切り替え処理
-///////////////////////////////////////////
+/***********************************************
+* 入力フォームの収支タブ切り替え処理
+***********************************************/
 document.addEventListener('DOMContentLoaded', function(){
     // タブに対してクリックイベントを適用
     const tabs = document.getElementsByClassName('tab');
@@ -20,30 +20,30 @@ document.addEventListener('DOMContentLoaded', function(){
       document.getElementsByClassName('panel')[index].classList.add('is-show');
     };
 }, false);
-  
-///////////////////////////////////////////
-// 入力する金額にコンマを入れる処理
-///////////////////////////////////////////
-function addComma(inputNum){
-  let inputValue = inputNum.value;
-  let num = inputValue.replace(/[^0-9]/g, "");
-  num = num.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
-  if(num.match(/[^0-9]/g)){
-    inputNum.value= num;
-    return true;
-  }
-  };
-  
-///////////////////////////////////////////
-// 非同期でレコード削除
-///////////////////////////////////////////
-// 記帳ページ全て読み込まれた後に実行される
-// window.onload = function(){
 
+
+/***********************************************
+* 入力する金額にコンマを入れる処理
+***********************************************/
+
+  function addComma(inputNum){
+    let inputValue = inputNum.value;
+    let num = inputValue.replace(/[^0-9]/g, "");
+    num = num.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
+    if(num.match(/[^0-9]/g)){
+      inputNum.value= num;
+      return true;
+    }
+  };
+
+
+/***********************************************
+* 非同期でレコード削除
+***********************************************/
 window.addEventListener('DOMContentLoaded',function() {
 
   $('.delete-btn').on('click', function() {
-    var delete_confirm = confirm('マジで消しちゃっていいですか？');
+    let delete_confirm = confirm('マジで消しちゃっていいですか？');
 
     if(delete_confirm === true) {
       //ボタンの親の親要素（tr）のid値を取得
@@ -79,8 +79,30 @@ window.addEventListener('DOMContentLoaded',function() {
 
 }, false);
 
+/***********************************************
+* 非同期でレコード編集（モーダルウィンドウ表示）
+***********************************************/
+window.addEventListener('DOMContentLoaded',function() {
+    $('.edit-btn').on('click',function(){
 
 
+      // if(result1 !== "" && result2 !== "" && result3 !== "") {
+      //     if (result1 === result2 && result2 === result3) {
+      //         $('.content').html('<p>結果：チャレンジ成功</p><p>１本サービス！！！</p>');
+      //     }else {
+      //         $('.content').html('<p>結果：チャレンジ失敗</p><p>残念。。。</p>');
+      //     }
+      //     $('.popup').addClass('show').fadeIn();
+      // }
+  });
+  //モーダルを閉じる
+  // $('.popup').on('click',function(){
+  //     $('.popup').fadeOut();
+  // });
+  // $('#close').on('click',function(){
+  //     $('.popup').fadeOut();
+  // });
+}, false);
 
 
 

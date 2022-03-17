@@ -157,13 +157,20 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
                     <td scope="row"><?php echo $record["user_name"] ?></td>
                     <td scope="row"><?php echo $record["updated_at"] ?></td>
                     <td scope="row"><?php echo $record["created_at"] ?></td>
-                    <td><button type="button" class="btn btn-info" name="edit-record">編集</button></td>
+                    <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
                     <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     <div>
+
+<div class="popup">
+    <div class="content">
+        <p>結果</p>
+        <button id="close">×</button>
+    </div>
+</div>
 
     <script src="../stylesheet/js/registory.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
