@@ -87,8 +87,13 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            
-            return $results; //格納されていなければ false を返す
+
+            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+            if(count($results) == 0) {
+                return false;
+            } else {
+                return $results;
+            }
         } else {
             return self::$connect_error;
         }
@@ -113,8 +118,13 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            
-            return $results; //格納されていなければ false を返す
+
+            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+            if(count($results) == 0) {
+                return false;
+            } else {
+                return $results;
+            }
         } else {
             return self::$connect_error;
         }
@@ -271,7 +281,13 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
 
-            return $results;
+
+            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+            if(count($results) == 0) {
+                return false;
+            } else {
+                return $results;
+            }
 
         } else {
             // 接続失敗時はstringでエラーメッセージを返す
@@ -335,7 +351,14 @@ class DB_Connector_main extends DB_Connector {
         // var_dump($stmt);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $results;
+
+        
+        // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+        if(count($results) == 0) {
+            return false;
+        } else {
+            return $results;
+        }
     }
 
     // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
@@ -356,7 +379,14 @@ class DB_Connector_main extends DB_Connector {
         // var_dump($stmt);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $results;
+
+        
+        // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+        if(count($results) == 0) {
+            return false;
+        } else {
+            return $results;
+        }
     }
 
     // 月別か週別か期間を選ぶ * 直接呼び出さない
