@@ -1,5 +1,5 @@
 <?php
-class DB_Controller {
+class DB_Connector {
     private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
     private const DB_USER = 'root';
     private const DB_PASSWORD = '';
@@ -13,7 +13,7 @@ class DB_Controller {
     // 対象テーブルを選択
     function __construct(string $target_table) {
         $this->target_table = $target_table;
-        self::connect_DB(); //PDOオブジェクトを生成
+        self::connectDB(); //PDOオブジェクトを生成
 
         // 以下でPDOの設定を行う
         self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
@@ -24,7 +24,7 @@ class DB_Controller {
     * DBへの接続関連メソッド
     *****************************************************************************/
     // DBとの接続処理を行う (基本的に内部で呼び出す)
-    public static function connect_DB() {
+    public static function connectDB() {
         if(!isset(self::$pdo)) {
             try{
                 self::$pdo = new PDO(self::DNS, self::DB_USER, self::DB_PASSWORD);
@@ -38,7 +38,7 @@ class DB_Controller {
         }
     }
     // DBとの切断処理を行う
-    public static function disconnect_DB() {
+    public static function disconnectDB() {
         self::$pdo = null;
     }
 
@@ -46,8 +46,8 @@ class DB_Controller {
      * 基本メソッド（idのみで行えるDB操作）
      **********************************************************************/
     // select * from 対象テーブル where = 指定したid
-    public function fetch_a_record(int $target_id) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchOne(int $target_id) {
+        if(isset(self::$pdo) || self::connectDB()) {
             $sql = "SELECT *
                     FROM `{$this->target_table}`
                     WHERE `id`=:id";
@@ -66,10 +66,10 @@ class DB_Controller {
     }
 
     // select * from 対象テーブル
-    public function fetch_all_records(int $order = 0) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchAll(int $order = 0) {
+        if(isset(self::$pdo) || self::connectDB()) {
             // 昇順・降順を選択する
-            $order_clause = $this->select_order($order);
+            $order_clause = $this->selectOrder($order);
 
             $sql = "SELECT *
                     FROM  `{$this->target_table}` " . $order_clause;
@@ -86,8 +86,8 @@ class DB_Controller {
         }
     }
     // delete from 対象テーブル
-    public function delete_a_record(int $target_id) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function deleteOne(int $target_id) {
+        if(isset(self::$pdo) || self::connectDB()) {
             try {
                 self::$pdo->beginTransaction();
                 $sql = "DELETE FROM `{$this->target_table}`
@@ -107,7 +107,7 @@ class DB_Controller {
         }
     }
     //order by句を返す
-    protected function select_order(int $order = 0, string $culmun = 'id') {
+    protected function selectOrder(int $order = 0, string $culmun = 'id') {
         switch($order){
             case 1:
                 $order_clause = "order by `{$culmun}` asc";
