@@ -49,7 +49,6 @@ window.addEventListener('DOMContentLoaded',function() {
       //ボタンの親の親要素（tr）のid値を取得
       let record_id = $(this).parent().parent().attr("id");
       record_id = 'id='+ record_id;
-      console.log(record_id);
       
       //削除対象のレコード行を取得
       let element = $(this).parent().parent();
@@ -80,26 +79,39 @@ window.addEventListener('DOMContentLoaded',function() {
 }, false);
 
 /***********************************************
-* 非同期でレコード編集（モーダルウィンドウ表示）
+* 非同期でレコード取得
 ***********************************************/
 window.addEventListener('DOMContentLoaded',function() {
-    $('.edit-btn').on('click',function(){
 
-      if (result1 === result2 && result2 === result3) {
-          $('.content').html('<p>結果：チャレンジ成功</p><p>１本サービス！！！</p>');
-      }else {
-          $('.content').html('<p>結果：チャレンジ失敗</p><p>残念。。。</p>');
-      }
-      $('.popup').addClass('show').fadeIn();
+  $('.edit-btn').on('click', function() {
+
+      //ボタンの親の親要素（tr）のid値を取得
+      let record_id = $(this).parent().parent().attr("id");
+      record_id = 'id='+ record_id;
+      console.log(record_id);
+      //削除対象のレコード行を取得
+      let element = $(this).parent().parent();
+      element = element[0];
+      console.log(element);
+
+      //１．ここで上記のelementから値(value)を取得する。
+      
+      let scroll_position = $(window).scrollTop();
+      console.log(scroll_position);
+      $('body').addClass('fixed').css({ 'top': -scroll_position });
+      //１で取得した値をモーダルウィンドウのフォームに挿入する。
+      
+      $('.post_process').fadeIn();
+      $('.modal').fadeIn();
       
   });
-  //モーダルを閉じる
-  // $('.popup').on('click',function(){
-  //     $('.popup').fadeOut();
-  // });
-  // $('#close').on('click',function(){
-  //     $('.popup').fadeOut();
-  // });
+  // モーダルを閉じる
+  $('#close').on('click',function(){
+      $('.post_process').fadeOut();
+      $('.modal').fadeOut();
+  });
+
+
 }, false);
 
 

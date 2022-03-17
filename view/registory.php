@@ -165,10 +165,40 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
         </table>
     <div>
 
-<div class="popup">
-    <div class="content">
-        <p>結果</p>
-        <button id="close">×</button>
+<!-- モーダルウィンドウ -->
+<div class="modal">
+    <div class="post_process">
+    <h2 class="post_title">編集</h2>
+    <form method="post" action="../modal_registory.php?type_id=2" enctype="multipart/form-data">
+    <div class="pb-2">
+            <label>日付</label>
+            <input type="date" class="form-control" name="payment_at" required>
+        </div>
+        <div class="pb-2">
+            <label>タイトル</label>
+            <input type="text" class="form-control"  name="title" required>
+        </div>
+        <div class="pb-2">
+            <label>カテゴリ</label>
+            <select  class="form-control" name="category_id" style="width:100px;">
+            <?php foreach($category_incomes as $key => $category_income) :?>
+                <option value="<?= $key + 101 ?>"><?= $category_income ?></option>
+            <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="amount pb-2">
+                <label>金額</label>
+                <input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="mt-5 form-control" name="payment" maxlength="12" min="1" required>
+            </div>
+            <div class="pb-2">
+            <div>
+                <label>メモ</label>
+            </div>
+            <textarea name="content" class="form-control" cols="40" rows="10"></textarea><br>
+        </div>
+        <button class="btn btn-primary" type="submit" name="update" id="post">更新</button>
+        <button class="btn btn-danger" id="close" type="button">キャンセル</button>
+    </form>
     </div>
 </div>
 
