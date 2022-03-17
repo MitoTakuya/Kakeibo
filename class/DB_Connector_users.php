@@ -1,5 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/DB_Connector.php';
+session_start();
+
 class DB_Connector_users extends DB_Connector
 {
     public static $user_errors = array();
@@ -110,7 +112,6 @@ class DB_Connector_users extends DB_Connector
     // ログイン入力確認
     public function loginConfirmation()
     {
-
         // POSTされていないときは処理を中断する
         if (!filter_input_array(INPUT_POST)) {
             return;
@@ -130,10 +131,24 @@ class DB_Connector_users extends DB_Connector
             $password = $_POST['password'];
         }
 
+        // パスワード、メールアドレスが入力されていたらチェック
+        if (!empty($mail) && !empty($password)) {
+            $user_password = $this->loginUser($mail);
+            if (!is_array($user_password)) {
+                self::$user_errors['login_mail'] = 'メールアドレスが見つかりません';
+            } else {
+                // 指定したハッシュがパスワードにマッチしているか
+                if (!password_verify($password, $user_password['password'])) {
+                    // ユーザー情報をセッションに保存
+                    self::$user_errors['login_password'] = "パスワードが違います。";
+                }
+            }
+        }
+        
         // エラーがなければ保存
         if (count(self::$user_errors) == 0) {
-            $this->loginUser($mail, $password);
-            return "login";
+            $_SESSION['id'] = $user_password['id'];
+            return "login_ok";
         } else {
             return self::$user_errors;
         }
@@ -162,22 +177,16 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ログイン用メソッド
-    public function loginUser($mail, $password)
+    public function loginUser($mail)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $stmt = self::$pdo->prepare('SELECT `id`, `password`, `mail` FROM users WHERE mail=:mail');
+            $stmt = self::$pdo->prepare('SELECT `id`, `password` FROM users WHERE mail=:mail');
             //SQL文中の プレース部を 定義しておいた変数に置き換える
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->execute();
-            $user = $stmt->fetch();
-            // 指定したハッシュがパスワードにマッチしているか
-            if (password_verify($password, $user['password'])) {
-                // ユーザー情報をセッションに保存
-                $_SESSION['id'] = $user['id'];
-                return "login_ok";
-            } else {
-                return self::$user_errors;
-            }
+            $user_password = $stmt->fetch();
+            // 未登録アドレスならfalse
+            return $user_password;;
         } else {
             return self::$connect_error;
         }
@@ -230,7 +239,7 @@ class DB_Connector_users extends DB_Connector
         } else {
             return self::$connect_error;
         }
-    } 
+    }
 
     /**************************************************************************
      * userテーブル操作用のメソッド

@@ -13,7 +13,7 @@ if(!empty($_POST)){
 	// ログインの際
 	} else if(isset($_POST['login_user'])) {
 		$user_errors = $new_user->loginConfirmation();
-		if($user_errors == "login") {
+		if($user_errors == "login_ok") {
 		// トップページに飛ばす
 		header('Location: ../view/index.php');
 		}
