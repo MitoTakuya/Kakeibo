@@ -219,6 +219,30 @@ class DB_Connector_main extends DB_Connector {
             return self::$connect_error;
         }
     }
+    public function fetchFilteredOutgoList($group_id, $target_date = null, $period_param = 0) {
+        if(isset(self::$pdo) || self::connectDB()) {
+            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
+
+            $sql = "SELECT main.`category_id`, categories.category_name,  SUM(payment)
+                    FROM `main`
+                    JOIN `categories` on `categories`.`id` = `main`.`category_id`
+                    WHERE `group_id` = :group_id
+                    AND {$period}(payment_at) = {$period}({$target_date})
+                    AND YEAR(payment_at) = YEAR({$target_date})
+                    GROUP BY `category_id`";           //$target_date には関数も入るためバインドしない
+
+            $stmt = self::$pdo->prepare($sql);
+            
+            $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $results;
+        } else {
+            return self::$connect_error;
+        }
+    }
     
     /**********************************************************
      * 詳細画面で表示するためのレコードを取り出すメソッド
@@ -307,24 +331,6 @@ class DB_Connector_main extends DB_Connector {
         return $results;
     }
 
-    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する * 直接呼び出さない
-    private function fetchFullyFilteredOutgo($group_id, $category_id, $target_date, $period) {
-        $sql = "SELECT sum(payment) AS `sum`
-                FROM `main`
-                WHERE `group_id` = :group_id
-                AND `type_id` = :type_id
-                AND `category_id` = :category_id
-                AND {$period}(payment_at) = {$period}({$target_date})
-                AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
-
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
-        $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
-        $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $results;
-    }
     // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
     private function fetchDateFilteredRecords($group_id, $target_date = null, $period, $order_clause) {
         $sql = "SELECT *
@@ -343,6 +349,22 @@ class DB_Connector_main extends DB_Connector {
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // クエリ結果が0件の場合、空の配列を返す
+        return $results;
+    }
+    private function fetchFullyFilteredOutgo($group_id, $category_id, $target_date, $period) {
+        $sql = "SELECT main.`category_id`, `categories`.category_name,  SUM(`payment`)
+                FROM `main`
+                JOIN `categories` on `categories`.`id` = `main`.`category_id`
+                GROUP BY `category_id`
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})";           //$target_date には関数も入るためバインドしない
+
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam( ':group_id',      $group_id,              PDO::PARAM_INT);
+        $stmt->bindParam( ':category_id',   $category_id,           PDO::PARAM_INT);
+        $stmt->bindParam( ':type_id',       self::$outgo_type_id,   PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $results;
     }
 
