@@ -1,6 +1,6 @@
 <?php
-require_once('DB_Controller.php');
-class DB_Controller_main extends DB_Controller {
+require_once('DB_Connector.php');
+class DB_Connector_main extends DB_Connector {
     protected static int $outgo_type_id = 1;
     protected static int $income_type_id = 2;
 
@@ -14,8 +14,8 @@ class DB_Controller_main extends DB_Controller {
      **********************************************************************/
     // $memo は引数を無い場合があるため、デフォルト値として''を設定する。
     // （nullはそのままstringにバインドできないため）
-    public function insert_a_record($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function insertRecord($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
+        if(isset(self::$pdo) || self::connectDB()) {
             try {
                 self::$pdo->beginTransaction();
 
@@ -45,8 +45,8 @@ class DB_Controller_main extends DB_Controller {
         }
     }
     // レコードの更新
-    public function update_a_record($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo = null) {
+        if(isset(self::$pdo) || self::connectDB()) {
             try {
                 self::$pdo->beginTransaction();
                 $sql = 'UPDATE `main` SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at, `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
@@ -75,8 +75,8 @@ class DB_Controller_main extends DB_Controller {
         }
     }
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
-    public function fetch_all_group_records($group_id) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchGroupRecords($group_id) {
+        if(isset(self::$pdo) || self::connectDB()) {
             $sql = 'SELECT *
                     FROM `full_records`
                     WHERE `group_id`=:group_id;';
@@ -95,9 +95,9 @@ class DB_Controller_main extends DB_Controller {
     }
 
     // あるグループのレコードを一定数取り出す（画面に収まる数など）*要order切り替え
-    public function fetch_group_records_to_display($group_id, $limit, $offset = 0, $order) {
-        if(isset(self::$pdo) || self::connect_DB()) {
-            $order_clause = $this->select_order($order);    // 昇順・降順を選択する
+    public function fetchGroupLimitedRecords($group_id, $limit, $offset = 0, $order) {
+        if(isset(self::$pdo) || self::connectDB()) {
+            $order_clause = $this->selectOrder($order);    // 昇順・降順を選択する
 
             $sql = "SELECT * FROM `full_records`
                     WHERE `group_id`=:group_id
@@ -124,9 +124,9 @@ class DB_Controller_main extends DB_Controller {
      * ダッシュボードで集計を表示するための関数
      **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
-    public function group_total_balance($group_id) {
-        $outgo = $this->group_total_outgo($group_id);
-        $income = $this->group_total_income($group_id);
+    public function getBalance($group_id) {
+        $outgo = $this->fetchOutgo($group_id);
+        $income = $this->fetchIncome($group_id);
 
         if(!is_numeric($outgo) || !is_numeric($income)) {
             return self::$connect_error;    // DB接続失敗時の処理
@@ -144,8 +144,8 @@ class DB_Controller_main extends DB_Controller {
     }
     
     // 今までの合計支出を返す ダッシュボードに表示する
-    public function group_total_outgo($group_id) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchOutgo($group_id) {
+        if(isset(self::$pdo) || self::connectDB()) {
             $sql = 'SELECT `type_id`, SUM(`payment`) AS `outgo`
                     FROM `main`
                     WHERE `group_id` = :group_id
@@ -165,8 +165,8 @@ class DB_Controller_main extends DB_Controller {
         }
     }
     // 今までの合計収入を返す ダッシュボードに表示する
-    public function group_total_income($group_id) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchIncome($group_id) {
+        if(isset(self::$pdo) || self::connectDB()) {
             $sql = 'SELECT `type_id`, SUM(`payment`) AS `income`
                     FROM `main`
                     WHERE `group_id` = :group_id
@@ -191,21 +191,21 @@ class DB_Controller_main extends DB_Controller {
         使用例：get_filtered_outgo(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の合計支出を出力)
     */
-    public function get_filtered_outgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchFilteredOutgo($group_id, $target_date = null, $category_id = null, $period_param = 0) {
+        if(isset(self::$pdo) || self::connectDB()) {
             $period = $this->select_a_period($period_param);    // 月別、週別の指定
             $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
             if(is_null($category_id)) {
                 // 期間のみでfilterする場合
-                $results = $this->get_filtered_outgo_by_a_date(
+                $results = $this->fetchDateFilteredOutgo(
                                 group_id:   $group_id,
                                 target_date:$target_date,
                                 period:     $period
                             );
             } else {
                 // 期間とカテゴリでfilterする場合
-                $results = $this->get_filtered_outgo_by_date_and_category(
+                $results = $this->fetchFullyFilteredOutgo(
                                 group_id:       $group_id,
                                 category_id:    $category_id,
                                 target_date:    $target_date,
@@ -227,15 +227,15 @@ class DB_Controller_main extends DB_Controller {
         使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の全レコードを出力)
     */
-    public function fetch_filtered_records($group_id, $target_date = null, $category_id = null, $period_param = 0, $order = 0) {
-        if(isset(self::$pdo) || self::connect_DB()) {
-            $order_clause = $this->select_order($order);        // 昇順・降順を選択する
+    public function fetchFilteredRecords($group_id, $target_date = null, $category_id = null, $period_param = 0, $order = 0) {
+        if(isset(self::$pdo) || self::connectDB()) {
+            $order_clause = $this->selectOrder($order);        // 昇順・降順を選択する
             $period = $this->select_a_period($period_param);    // 月別、週別の指定
             $target_date = $this->select_a_date($target_date);  // 基準になる日付の指定
 
             if(is_null($category_id)) {
                 // 期間のみでfilterする場合
-                $results = $this->fetch_filtered_records_by_a_date(
+                $results = $this->fetchDateFilteredRecords(
                                 group_id:       $group_id,
                                 target_date:    $target_date,
                                 period:         $period,
@@ -243,7 +243,7 @@ class DB_Controller_main extends DB_Controller {
                             );
             } else {
                 // 期間とカテゴリでfilterする場合
-                $results = $this->fetch_filtered_records_by_date_and_category(
+                $results = $this->fetchFullyFilteredRecords(
                                 group_id:       $group_id,
                                 category_id:    $category_id,
                                 target_date:    $target_date,
@@ -258,10 +258,10 @@ class DB_Controller_main extends DB_Controller {
         }
     }
     // 1列分の値だけを取り出す
-    public function fetch_category_column($order = 1) {
-        if(isset(self::$pdo) || self::connect_DB()) {
+    public function fetchCategoryColumns($order = 1) {
+        if(isset(self::$pdo) || self::connectDB()) {
             // 昇順・降順を選択する
-            $order_clause = $this->select_order($order);
+            $order_clause = $this->selectOrder($order);
 
             $sql = "SELECT `type_id`, `category_name`
                     FROM  `categories` " . $order_clause;
@@ -284,7 +284,7 @@ class DB_Controller_main extends DB_Controller {
      * DB切断は呼び出し元メソッドで行う
      *******************************************/
     // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
-    private function get_filtered_outgo_by_a_date($group_id, $target_date = null, $period) {
+    private function fetchDateFilteredOutgo($group_id, $target_date = null, $period) {
         $sql = "SELECT sum(payment) AS `sum`
                 FROM `main`
                 WHERE `group_id` = :group_id
@@ -302,7 +302,7 @@ class DB_Controller_main extends DB_Controller {
     }
 
     // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する * 直接呼び出さない
-    private function get_filtered_outgo_by_date_and_category($group_id, $category_id, $target_date, $period) {
+    private function fetchFullyFilteredOutgo($group_id, $category_id, $target_date, $period) {
         $sql = "SELECT sum(payment) AS `sum`
                 FROM `main`
                 WHERE `group_id` = :group_id
@@ -320,7 +320,7 @@ class DB_Controller_main extends DB_Controller {
         return $results;
     }
     // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
-    private function fetch_filtered_records_by_a_date($group_id, $target_date = null, $period, $order_clause) {
+    private function fetchDateFilteredRecords($group_id, $target_date = null, $period, $order_clause) {
         $sql = "SELECT *
                 FROM `full_records`
                 WHERE `group_id` = :group_id
@@ -339,7 +339,7 @@ class DB_Controller_main extends DB_Controller {
     }
 
     // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
-    private function fetch_filtered_records_by_date_and_category($group_id, $target_date = null, $category_id, $period, $order_clause) {
+    private function fetchFullyFilteredRecords($group_id, $target_date = null, $category_id, $period, $order_clause) {
         $sql = "SELECT *
                 FROM `full_records`
                 WHERE `group_id` = :group_id
