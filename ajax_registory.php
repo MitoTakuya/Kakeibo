@@ -1,23 +1,22 @@
 <?php
-// session_start();
+session_start();
 
 require_once __DIR__.'/class/DB_Controller_main.php';
 
 // ajaxでPOSTされたときに以下を実行する。
 // if (isset($_SESSION['csrf_token']) && isset($_SESSION['id']))  {
-	if( $_POST['id'] ) {
-
-        $id = $_POST['id'];
-        //カテゴリTBL
+	if($_POST['id']) {
+        
+        $record_id = $_POST['id'];
         
         //インスタンス作成
         $db_main = new DB_Controller_main();
         
-        //カテゴリTBLより全データを連想配列で取得
-        $result = $db_main->delete_a_record($id);
-        exit;
+        //mainテーブルの対象レコードを削除
+        $result = $db_main->delete_a_record($record_id);
+
         if(!is_array($result)) {
-            $error_messages = "データ取得に失敗しました。";
+            $error_message = "データ取得に失敗しました。";
         }
 
 	}

@@ -5,29 +5,23 @@ $error_messages = array();
 #############################################################
 #DB_Controllerクラスを使ってカテゴリーデータ取得する処理
 #############################################################
-require_once __DIR__.'/../class/DB_Controller.php';
+// require_once __DIR__.'/../class/DB_Controller.php';
 
-//カテゴリTBL
-$target_table = "categories";
+// //カテゴリTBL
+// $target_table = "categories";
 
-//インスタンス作成
-$db_connect = new DB_Controller($target_table);
+// //インスタンス作成
+// $db_connect = new DB_Controller($target_table);
 
-//カテゴリTBLより全データを連想配列で取得
-$categories = $db_connect->fetch_all_records();
+// //カテゴリTBLより全データを連想配列で取得
+// $categories = $db_connect->fetch_all_records();
 
-if(!is_array($categories)) {
-    $error_messages = "データ取得に失敗しました。";
-}
+// if(!is_array($categories)) {
+//     $error_messages = "データ取得に失敗しました。";
+// }
 
-// 「支出」と「収入」別にカテゴリーを分ける。
-for ($i=0; $i < count($categories); $i++) {
-    if ($categories[$i]["type_id"] === 1) {
-        $category_outgoes[] = $categories[$i]["category_name"];
-    }else {
-        $category_incomes[] = $categories[$i]["category_name"];
-    }
-}
+// // 「支出」と「収入」別にカテゴリーを分ける。
+
 
 #############################################################
 #メインTBLよりグループIDを条件にデータ取得する処理だよ！！
@@ -42,13 +36,28 @@ require_once __DIR__.'/../class/DB_Controller_main.php';
 
     //メインTBLより特定グループのデータを多次元連想配列で取得
     $records = $db_connect->fetch_all_group_records($group_id);
-
+    $categories = $db_connect->fetch_category_column();
+    var_dump($categories);
+    exit;
     //エラーの場合
     if(!is_array($records)) {
         $error_messages = $records;
         exit;
     }
+    if(!is_array($categories)) {
+        $error_messages = $categories;
+        exit;
+    }
 
+    //３月17日はここから始める。
+    for ($i=1; $i < count($categories); $i++) {  
+
+        if ($categories[$i][0] === 1) {
+            $category_outgoes[] = $categories[$i]["category_name"];
+        }else {
+            $category_incomes[] = $categories[$i]["category_name"];
+        }
+    }
 ?>
 
 
