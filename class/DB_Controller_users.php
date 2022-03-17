@@ -18,7 +18,7 @@ class DB_Controller_users extends DB_Controller {
 
     // ユーザー登録入力内容チェック
     public function input_confirmation() {
-        if(!isset($_POST['user_name']) || !strlen($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
+        if(!isset($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
             self::$user_errors['user_name'] = '名前を入力してください';
         } else if(mb_strlen($_POST['user_name']) > 30) {
             self::$user_errors['user_name'] = '名前は30文字以内で入力してください';
@@ -53,7 +53,7 @@ class DB_Controller_users extends DB_Controller {
         // ユーザーグループ
         // 新規グループ選択時
         if($_POST['user_group'] == "new_group") {
-            if(!isset($_POST['group_form']) || !strlen($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
+            if(!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
                 self::$user_errors['group_form'] = '家計簿名を入力してください';
             } else if(mb_strlen($_POST['group_form']) > 30) {
                 self::$user_errors['group_form'] = '30文字以内で入力してください';
@@ -64,7 +64,7 @@ class DB_Controller_users extends DB_Controller {
             }
             // 既存グループ選択時
         } elseif($_POST['user_group'] == "existing_group") {
-            if(!isset($_POST['group_form']) || !strlen($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
+            if(!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
                 self::$user_errors['group_form'] = 'グループパスワードを入力してください';
             } else if(mb_strlen($_POST['group_form']) > 30) {
                 self::$user_errors['group_form'] = '30文字以内で入力してください';
