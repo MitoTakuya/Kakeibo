@@ -24,8 +24,9 @@ if(!empty($_POST)) {
     //DB接続 & DBにデータ挿入
     $db_main->insertRecord($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
     //記帳画面へリダイレクト
-    var_dump($db_main);
     header('Location: http://localhost/kakeibo/view/registory.php');
 }else {
+
+    //★ログイン画面にリダイレクト処理を追記する予定
     echo "不正なアクセスです。";
 }
