@@ -3,7 +3,7 @@ require('class/DB_Connector_users.php');
 
 $new_user = new DB_Connector_users();
 
-if(!empty($_POST)){	
+if (!empty($_POST)) {	
 
 	// ユーザー登録の際
 	if(isset($_POST['new_user'])) {
@@ -13,7 +13,7 @@ if(!empty($_POST)){
 		header('Location: ../view/login.php');
 		}
 	// ログインの際
-	} else if(isset($_POST['login_user'])) {
+	} elseif (isset($_POST['login_user'])) {
 		$user_errors = $new_user->loginConfirmation();
 		if($user_errors == "login_ok") {
 		// トップページに飛ばす
