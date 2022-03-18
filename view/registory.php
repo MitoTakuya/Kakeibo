@@ -28,6 +28,8 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     $category_incomes = $categories[2];
 
 
+
+
 ?>
 
 
@@ -71,7 +73,7 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
                         </div>
                         <div class="pb-2">
                             <label>カテゴリ</label>
-                            <select  class="form-control" name="category_id" style="width:100px;">
+                            <select id="outgoes" class="form-control" name="category_id" style="width:100px;">
                                 <?php foreach($category_outgoes as $key => $category_outgo) :?>
                                     <option value="<?= $key + 1 ?>"><?= $category_outgo ?></option>
                                 <?php endforeach; ?>
@@ -104,7 +106,7 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
                         </div>
                         <div class="pb-2">
                             <label>カテゴリ</label>
-                            <select  class="form-control" name="category_id" style="width:100px;">
+                            <select id="incomes" class="form-control" name="category_id" style="width:100px;">
                             <?php foreach($category_incomes as $key => $category_income) :?>
                                 <option value="<?= $key + 101 ?>"><?= $category_income ?></option>
                             <?php endforeach; ?>
@@ -134,29 +136,29 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
             <tbody>
                 <!-- 一覧の項目名 -->
                 <tr>
-                    <td scope="col" id="payment_at">日付</td> 
-                    <td scope="col" id="type_name">収支</td> 
-                    <td scope="col" id="title">タイトル</td> 
-                    <td scope="col" id="category_name">カテゴリー</td> 
-                    <td scope="col" id="payment">金額</td> 
-                    <td scope="col" id="memo">メモ</td> 
-                    <td scope="col" id="user_name">ユーザ名</td> 
-                    <td scope="col" id="updated_at">更新日</td> 
-                    <td scope="col" id="created_at">登録日</td> 
-                    <td scope="col" id="edit-btn">編集</td>          
-                    <td scope="col" id="delete-btn">削除</td>          
+                    <td scope="col" class="payment_at">日付</td> 
+                    <td scope="col" class="type_name">収支</td> 
+                    <td scope="col" class="title">タイトル</td> 
+                    <td scope="col" class="category_name">カテゴリー</td> 
+                    <td scope="col" class="payment">金額</td> 
+                    <td scope="col" class="memo">メモ</td> 
+                    <td scope="col" class="user_name">ユーザ名</td> 
+                    <td scope="col" class="updated_at">更新日</td> 
+                    <td scope="col" class="created_at">登録日</td> 
+                    <td scope="col" class="edit-btn">編集</td>          
+                    <td scope="col" class="delete-btn">削除</td>          
                 </tr>
                 <?php foreach($records as $record) :?>
                 <tr id="<?php echo $record['id']; ?>">
-                    <td scope="row"><?= $record["payment_at"] ?></td>
-                    <td scope="row"><?= $record["type_name"] ?></td>
-                    <td scope="row"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
-                    <td scope="row"><?= $record["category_name"] ?></td>
-                    <td scope="row"><?= $record["payment"] ?>円</td>
-                    <td scope="row"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
-                    <td scope="row"><?= $record["user_name"] ?></td>
-                    <td scope="row"><?= $record["updated_at"] ?></td>
-                    <td scope="row"><?= $record["created_at"] ?></td>
+                    <td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
+                    <td scope="row" id="type_name"><?= $record["type_name"] ?></td>
+                    <td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
+                    <td scope="row" id="category_name"><?= $record["category_name"] ?></td>
+                    <td scope="row" id="payment"><?= $record["payment"] ?>円</td>
+                    <td scope="row" id="memo"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
+                    <td scope="row" id="user_name"><?= $record["user_name"] ?></td>
+                    <td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
+                    <td scope="row" id="created_at"><?= $record["created_at"] ?></td>
                     <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
                     <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                 </tr>
@@ -169,32 +171,32 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
 <div class="modal">
     <div class="post_process">
     <h2 class="post_title">編集</h2>
-    <form method="post" action="../modal_registory.php?type_id=2" enctype="multipart/form-data">
+    <form method="post" action="../modal_registory.php" enctype="multipart/form-data">
+    <input type="hidden" id="record_id" name="record_id">
+    <input type="hidden" id="type_id" name="type_id">
     <div class="pb-2">
             <label>日付</label>
-            <input type="date" class="form-control" name="payment_at" required>
+            <input type="date" id="edit_payment_at" class="form-control" name="payment_at" required>
         </div>
         <div class="pb-2">
             <label>タイトル</label>
-            <input type="text" class="form-control"  name="title" required>
+            <input type="text" id="edit_title" class="form-control"  name="title" required>
         </div>
         <div class="pb-2">
             <label>カテゴリ</label>
-            <select  class="form-control" name="category_id" style="width:100px;">
-            <?php foreach($category_incomes as $key => $category_income) :?>
-                <option value="<?= $key + 101 ?>"><?= $category_income ?></option>
-            <?php endforeach; ?>
-            </select>
+            <div id="modal_categories">
+            <!-- モーダル表示する際にJavaScriptでhtmlを追加する -->
+            </div>
         </div>
         <div class="amount pb-2">
                 <label>金額</label>
-                <input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="mt-5 form-control" name="payment" maxlength="12" min="1" required>
+                <input type="text" id="edit_payment" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="mt-5 form-control" name="payment" maxlength="12" min="1" required>
             </div>
             <div class="pb-2">
             <div>
                 <label>メモ</label>
             </div>
-            <textarea name="content" class="form-control" cols="40" rows="10"></textarea><br>
+            <textarea name="content" id="edit_memo" class="form-control" cols="40" rows="10"></textarea><br>
         </div>
         <button class="btn btn-primary" type="submit" name="update" id="post">更新</button>
         <button class="btn btn-danger" id="close" type="button">キャンセル</button>
