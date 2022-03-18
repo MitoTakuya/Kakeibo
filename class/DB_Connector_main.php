@@ -267,8 +267,11 @@ class DB_Connector_main extends DB_Connector {
         }
     }
 
-    public function fetchFilteredOutgoList(int $group_id, ?string $target_date = null, int $period_param = 0)
-    {
+    public function fetchFilteredOutgoList(
+        int $group_id,
+        int $period_param = 0,
+        ?string $target_date = null,
+    ){
         if (isset(self::$pdo) || self::connectDB()) {
             $period = $this->selectPeriod($period_param);    // 月別、週別の指定
             $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
