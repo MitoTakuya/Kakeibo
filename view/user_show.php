@@ -27,12 +27,12 @@ require_once ("../users_do.php");
 						<div class="check"><h5><i class="fas fa-pen"></i>ログイン中ユーザー</h5></div>
 						<div class="ml-4">
 							<h5><span><?php echo $current_user['user_name']; ?>
-								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像" style="height:50px;width:50px;border-radius:50%"/>
+								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像"
+									style="height:50px;width:50px;border-radius:50%"/><span class="float-right"><button type="button" class="btn btn-primary">
+										更新する</button></span>
 							</span></h5>
-							<div class="text-right">
-								<button type="button" class="btn btn-primary" >更新する</button>
-							</div>
 						</div>
+						<div class="mt-4"></div>
 						<?php 
 						if (isset($other_users)):
 						foreach($other_users as $row) {
