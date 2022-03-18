@@ -48,7 +48,7 @@ window.addEventListener('DOMContentLoaded',function() {
     if(delete_confirm === true) {
       //ボタンの親の親要素（tr）のid値を取得
       let record_id = $(this).parent().parent().attr("id");
-      record_id = 'id='+ record_id;
+      // record_id = 'id='+ record_id;
       
       //削除対象のレコード行を取得
       let element = $(this).parent().parent();
@@ -60,10 +60,10 @@ window.addEventListener('DOMContentLoaded',function() {
         
         type: 'POST',
         url: 'http://localhost/kakeibo/ajax_registory.php',
-        data: record_id,
+        data: {'id': record_id, 'method': 'delete'}
 
       })
-
+      
       .done(function() {
         // 通信が成功したらレコード削除
         element.remove();
@@ -86,33 +86,111 @@ window.addEventListener('DOMContentLoaded',function() {
   $('.edit-btn').on('click', function() {
 
       //ボタンの親の親要素（tr）のid値を取得
-      let record_id = $(this).parent().parent().attr("id");
-      record_id = 'id='+ record_id;
+      let id = $(this).parent().parent().attr("id");
+      let record_id = id;
       console.log(record_id);
-      //削除対象のレコード行を取得
+      //編集対象のレコード要素（tr…/tr）を取得
       let element = $(this).parent().parent();
-      element = element[0];
+      // element = element[0].innerText;
       console.log(element);
 
-      //１．ここで上記のelementから値(value)を取得する。
-      
+      // 非同期処理
+      $.ajax({
+        // リクエスト方法
+        type: 'POST',
+        // 送信先ファイル名
+        url: 'http://localhost/kakeibo/ajax_registory.php',
+        // 受け取りデータの種類
+        datatype: "json",
+        // 送信データ
+        data: {'id': record_id, 'method': 'select'}
+
+      })
+
+      // 通信が成功した時
+      .done( function(data) {
+        
+        console.log('通信成功');
+        console.log(data);
+
+        //編集フォームに既存の値を入れる
+        $("#record_id").val(data.id);
+        $("#type_id").val(data.type_id);
+        $("#edit_payment_at").val(data.payment_at);
+        $("#edit_title").val(data.title);
+        $("#edit_payment").val(data.payment);
+        $("#edit_memo").val(data.memo);
+        
+        const type_id = (data.type_id);
+        const category_id = (data.category_id);
+
+        //収入or支出で出力するカテゴリを分ける。
+        if (type_id == 1) {
+
+          //カテゴリ表示を複製
+          let clone_outgoes = $('#outgoes').clone(true);
+          // 複製した要素の属性を編集
+          clone_outgoes[0].id = "modal_outgoes";
+          //複製したカテゴリをhtmlに追加する
+          $('#modal_categories').html(clone_outgoes[0]);
+          //選択済みのカテゴリ名が初期値で設定される。
+          $("#modal_outgoes").val(category_id);
+
+        } else {
+
+          let clone_incomes = $('#incomes').clone(true);
+
+          clone_incomes[0].id = "modal_incomes";
+
+          $('#modal_categories').html(clone_incomes[0]);
+
+          $("#modal_incomes").val(category_id);
+        }
+
+      })
+
+      // 通信が失敗した時
+      .fail( function(data) {
+        console.log('通信失敗');
+        console.log(data);
+      });
+
+      //モーダルウィンドウの処理
       let scroll_position = $(window).scrollTop();
       console.log(scroll_position);
       $('body').addClass('fixed').css({ 'top': -scroll_position });
-      //１で取得した値をモーダルウィンドウのフォームに挿入する。
       
+      // モーダルを表示する
       $('.post_process').fadeIn();
       $('.modal').fadeIn();
       
-  });
-  // モーダルを閉じる
-  $('#close').on('click',function(){
-      $('.post_process').fadeOut();
-      $('.modal').fadeOut();
+      // モーダルを閉じる
+      $('#close').on('click',function(){
+          $('.post_process').fadeOut();
+          $('.modal').fadeOut();
+      });
+      
   });
 
 
 }, false);
+
+
+////////////////////////////////////////////////////////////
+//画面上のデータをそのまま編集画面に当てはめるやり方
+////////////////////////////////////////////////////////////
+// type = element[0].cells[1].innerText;
+// title = element[0].cells[2].innerText;
+// categorie = element[0].cells[3].innerText;
+// amount = element[0].cells[4].innerText;
+// memo = element[0].cells[5].innerText;
+// console.log(title);
+// console.log(amount);
+// $("#edit_title").val(title);
+// $("#edit_amount").val(amount);
+// $("#edit_memo").val(memo);
+////////////////////////////////////////////////////////////
+
 
 
 
