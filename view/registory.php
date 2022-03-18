@@ -134,29 +134,29 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
             <tbody>
                 <!-- 一覧の項目名 -->
                 <tr>
-                    <td scope="row" id="payment_at">日付</td> 
-                    <td scope="row" id="type_name">収支</td> 
-                    <td scope="row" id="title">タイトル</td> 
-                    <td scope="row" id="category_name">カテゴリー</td> 
-                    <td scope="row" id="payment">金額</td> 
-                    <td scope="row" id="memo">メモ</td> 
-                    <td scope="row" id="user_name">ユーザ名</td> 
-                    <td scope="row" id="updated_at">更新日</td> 
-                    <td scope="row" id="created_at">登録日</td> 
-                    <td scope="row" id="edit-btn">編集</td>          
-                    <td scope="row" id="delete-btn">削除</td>          
+                    <td scope="col" id="payment_at">日付</td> 
+                    <td scope="col" id="type_name">収支</td> 
+                    <td scope="col" id="title">タイトル</td> 
+                    <td scope="col" id="category_name">カテゴリー</td> 
+                    <td scope="col" id="payment">金額</td> 
+                    <td scope="col" id="memo">メモ</td> 
+                    <td scope="col" id="user_name">ユーザ名</td> 
+                    <td scope="col" id="updated_at">更新日</td> 
+                    <td scope="col" id="created_at">登録日</td> 
+                    <td scope="col" id="edit-btn">編集</td>          
+                    <td scope="col" id="delete-btn">削除</td>          
                 </tr>
                 <?php foreach($records as $record) :?>
                 <tr id="<?php echo $record['id']; ?>">
-                    <td scope="row"><?php echo $record["payment_at"] ?></td>
-                    <td scope="row"><?php echo $record["type_name"] ?></td>
-                    <td scope="row"><?php echo mb_strimwidth($record["title"], 0, 25,'…') ?></td>
-                    <td scope="row"><?php echo $record["category_name"] ?></td>
-                    <td scope="row"><?php echo $record["payment"] ?>円</td>
-                    <td scope="row"><?php echo mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
-                    <td scope="row"><?php echo $record["user_name"] ?></td>
-                    <td scope="row"><?php echo $record["updated_at"] ?></td>
-                    <td scope="row"><?php echo $record["created_at"] ?></td>
+                    <td scope="row"><?= $record["payment_at"] ?></td>
+                    <td scope="row"><?= $record["type_name"] ?></td>
+                    <td scope="row"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
+                    <td scope="row"><?= $record["category_name"] ?></td>
+                    <td scope="row"><?= $record["payment"] ?>円</td>
+                    <td scope="row"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
+                    <td scope="row"><?= $record["user_name"] ?></td>
+                    <td scope="row"><?= $record["updated_at"] ?></td>
+                    <td scope="row"><?= $record["created_at"] ?></td>
                     <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
                     <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                 </tr>
