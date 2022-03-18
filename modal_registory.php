@@ -9,12 +9,13 @@ if(!empty($_POST)) {
     //★★★sessionIDを使用する予定
     $user_id = 1;
     $group_id = 1;
+    $id = $_POST["record_id"];
     $title = $_POST["title"];
     $payment = $_POST["payment"];
-    //金額のカンマ区切りを除去し、int型に変更
+    //金額のカンマ区切りを除去
     $payment = str_replace(",","", $_POST['payment']);
     $payment_at = $_POST["payment_at"];
-    $type_id = $_GET['type_id'];
+    $type_id = $_POST['type_id'];
     $category_id = $_POST["category_id"];
     $memo = $_POST["content"];
 
@@ -22,7 +23,7 @@ if(!empty($_POST)) {
     $db_main = new DB_Connector_main();
 
     //DB接続 & DBにデータ挿入
-    $db_main->insertRecord($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
+    $db_main->updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
     //記帳画面へリダイレクト
     header('Location: http://localhost/kakeibo/view/registory.php');
 }else {
