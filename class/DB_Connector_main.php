@@ -113,6 +113,7 @@ class DB_Connector_main extends DB_Connector {
 
             // クエリ結果が0件の場合、空の配列を返す
             return $results;
+
         } else {
             return self::$connect_error;
         }
@@ -352,6 +353,7 @@ class DB_Connector_main extends DB_Connector {
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
 
+
             // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
             if (count($results) == 0) {
                 return false;
@@ -437,8 +439,15 @@ class DB_Connector_main extends DB_Connector {
         $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
         $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
         $stmt->execute();
-        $results = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $results;
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        
+        // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+        if(count($results) == 0) {
+            return false;
+        } else {
+            return $results;
+        }
     }
 
     // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
@@ -465,6 +474,7 @@ class DB_Connector_main extends DB_Connector {
         // var_dump($stmt);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         
         // クエリ結果が0件の場合、空の配列を返す
         return $results;
