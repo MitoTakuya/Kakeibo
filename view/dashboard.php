@@ -74,15 +74,15 @@ include('../dashboard_process.php');
                                     <thead>
                                         <th>カテゴリー</th>
                                         <th>支出額</th>
-                                        <th>前月比とか？</th>
+                                        <!-- <th>前月比とか？</th> -->
                                     </thead>
-                                    <?php foreach(): ?>
+                                    <?php foreach($categorized_outgo_list as $outgo): ?>
                                     <tr>
                                         <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
-                                            <a href="" target="_blank" rel="noopener noreferrer">a</a>
+                                            <a href="" target="_blank" rel="noopener noreferrer"><?= $outgo['category_name'] ?></a>
                                         </td>
-                                        <td>a</td>
-                                        <td>なにかしらのデータ</td>
+                                        <td><?= $outgo['outgo'] ?></td>
+                                        <!-- <td>なにかしらのデータ</td> -->
                                     </tr>
                                     <?php endforeach; ?>
                                 </table>
@@ -112,12 +112,7 @@ include('../dashboard_process.php');
                 selected_date : '', // phpから直に最新月の直接を代入する
                 detail_link : 'outgo_detail.php?ctg=',
                 outgo_table_columns : ["カテゴリー",  "支出額", "(前月比とか？)"],
-                sample_dates : [// phpで先に読み込ませておく データは降順
-                    { year : '2021', month : 12, year_month : 20211201},
-                    { year : '2022', month : 1,  year_month : 20220101},
-                    { year : '2022', month : 2,  year_month : 20220201},
-                    { year : '2022', month : 3,  year_month : 20220301}
-                ],
+                sample_dates : [<?= $archives ?>], //php から読み込む
                 selecting_date : "selecting_date"
             },
             methods : {
