@@ -276,7 +276,7 @@ class DB_Connector_main extends DB_Connector {
             $period = $this->selectPeriod($period_param);    // 月別、週別の指定
             $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
 
-            $sql = "SELECT main.`category_id`, categories.category_name,  SUM(payment)
+            $sql = "SELECT main.`category_id`, categories.category_name, SUM(payment) AS payment
                     FROM `main`
                     JOIN `categories` on `categories`.`id` = `main`.`category_id`
                     WHERE `group_id` = :group_id
