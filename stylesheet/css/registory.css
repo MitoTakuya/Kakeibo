@@ -1,0 +1,91 @@
+
+.tab-group{
+    padding: 0;
+    margin: 0;
+    font-size: 24px;
+    display: flex;
+  }
+
+  /* 収支タブ */
+  .tab{
+    flex-grow: 1;
+    padding:5px;
+    list-style:none;
+    border-radius: 10px 10px 0 0 ;
+    text-align:center;
+    cursor:pointer;
+  }
+
+  /* 収支ごとのフォーム部分 */
+  .panel-group{
+    height:520px;
+    background:#eee;
+  }
+
+  .panel{
+    display:none;
+  }
+  .tab-A.is-active{
+    background:rgb(245, 195, 195);
+    color:#FFF;
+    transition: all 0.2s ease-out;
+  }
+
+  .panel.tab-A.is-show{
+    background:rgb(245, 195, 195);
+    display:block;
+  }
+
+  .tab-B.is-active{
+    background:rgb(149, 213, 230);
+    color:#FFF;
+    transition: all 0.2s ease-out;
+  }
+  .panel.tab-B.is-show{
+    display:block;
+    background:rgb(149, 213, 230);
+  }
+
+/* 金額を入力する項目 */
+.amount input {
+  text-align: right;
+  width: 150px;
+  }
+
+/* モーダルウィンドウの表示 */
+.modal {
+  display: none;
+  height: 100vh;
+  width: 100%;
+  background: black;
+  opacity: 0.8;
+  position: fixed;
+  z-index: 5;
+  top: 0;
+  left: 0;
+  }
+  
+.post_process {
+  display: none;
+  position: fixed;
+  z-index: 50;
+  top: 30%;
+  left: 50%;
+  border-radius: 8px;
+  background-color: black;
+  width: 600px;
+  color: #fff;
+  -webkit-transform: translate(-50%, -10%);
+  transform: translate(-50%, -10%);
+  font-size: 1.3rem;
+  border: 0.3rem solid #fff;
+  padding: 10px;
+}
+
+/* .show {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  } */
+
+
