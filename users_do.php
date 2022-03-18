@@ -20,11 +20,19 @@ if(!empty($_POST)){
 		header('Location: ../view/index.php');
 		}
 	}
+	// ヘッダーからユーザー詳細ページの際
 } elseif (isset($_GET['id']) && is_numeric(($_GET['id']))) {
-	// $user_id = $_GET['id'];
-	$user_id = 100;
-	// var_dump($user_id);
+	$user_id = $_GET['id'];
 	$user_show = $new_user->fetchUsersFullRecords($user_id);
-	var_dump($user_show);
+	// var_dump($user_show);
+	// var_dump($user_id);
+	foreach ($user_show as $row) {
+		// ログイン中ユーザーを抽出
+		if ($row['user_id'] == $user_id) {
+			$current_user = $row;
+		} else {
+			// ログインユーザー以外
+			$other_users[] = $row;
+		}
+	}
 }
-
