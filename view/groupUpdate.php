@@ -30,8 +30,8 @@ require_once ("../user_group_do.php");
 				<p><i class="fas fa-user-group"></i>
 					<label for="group_name">グループ名</label>
 					<input type="text" id="group_name" name="group_name" class="form-control" value="<?php echo $row["group_name"]; ?>">
-					<?php if(!empty($errors['group_name'])): ?>
-					<span class="text-danger"><?php echo $errors['group_name']; ?></span>
+					<?php if(!empty($group_errors['group_name'])): ?>
+					<span class="text-danger"><?php echo $group_errors['group_name']; ?></span>
 					<?php endif; ?>
 				</p>
 				</div>
@@ -41,8 +41,8 @@ require_once ("../user_group_do.php");
 				<p><i class="fas fa-piggy-bank"></i>
 					<label for="goal">目標貯金額</label>
 					<input type="number" id="goal" name="goal" class="form-control" min="0" value="<?php echo $row["goal"]; ?>">
-					<?php if(!empty($errors['goal'])): ?>
-					<span class="text-danger"><?php echo $errors['goal']; ?></span>
+					<?php if(!empty($group_errors['goal'])): ?>
+					<span class="text-danger"><?php echo $group_errors['goal']; ?></span>
 					<?php endif; ?>
 				</p>
 				</div>

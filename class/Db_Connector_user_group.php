@@ -13,7 +13,7 @@ class DB_Connector_user_group extends DB_Connector
     }
 
     // ユーザーグループ取得
-    public static function fetchUserGroup(int $group_id)
+    public function fetchUserGroup(int $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT *
@@ -33,21 +33,15 @@ class DB_Connector_user_group extends DB_Connector
     }
 
     // ユーザーグループ編集
-    public static function editUserGroup(
-        string $group_name,
-        string $group_password,
-        int $goal,
-        int $group_id
-    )
+    public function editUserGroup(string $group_name, int $goal, int $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             try {
                 self::$pdo->beginTransaction();
-                $stmt = self::$pdo->prepare('UPDATE user_groups SET group_name=:group_name, group_password=:group_password, goal=:goal WHERE group_id=:group_id');
+                $stmt = self::$pdo->prepare('UPDATE user_groups SET group_name=:group_name, goal=:goal WHERE id=:id');
                 $stmt->bindParam('group_name', $group_name, PDO::PARAM_STR);
-                $stmt->bindParam('group_password', $group_password, PDO::PARAM_STR);
                 $stmt->bindParam('goal', $goal, PDO::PARAM_INT);
-                $stmt->bindParam('group_id', $group_id, PDO::PARAM_INT);
+                $stmt->bindParam('id', $id, PDO::PARAM_INT);
                 $stmt->execute();
                 self::$pdo->commit();
             } catch (PDOException $e) {

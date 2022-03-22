@@ -1,6 +1,6 @@
 <?php
 require('class/DB_Connector_users.php');
-// if (DB_Connector::connectDB()) {
+if (DB_Connector::connectDB()) {
 	$new_user = new DB_Connector_users();
 
 	if (!empty($_POST)) {	
@@ -24,8 +24,6 @@ require('class/DB_Connector_users.php');
 	} elseif (isset($_GET['id']) && is_numeric(($_GET['id']))) {
 		$user_id = $_GET['id'];
 		$user_show = $new_user->fetchUsersFullRecords($user_id);
-		// var_dump($user_show);
-		// var_dump($user_id);
 		foreach ($user_show as $row) {
 			// ログイン中ユーザーを抽出
 			if ($row['user_id'] == $user_id) {
@@ -36,6 +34,6 @@ require('class/DB_Connector_users.php');
 			}
 		}
 	}
-// } else {
-// 	include('エラー画面');
-// }
+} else {
+	// include('エラー画面');
+}

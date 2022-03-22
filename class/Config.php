@@ -4,6 +4,7 @@
 ############################################################
 
 class Config {
+    public static $user_errors = array();
 
     //入力値のエスケープ処理　Config::h($変数) で使用可能
     public static function h($str) {
@@ -52,6 +53,17 @@ class Config {
         session_destroy();
         header('Location: http://localhost/');
         exit;
-        }
+    }
 
+    public static function checkUserGroup() {
+        if (!isset($_POST['group_name']) || str_replace(array(" ", "　"), "", $_POST['group_name']) === '') {
+            self::$user_errors['group_name'] = 'グループ名を入力してください';
+        } elseif (mb_strlen($_POST['group_name']) > 30) {
+            self::$user_errors['group_name'] = 'グループ名は30文字以内で入力してください';
+        }
+        if (!isset($_POST['goal']) || str_replace(array(" ", "　"), "", $_POST['goal']) === '') {
+            self::$user_errors['goal'] = '目標貯金額を入力してください';
+        } 
+        return self::$user_errors;
+    }
 } 
