@@ -5,7 +5,7 @@ $error_messages = array();
 
 //registory.phpからデータがPOSTされた時の処理
 if(!empty($_POST)) {
-
+    
     //★★★sessionIDを使用する予定
     $user_id = 1;
     $group_id = 1;
@@ -21,11 +21,21 @@ if(!empty($_POST)) {
 
     //db_mainインスタンス作成
     $db_main = new DB_Connector_main();
+    //更新するレコードが存在するか確認
+    $confirm = $db_main->fetchOne($id);
+    
+    if (is_array($confirm)) {
+        //レコードを更新する
+        $db_main->updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
+    }else {
+        $error_messages = "すでにデータが削除されております。";
+        echo $error_messages;
+    }
 
-    //DB接続 & DBにデータ挿入
-    $db_main->updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
-    //記帳画面へリダイレクト
     header('Location: http://localhost/kakeibo/view/registory.php');
+    // require_once __DIR__.'/view/registory.php';
+
+
 }else {
 
     //★ログイン画面にリダイレクト処理を追記する予定
