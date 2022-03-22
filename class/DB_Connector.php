@@ -9,6 +9,10 @@ abstract class DB_Connector
     // 対象テーブル
     protected static $target_table = null;
 
+    // テーブル操作に使う変数
+    protected static int $outgo_type_id = 1;
+    protected static int $income_type_id = 2;
+
     // エラーメッセージ
     protected static string $connect_error = 'データベースへの接続に失敗しました';
     protected static string $transaction_error = '処理に失敗しました';

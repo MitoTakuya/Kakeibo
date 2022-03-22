@@ -1,8 +1,6 @@
 <?php
 require_once('DB_Connector.php');
 class DB_Connector_main extends DB_Connector {
-    protected static int $outgo_type_id = 1;
-    protected static int $income_type_id = 2;
 
     protected static $target_table = 'main';
 
@@ -339,7 +337,7 @@ class DB_Connector_main extends DB_Connector {
         }
     }
 
-    // 1列分の値だけを取り出す
+    // 1列分の値だけを取り出す 
     public static function fetchCategoryColumns(int $order = 1) {
         if (isset(self::$pdo) || self::connectDB()) {
             // 昇順・降順を選択する
