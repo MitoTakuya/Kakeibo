@@ -5,21 +5,18 @@ class DB_Connector
     private const DB_USER = 'root';
     private const DB_PASSWORD = '';
     protected static ?PDO $pdo;    //PDO か nullでなければいけない
+
+    // 対象テーブル
+    protected static $target_table = 'main';
+
+    // エラーメッセージ
     protected static string $connect_error = 'データベースへの接続に失敗しました';
     protected static string $transaction_error = '処理に失敗しました';
 
-    protected String $target_table;
-    
-
     // 対象テーブルを選択
-    function __construct(string $target_table)
+    function __construct()
     {
-        $this->target_table = $target_table;
-        self::connectDB(); //PDOオブジェクトを生成
-
-        // 以下でPDOの設定を行う
-        self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
-        self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
+        // self::connectDB(); //PDOオブジェクトを生成
     }
 
     /****************************************************************************
@@ -31,6 +28,10 @@ class DB_Connector
         if (!isset(self::$pdo)) {
             try {
                 self::$pdo = new PDO(self::DNS, self::DB_USER, self::DB_PASSWORD);
+                // 以下でPDOの設定を行う
+                self::$pdo->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_EMPTY_STRING);   // カラムがnullのままinsertできるように設定
+                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
+
                 //print('接続に成功しました。<br>');
                 return true;
             } catch (PDOException $e) {
@@ -49,11 +50,12 @@ class DB_Connector
      * 基本メソッド（idのみで行えるDB操作）
      **********************************************************************/
     // select * from 対象テーブル where = 指定したid
-    public function fetchOne(int $target_id)
+    public static function fetchOne(int $target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
+            $target_table = self::$target_table;
             $sql = "SELECT *
-                    FROM `{$this->target_table}`
+                    FROM `{$target_table}`
                     WHERE `id`=:id";
             
             $stmt = self::$pdo->prepare($sql);
@@ -70,14 +72,15 @@ class DB_Connector
     }
 
     // select * from 対象テーブル
-    public function fetchAll(int $order = 0)
+    public static function fetchAll(int $order = 0)
     {
         if (isset(self::$pdo) || self::connectDB()) {
+            $target_table = self::$target_table;
             // 昇順・降順を選択する
-            $order_clause = $this->selectOrder($order);
+            $order_clause = self::selectOrder($order);
 
             $sql = "SELECT *
-                    FROM  `{$this->target_table}` " . $order_clause;
+                    FROM  `{$target_table}` " . $order_clause;
 
             $stmt = self::$pdo->prepare($sql);
             $stmt->execute();
@@ -91,12 +94,13 @@ class DB_Connector
         }
     }
     // delete from 対象テーブル
-    public function deleteOne(int $target_id)
+    public static function deleteOne(int $target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             try {
+                $target_table = self::$target_table;
                 self::$pdo->beginTransaction();
-                $sql = "DELETE FROM `{$this->target_table}`
+                $sql = "DELETE FROM `{$target_table}`
                         WHERE `id`=:id";
                 
                 $stmt = self::$pdo->prepare($sql);
@@ -113,7 +117,7 @@ class DB_Connector
         }
     }
     //order by句を返す
-    protected function selectOrder(int $order = 0, string $culmun = 'id')
+    protected static function selectOrder(int $order = 0, string $culmun = 'id')
     {
         switch ($order) {
             case 1:
