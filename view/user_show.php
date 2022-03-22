@@ -28,9 +28,9 @@ require_once ("../users_do.php");
 						<div class="ml-4">
 							<h5><span><?php echo $current_user['user_name']; ?>
 								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像"
-									style="height:50px;width:50px;border-radius:50%"/><span class="float-right"><button type="button" class="btn btn-primary">
+									style="height:50px;width:50px;border-radius:50%"/><span class="float-right">
+										<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php?id=<?php echo $current_user['user_id']; ?>'">
 										更新する</button></span>
-							</span></h5>
 						</div>
 						<div class="mt-4"></div>
 						<?php 

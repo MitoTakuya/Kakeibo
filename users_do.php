@@ -1,12 +1,34 @@
 <?php
 require('class/DB_Connector_users.php');
+require('class/Config.php');
 if (DB_Connector::connectDB()) {
 	$new_user = new DB_Connector_users();
 
-	if (!empty($_POST)) {	
+	if (!empty($_POST)) {
+		// ユーザー情報更新の際
+		if (isset($_POST['user_update'])) {
+			var_dump($_GET['id']);
+			// $row = $user_group->fetchUserGroup($_GET['id']);
+			// バリデーションチェック
+			$user_errors = Config::checkUser();
+			// $user_errors = $new_user->checkEditMail($_POST['mail'], $_POST['id']);
+			// アドレスチェックを行う
+			// エラーがなければユーザー情報更新
+			if (count($user_errors) == 0) {
+				// ユーザー詳細ページに飛ばす
+            	// パスワードを暗号化
+				$hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
+				$user_image = date('YmdHis') . $_FILES['user_image']['name'];
+				// 画像をアップロード
+				move_uploaded_file($_FILES['user_image']['tmp_name'], '../images/'. $user_image);
+				$new_user->editUser($_POST['user_name'], $_POST['password'], $_POST['mail'], $user_image, $_POST['id']);
+				header('Location: ../view/user_show.php?id='.$_SESSION['id']);
+				exit();
+			}
+		}
 
 		// ユーザー登録の際
-		if(isset($_POST['new_user'])) {
+		if (isset($_POST['new_user'])) {
 			$user_errors = $new_user->inputConfirmation();
 			if($user_errors == "ok") {
 			// ログインに飛ばす
