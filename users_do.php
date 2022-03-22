@@ -7,7 +7,6 @@ if (DB_Connector::connectDB()) {
 	if (!empty($_POST)) {
 		// ユーザー情報更新の際
 		if (isset($_POST['user_update'])) {
-			var_dump($_GET['id']);
 			// $row = $user_group->fetchUserGroup($_GET['id']);
 			// バリデーションチェック
 			$user_errors = Config::checkUser();
