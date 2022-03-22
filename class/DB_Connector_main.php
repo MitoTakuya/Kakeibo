@@ -4,17 +4,14 @@ class DB_Connector_main extends DB_Connector {
     protected static int $outgo_type_id = 1;
     protected static int $income_type_id = 2;
 
-    // 対象テーブルを選択
-    function __construct() {
-        parent::__construct('main');
-    }
+    protected static $target_table = 'main';
 
     /**************************************************************************
      * mainテーブル操作用のメソッド
      **********************************************************************/
     // $memo は引数を無い場合があるため、デフォルト値として''を設定する。
     // （nullはそのままstringにバインドできないため）
-    public function insertRecord(
+    public static function insertRecord(
         $title,
         int $payment, 
         string $payment_at,
@@ -55,7 +52,7 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // レコードの更新
-    public function updateRecord(
+    public static function updateRecord(
         int $id,
         string $title,
         int $payment,
@@ -98,7 +95,7 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
-    public function fetchGroupRecords(int $group_id)
+    public static function fetchGroupRecords(int $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $sql = 'SELECT *
@@ -120,14 +117,14 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // あるグループのレコードを一定数取り出す（画面に収まる数など）*要order切り替え
-    public function fetchGroupLimitedRecords(
+    public static function fetchGroupLimitedRecords(
         int $group_id,
         int $limit,
         int $order,
         int $offset = 0)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $order_clause = $this->selectOrder($order);    // 昇順・降順を選択する
+            $order_clause = self::selectOrder($order);    // 昇順・降順を選択する
 
             $sql = "SELECT * FROM `full_records`
                     WHERE `group_id`=:group_id
@@ -155,12 +152,12 @@ class DB_Connector_main extends DB_Connector {
      * ダッシュボードで集計を表示するための関数
      **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
-    public function fetchBalance(int $group_id)
+    public static function fetchBalance(int $group_id)
     {
         try {
             self::$pdo->beginTransaction();
-            $outgo = $this->fetchOutgo($group_id);
-            $income = $this->fetchIncome($group_id);
+            $outgo = self::fetchOutgo($group_id);
+            $income = self::fetchIncome($group_id);
             self::$pdo->commit();
 
             if (!is_numeric($outgo) || !is_numeric($income)) {
@@ -184,10 +181,10 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 今までの合計支出を返す ダッシュボードに表示する
-    public function fetchOutgo(int $group_id)
+    public static function fetchOutgo(int $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $sql = 'SELECT `type_id`, SUM(`payment`) AS `outgo`
+            $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
                     FROM `main`
                     WHERE `group_id` = :group_id
                     AND `type_id` = :type_id;';
@@ -207,10 +204,10 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 今までの合計収入を返す ダッシュボードに表示する
-    public function fetchIncome(int $group_id)
+    public static function fetchIncome(int $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $sql = 'SELECT `type_id`, SUM(`payment`) AS `income`
+            $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
                     FROM `main`
                     WHERE `group_id` = :group_id
                     AND `type_id` = :type_id;';
@@ -234,49 +231,49 @@ class DB_Connector_main extends DB_Connector {
         使用例：get_filtered_outgo(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の合計支出を出力)
     */
-    public function fetchFilteredOutgo(
+    public static function fetchFilteredOutgo(
         int $group_id,
         int $period_param = 0,
         int $category_id = null,
         ?string $target_date = null
     ) {
         if (isset(self::$pdo) || self::connectDB()) {
-            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
-            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
+            $period = static::selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = static::selectDate($target_date);  // 基準になる日付の指定
 
             if (is_null($category_id)) {
                 // 期間のみでfilterする場合
-                $results = $this->fetchDateFilteredOutgo(
+                $results = self::fetchDateFilteredOutgo(
                                 group_id: $group_id,
                                 target_date: $target_date,
                                 period: $period
                             );
             } else {
                 // 期間とカテゴリでfilterする場合
-                $results = $this->fetchFullyFilteredOutgo(
+                $results = self::fetchFullyFilteredOutgo(
                                 group_id: $group_id,
                                 category_id: $category_id,
                                 target_date: $target_date,
                                 period: $period
                             );
             }
-            
+            // var_dump($results);
             return $results['sum']; //格納されていなければ false を返す
         } else {
             return self::$connect_error;
         }
     }
 
-    public function fetchFilteredOutgoList(
+    public static function fetchFilteredOutgoList(
         int $group_id,
         int $period_param = 0,
         ?string $target_date = null,
     ){
         if (isset(self::$pdo) || self::connectDB()) {
-            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
-            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
+            $period = self::selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = self::selectDate($target_date);  // 基準になる日付の指定
 
-            $sql = "SELECT main.`category_id`, categories.category_name,  SUM(payment)
+            $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0)
                     FROM `main`
                     JOIN `categories` on `categories`.`id` = `main`.`category_id`
                     WHERE `group_id` = :group_id
@@ -305,34 +302,38 @@ class DB_Connector_main extends DB_Connector {
         使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
         (グループid1番の「2022年3月1日」の週の全レコードを出力)
     */
-    public function fetchFilteredRecords(
+    public static function fetchFilteredRecords(
         int $group_id,
         int $period_param = 0,
         int $order = 0,
+        int $type_id = 0,
         ?string $target_date = null,
         ?string $category_id = null
     ) {
         if (isset(self::$pdo) || self::connectDB()) {
-            $order_clause = $this->selectOrder($order);        // 昇順・降順を選択する
-            $period = $this->selectPeriod($period_param);    // 月別、週別の指定
-            $target_date = $this->selectDate($target_date);  // 基準になる日付の指定
+            $order_clause = self::selectOrder($order);      // 昇順・降順を選択する
+            $period = self::selectPeriod($period_param);    // 月別、週別の指定
+            $target_date = self::selectDate($target_date);  // 基準になる日付の指定
+            $type_filter = self::selectType($type_id);             // 支払い区分の指定, 文字列で返す
 
             if (is_null($category_id)) {
                 // 期間のみでfilterする場合
-                $results = $this->fetchDateFilteredRecords(
+                $results = self::fetchDateFilteredRecords(
                                 group_id: $group_id,
                                 target_date: $target_date,
                                 period: $period,
-                                order_clause: $order_clause
+                                order_clause: $order_clause,
+                                type_filter: $type_filter
                             );
             } else {
                 // 期間とカテゴリでfilterする場合
-                $results = $this->fetchFullyFilteredRecords(
+                $results = self::fetchFullyFilteredRecords(
                                 group_id: $group_id,
                                 category_id: $category_id,
                                 target_date: $target_date,
                                 period: $period,
-                                order_clause: $order_clause
+                                order_clause: $order_clause,
+                                type_filter: $type_filter
                             );
             }
             
@@ -343,10 +344,10 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 1列分の値だけを取り出す
-    public function fetchCategoryColumns(int $order = 1) {
+    public static function fetchCategoryColumns(int $order = 1) {
         if (isset(self::$pdo) || self::connectDB()) {
             // 昇順・降順を選択する
-            $order_clause = $this->selectOrder($order);
+            $order_clause = self::selectOrder($order);
 
             $sql = "SELECT `type_id`, `category_name`
                     FROM  `categories` " . $order_clause;
@@ -375,12 +376,12 @@ class DB_Connector_main extends DB_Connector {
      * DB切断は呼び出し元メソッドで行う
      *******************************************/
     // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
-    private function fetchDateFilteredOutgo(
+    private static function fetchDateFilteredOutgo(
         int $group_id,
         string $period,
         string $target_date
     ){
-        $sql = "SELECT sum(payment) AS `sum`
+        $sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
                 FROM `main`
                 WHERE `group_id` = :group_id
                 AND `type_id` = :type_id
@@ -396,39 +397,14 @@ class DB_Connector_main extends DB_Connector {
         return $results;
     }
 
-    // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
-    private function fetchDateFilteredRecords(
-        int $group_id,
-        string $period,
-        string $order_clause,
-        string $target_date
-    ) {
-        $sql = "SELECT *
-                FROM `full_records`
-                WHERE `group_id` = :group_id
-                AND `type_id` = :type_id
-                AND {$period}(payment_at) = {$period}({$target_date})
-                AND YEAR(payment_at) = YEAR({$target_date})
-                {$order_clause}";           //$target_date には関数も入るためバインドしない
-
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // クエリ結果が0件の場合、空の配列を返す
-        return $results;
-    }
-
     // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する * 直接呼び出さない
-    private function fetchFullyFilteredOutgo(
+    private static function fetchFullyFilteredOutgo(
         int $group_id,
         int $category_id,
         string $target_date,
         string $period
     ) {
-        $sql = "SELECT sum(payment) AS `sum`
+        $sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
                 FROM `main`
                 WHERE `group_id` = :group_id
                 AND `type_id` = :type_id
@@ -442,21 +418,16 @@ class DB_Connector_main extends DB_Connector {
         $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
         $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
         $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+        $results = $stmt->fetch(PDO::FETCH_ASSOC);
         
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
-        if(count($results) == 0) {
-            return false;
-        } else {
-            return $results;
-        }
+        return $results;
     }
 
-    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
-    private function fetchFullyFilteredRecords(
+    // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
+    private static function fetchDateFilteredRecords(
         int $group_id,
-        int $category_id,
+        string $type_filter,
         string $period,
         string $order_clause,
         string $target_date
@@ -464,7 +435,32 @@ class DB_Connector_main extends DB_Connector {
         $sql = "SELECT *
                 FROM `full_records`
                 WHERE `group_id` = :group_id
-                AND `type_id` = :type_id
+                AND {$type_filter}
+                AND {$period}(payment_at) = {$period}({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})
+                {$order_clause}";           //$target_date には関数も入るためバインドしない
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // クエリ結果が0件の場合、空の配列を返す
+        return $results;
+    }
+
+    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
+    private static function fetchFullyFilteredRecords(
+        int $group_id,
+        int $category_id,
+        string $type_filter,
+        string $period,
+        string $order_clause,
+        string $target_date
+    ) {
+        $sql = "SELECT *
+                FROM `full_records`
+                WHERE `group_id` = :group_id
+                AND {$type_filter}
                 AND `category_id` = :category_id
                 AND {$period}(payment_at) = {$period}({$target_date})
                 AND YEAR(payment_at) = YEAR({$target_date})
@@ -472,7 +468,6 @@ class DB_Connector_main extends DB_Connector {
 
         $stmt = self::$pdo->prepare($sql);
         $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
         $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
         // var_dump($stmt);
         $stmt->execute();
@@ -484,7 +479,7 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 月別か週別か期間を選ぶ * 直接呼び出さない
-    private function selectPeriod(int $period_param = 0)
+    private static function selectPeriod(int $period_param = 0)
     {
         switch ($period_param) {
             case 1:
@@ -500,11 +495,32 @@ class DB_Connector_main extends DB_Connector {
     }
 
     // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
-    private function selectDate(?string $target_date = null)
+    private static function selectDate(?int $target_date = null)
     {
         if (is_null($target_date)) {
             $target_date = "NOW()";
         }
         return $target_date;
+    }
+
+    // 「type_id IN」の文字列を返す
+    private static function selectType(int $type_id = null)
+    {
+        // type_id IN($type) に入れる文字列を返す
+        switch ($type_id) {
+            case self::$outgo_type_id:
+                $type_id = (string) self::$outgo_type_id;
+                break;
+            
+            case self::$income_type_id:
+                $type_id = (string) self::$income_type_id;
+                break;
+            
+            default:
+                $type_id = self::$outgo_type_id . "," . self::$income_type_id;
+                break;
+        }
+        $type_filter = "`type_id` IN({$type_id})";
+        return $type_filter;
     }
 }

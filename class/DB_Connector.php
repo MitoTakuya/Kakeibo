@@ -1,5 +1,5 @@
 <?php
-class DB_Connector
+abstract class DB_Connector
 {
     private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
     private const DB_USER = 'root';
@@ -7,7 +7,7 @@ class DB_Connector
     protected static ?PDO $pdo;    //PDO か nullでなければいけない
 
     // 対象テーブル
-    protected static $target_table = 'main';
+    protected static $target_table = null;
 
     // エラーメッセージ
     protected static string $connect_error = 'データベースへの接続に失敗しました';
@@ -53,14 +53,15 @@ class DB_Connector
     public static function fetchOne(int $target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $target_table = self::$target_table;
+            $target_table = static::$target_table;
+
             $sql = "SELECT *
                     FROM `{$target_table}`
                     WHERE `id`=:id";
             
             $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            
+            echo $sql;
             $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -75,7 +76,7 @@ class DB_Connector
     public static function fetchAll(int $order = 0)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $target_table = self::$target_table;
+            $target_table = static::$target_table;
             // 昇順・降順を選択する
             $order_clause = self::selectOrder($order);
 
@@ -98,7 +99,7 @@ class DB_Connector
     {
         if (isset(self::$pdo) || self::connectDB()) {
             try {
-                $target_table = self::$target_table;
+                $target_table = static::$target_table;
                 self::$pdo->beginTransaction();
                 $sql = "DELETE FROM `{$target_table}`
                         WHERE `id`=:id";
