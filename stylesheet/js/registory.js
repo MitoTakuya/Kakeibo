@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 
 /***********************************************
-* 非同期でレコード削除
+* レコード削除(非同期)
 ***********************************************/
 window.addEventListener('DOMContentLoaded',function() {
 
@@ -79,7 +79,7 @@ window.addEventListener('DOMContentLoaded',function() {
 }, false);
 
 /***********************************************
-* 非同期でレコード取得
+* レコード取得(非同期)
 ***********************************************/
 window.addEventListener('DOMContentLoaded',function() {
 
@@ -155,25 +155,29 @@ window.addEventListener('DOMContentLoaded',function() {
         console.log(data);
       });
 
-      //モーダルウィンドウの処理
       let scroll_position = $(window).scrollTop();
       console.log(scroll_position);
       $('body').addClass('fixed').css({ 'top': -scroll_position });
-      
-      // モーダルを表示する
-      $('.post_process').fadeIn();
+
+      //モーダルウィンドウの表示
+      $('.modal_form').fadeIn();
       $('.modal').fadeIn();
       
+      });
       // モーダルを閉じる
       $('#close').on('click',function(){
-          $('.post_process').fadeOut();
+          $('.modal_form').fadeOut();
           $('.modal').fadeOut();
-      });
-      
+
   });
 
 
+
+
+  
 }, false);
+
+
 
 
 ////////////////////////////////////////////////////////////
@@ -190,8 +194,4 @@ window.addEventListener('DOMContentLoaded',function() {
 // $("#edit_amount").val(amount);
 // $("#edit_memo").val(memo);
 ////////////////////////////////////////////////////////////
-
-
-
-
 
