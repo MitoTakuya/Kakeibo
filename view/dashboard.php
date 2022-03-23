@@ -68,24 +68,26 @@ include('../dashboard_process.php');
             <div class="mx-auto">
                 <div class="card card_property">
                         <div class="outgo_chart card-body mx-auto">
-                                <table class="table">
+                                <table class="table table_layout">
                                     <?php if (count($categorized_outgo_list) === 0):?>
                                         <!-- もしレコードが存在しなければ「記録がありません」 -->
                                             <p>記録がありません</p>
                                     <?php else:?> 
                                         <!-- 後で colの属性を指定する -->
-                                        <col width="500">
                                         <thead>
-                                            <th>カテゴリー</th>
-                                            <th>支出額</th>
+                                            <th scope="col">カテゴリー</th>
+                                            <th scope="col">支出額</th>
                                             <!-- <th>前月比とか？</th> -->
                                         </thead>
                                             <?php foreach($categorized_outgo_list as $outgo): ?>
                                             <tr>
-                                                <td> <!-- 別タブで開くように設定予定 getメソッドで送る-->
-                                                    <a href="" target="_blank" rel="noopener noreferrer"><?= $outgo['category_name'] ?></a>
+                                                <td scope="row"> <!-- 別タブで開くように設定予定 getメソッドで送る 送信先は仮置き-->
+                                                <form action="../test.php" method="get" :ref="to_detail">
+                                                    <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
+                                                    <input type="hidden" name="category_id" value=<?= $outgo['category_id'] ?>>
+                                                </form>
                                                 </td>
-                                                <td><?= $outgo['payment'] ?></td>
+                                                <td scope="row"><?= $outgo['payment'] ?></td>
                                                 <!-- <td>なにかしらのデータ</td> -->
                                             </tr>
                                             <?php endforeach; ?>
@@ -111,25 +113,10 @@ include('../dashboard_process.php');
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
         <!-- Chart.js -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
         <!-- axios -->
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-        <script>
-            // // vuejsでの実装方法を確認中のため、仮置き
-            // var ctx = document.getElementById('outgo_rate_chart').getContext('2d');
-            // //console.log(ctx);
-            // var myChart = new Chart(ctx, {
-            //     type: 'pie',
-            //     data: {
-            //             labels: ['Red', 'Green', 'Blue'],
-            //             datasets: [{
-            //                 data: [10, 20, 30],
-            //                 backgroundColor: ['#f88', '#484', '#48f'],
-            //                 weight: 100,
-            //             }],
-            //         },
-            // });
 
+        <script>
             let app = new Vue({
             el :'#dashboard',
             data : {

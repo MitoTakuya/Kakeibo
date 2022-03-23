@@ -78,7 +78,7 @@ if (DB_Connector::connectDB()) {
 
     // echo "<br>-----<br>";
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
-    var_dump($jsonized_outgo_list);
+    // var_dump($jsonized_outgo_list);
     DB_Connector::disconnectDB();
 } else {
     // include('error.php');
