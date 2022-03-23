@@ -5,106 +5,10 @@ session_start();
 class DB_Connector_users extends DB_Connector
 {
     public static $user_errors = array();
-    private $group_id = 0;
+
 
     // 対象テーブルを選択
     protected static $target_table = 'users';
-
-    public function setGroupId($group_id)
-    {
-        $this->group_id = $group_id;
-    }
-    public function getGroupId()
-    {
-        return $this->group_id;
-    }
-
-    // ユーザー登録入力内容チェック
-    public static function inputConfirmation()
-    {
-        if (!isset($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
-            self::$user_errors['user_name'] = '名前を入力してください';
-        } elseif (mb_strlen($_POST['user_name']) > 30) {
-            self::$user_errors['user_name'] = '名前は30文字以内で入力してください';
-        } else {
-            $user_name = $_POST['user_name'];
-        }
-
-        if (trim($_POST['mail']) === "") {
-            self::$user_errors['mail'] = "メールアドレスを入力してください";
-        } else {
-            $mail = $_POST['mail'];
-            self::checkDuplicate($mail);
-        }
-
-        if (trim($_POST['password']) === "") {
-            self::$user_errors['password'] = "パスワードを入力してください";
-        } elseif (strlen($_POST['password']) < 4) {
-            self::$user_errors['password'] = 'パスワードを4文字以上で入力してください';
-        } else {
-            $password = $_POST['password'];
-        }
-
-        if (!empty($_FILES['user_image']['name'])) {
-            $ext = substr($_FILES['user_image']['name'], -3);
-            if ($ext != 'jpg' && $ext != 'gif' && $ext != 'png') {
-                self::$user_errors['user_image'] = '画像の形式は[jpg],[gif],[png]のみです。';
-            }
-        } elseif (empty($_FILES['user_image']['name'])) {
-            self::$user_errors['user_image'] = '画像を選択してください';
-        }
-
-        // ユーザーグループ
-        // 新規グループ選択時
-        if ($_POST['user_group'] == "new_group") {
-            if (!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
-                self::$user_errors['group_form'] = '家計簿名を入力してください';
-            } elseif (mb_strlen($_POST['group_form']) > 30) {
-                self::$user_errors['group_form'] = '30文字以内で入力してください';
-            } else {
-                $group_name = $_POST['group_form'];
-                // ユニークキー作成方法は検討
-                $group_password =  uniqid();
-            }
-            // 既存グループ選択時
-        } elseif ($_POST['user_group'] == "existing_group") {
-            if (!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
-                self::$user_errors['group_form'] = 'グループパスワードを入力してください';
-            } elseif (mb_strlen($_POST['group_form']) > 30) {
-                self::$user_errors['group_form'] = '30文字以内で入力してください';
-            } else {
-                $group_password = $_POST['group_form'];
-                // パスワードからuser_groupのidを検索
-                $error = self::searchGroupId($group_password);
-                if (!is_array($error)) {
-                    self::$user_errors['group_form'] = 'グループパスワードが違います。';
-                } else {
-                    self::setGroupId($error['id']);
-                }
-            }
-        }
-
-        // エラーがなければユーザー情報登録
-        if (count(self::$user_errors) == 0) {
-            // パスワードを暗号化
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $user_image = date('YmdHis') . $_FILES['user_image']['name'];
-            // 画像をアップロード
-            move_uploaded_file($_FILES['user_image']['tmp_name'], '../images/'. $user_image);
-            
-            if ($_POST['user_group'] ==  "new_group") {
-                // ユーザー、新規グループ登録
-                self::createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image);
-            } else {
-                // ユーザー登録
-                $group_id = self::getGroupId();
-                self::insertUser($user_name, $hash, $mail, $user_image, $group_id);
-            }
-            return "ok";
-        } else {
-            return self::$user_errors;
-        }
-    }
     
     // ログイン入力確認
     public static function loginConfirmation()
@@ -151,27 +55,7 @@ class DB_Connector_users extends DB_Connector
         }
     }
 
-    protected function redirect($url)
-    {
-        header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).$url);
-    }
 
-    // ユーザー・新規グループ登録
-    public static function createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image)
-    {
-        try {
-            self::$pdo->beginTransaction();
-
-            self::insertUserGroup($group_name, $group_password);
-            $group_id = self::getGroupId();
-            self::insertUser($user_name, $hash, $mail, $user_image, $group_id);
-
-            self::$pdo->commit();
-        } catch (PDOException $e) {
-            self::$pdo->rollBack();
-            return self::$transaction_error;
-        }
-    }
 
     // ログイン用メソッド
     public static function loginUser($mail)
@@ -199,9 +83,9 @@ class DB_Connector_users extends DB_Connector
             $stmt->execute();
             // メールアドレスをカウント
             $record = $stmt->fetch();
-            var_dump($record);
+
             if ($record['cnt'] > 0) {
-                self::$user_errors['mail'] = "登録済みのメールアドレスです。";
+                return "登録済みのメールアドレスです。";
             }
         } else {
             return self::$connect_error;
@@ -238,7 +122,8 @@ class DB_Connector_users extends DB_Connector
             $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
             //sqlを 実行
             $stmt->execute();
-            self::setGroupId(self::$pdo->lastInsertId());
+            // self::setGroupId(self::$pdo->lastInsertId());
+            return $group_id = self::$pdo->lastInsertId();
         } else {
             return self::$connect_error;
         }

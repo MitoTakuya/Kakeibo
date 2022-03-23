@@ -1,15 +1,11 @@
 <?php
 require('class/DB_Connector_user_group.php');
-require('class/Config.php');
+require('class/UserController.php');
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-    $user_group = new DB_Connector_user_group();
-    // ユーザーグループ情報取得
-    $row = $user_group->fetchUserGroup($_GET['id']);
-
     // POSTされたら入力チェック
     if (!empty($_POST)) {
-        $group_errors = Config::checkUserGroup();
+        $group_errors = UserController::checkUserGroup();
         // エラーがなければグループ情報更新
         if (count($group_errors) == 0) {
             $user_group->editUserGroup($_POST['group_name'], $_POST['goal'], $_POST['id']);
