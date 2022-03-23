@@ -1,4 +1,3 @@
-
 .tab-group{
     padding: 0;
     margin: 0;
@@ -9,22 +8,27 @@
   /* 収支タブ */
   .tab{
     flex-grow: 1;
-    padding:5px;
+    padding:10px;
     list-style:none;
     border-radius: 10px 10px 0 0 ;
     text-align:center;
     cursor:pointer;
   }
 
-  /* 収支ごとのフォーム部分 */
-  .panel-group{
-    height:520px;
-    background:#eee;
+  /*アクティブではないtabにマウスが乗ったら文字色を変更する*/
+  .tab:not(.is-active):hover  {
+    color:gray;
+
   }
+  /* 収支ごとのフォーム部分 */
+  /* .panel-group{
+    height:800px;
+  } */
 
   .panel{
     display:none;
   }
+
   .tab-A.is-active{
     background:rgb(245, 195, 195);
     color:#FFF;
@@ -52,7 +56,28 @@
   width: 150px;
   }
 
+p {
+  font-size: 24px;
+}
+
 /* モーダルウィンドウの表示 */
+.modal_form {
+  display: none;
+  position: fixed;
+  z-index: 50;
+  top: 20%;
+  left: 50%;
+  border-radius: 8px;
+  background-color: black;
+  width: 400px;
+  color: #fff;
+  -webkit-transform: translate(-50%, -10%);
+  transform: translate(-50%, -10%);
+  font-size: 1.3rem;
+  border: 0.3rem solid #fff;
+  padding: 10px;
+}
+
 .modal {
   display: none;
   height: 100vh;
@@ -65,22 +90,6 @@
   left: 0;
   }
   
-.post_process {
-  display: none;
-  position: fixed;
-  z-index: 50;
-  top: 30%;
-  left: 50%;
-  border-radius: 8px;
-  background-color: black;
-  width: 600px;
-  color: #fff;
-  -webkit-transform: translate(-50%, -10%);
-  transform: translate(-50%, -10%);
-  font-size: 1.3rem;
-  border: 0.3rem solid #fff;
-  padding: 10px;
-}
 
 /* .show {
   display: flex;
