@@ -238,7 +238,7 @@ class DB_Connector_main extends DB_Connector {
         // 月別・週別の選択と、その基準日の選択
         $period_filter = self::makePeriodFilter($period_param, $target_date);
 
-        $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0)
+        $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`
                 FROM `main`
                 JOIN `categories` on `categories`.`id` = `main`.`category_id`
                 WHERE `group_id` = :group_id
