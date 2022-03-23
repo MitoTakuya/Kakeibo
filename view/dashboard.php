@@ -53,11 +53,15 @@ include('../dashboard_process.php');
                             </select>
                         </form>
                         </div>
-                        <!-- 支出割合グラフ -->
-                        <div class="outgo_chart card-body mx-auto" style="width:600px">
-                                <canvas id="outgo_rate" style="width:600px"></canvas>
-                        </div>
-                        
+                        <?php if (count($categorized_outgo_list) === 0):?>
+                            <!-- もしレコードが存在しなければ「記録がありません」 -->
+                                <p>記録がありません</p>
+                            <?php else:?> 
+                            <!-- 支出割合グラフ -->
+                            <div class="outgo_chart card-body mx-auto" style="width:600px">
+                                    <canvas id="outgo_rate_chart" style="width:600px" :ref="outgo_rate_chart"></canvas>
+                            </div>
+                        <?php endif;?>
                     </div>
             </div>
 
@@ -105,26 +109,26 @@ include('../dashboard_process.php');
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
         <!-- Vue.js -->
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-        <!-- Vue-Chart.js -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-        <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
+        <!-- Chart.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js" integrity="sha512-QSkVNOCYLtj73J4hbmVoOV6KVZuMluZlioC+trLpewV8qMjsWqlIQvkn1KGX2StWvPMdWGBqim1xlC8krl1EKQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
         <!-- axios -->
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script>
-            // vuejsでの実装方法を確認中のため、仮置き
-            var ctx = document.getElementById('outgo_rate').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                        labels: ['Red', 'Green', 'Blue'],
-                        datasets: [{
-                            data: [10, 20, 30],
-                            backgroundColor: ['#f88', '#484', '#48f'],
-                            weight: 100,
-                        }],
-                    },
-            });
-            console.log(ctx);
+            // // vuejsでの実装方法を確認中のため、仮置き
+            // var ctx = document.getElementById('outgo_rate_chart').getContext('2d');
+            // //console.log(ctx);
+            // var myChart = new Chart(ctx, {
+            //     type: 'pie',
+            //     data: {
+            //             labels: ['Red', 'Green', 'Blue'],
+            //             datasets: [{
+            //                 data: [10, 20, 30],
+            //                 backgroundColor: ['#f88', '#484', '#48f'],
+            //                 weight: 100,
+            //             }],
+            //         },
+            // });
 
             let app = new Vue({
             el :'#dashboard',
@@ -132,40 +136,37 @@ include('../dashboard_process.php');
                 selected_date : '', // phpから直に最新月の直接を代入する
 
                 selectable_dates : <?= $jsonized_past_dates ?>, //php から読み込む
-                selecting_date : "selecting_date",
+                selecting_date : "selecting_date",  // selectタグのdomを格納する
 
-                chart_area : null,
-                outgo_list : <?= $jsonized_outgo_list ?>
+                outgo_rate_chart : "outgo_rate_chart", // canvasタグのdomを格納する
+                chart_data : <?= $jsonized_outgo_list ?>, //グラフ用の
+                outgo_chart : null // chart.jsのインスタンスを格納する
             },
             methods : {
-                // displayChart : async function(event) {
-                //     // 仮置きしている非同期処理用メソッド
-                //     let params = new URLSearchParams();
-                //     let path = '../ajax_dashbord.php'
-                //     // params.append('param_name', );
-                //     axios
-                //     .post(path, params)
-                //     .then(response => {
-                //         console.log(response.data);
-                //         return response.data
-                //     });
-                // },
-                
+                // ページを更新する
                 selfPostDate : function (event) {
                     //$ref['selecting_date'].submit();
-                    console.log(this.$refs['selecting_date']);
+                    //console.log(this.$refs['selecting_date']);
                     this.$refs['selecting_date'].submit();
                 }
-            }// ,   後で修正
-            // mounted: function(){
-            //     console.log(this.outgo_list);
-            //     this.chart_area = this.$refs['outgo_chart'];
-            //     console.log(this.$refs);
-            //     // this.outgo_chart = new Chart(this.chart_area, {
-            //     //     type: 'pie',
-            //     //     data: 
-            //     // });
-            // }
+            },
+            mounted: function(){
+                //console.log(this.chart_data);
+                chart_data = JSON.stringify(<?= $jsonized_outgo_list ?>);
+                chart_data = JSON.parse(chart_data);
+                console.log(chart_data);
+                this.outgo_chart = new Chart(this.$refs['outgo_rate_chart'], {
+                    type: 'pie',
+                    data: {
+                        labels: chart_data.labels,
+                        datasets: [{
+                            data: chart_data.datasets.data,
+                            backgroundColor: chart_data.datasets.backgroundColor,
+                            weight: 100,
+                        }],
+                    },
+                });
+            }
         })
         </script>
     </body>
