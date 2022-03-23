@@ -66,15 +66,23 @@ if (DB_Connector::connectDB()) {
         $to_json["labels"][] = $row['category_name'];
         $to_json["datasets"]["data"][] = $row['payment'];
     }
-    $to_json["datasets"]["backgroundColor"] = [
-        "#ff0000",  //赤
-        "#E7556E",  //ピンク
-        "#ffaa55",  //薄茶
-        "#ffff80",  //黄色
-        "#aae272",  //緑
-        "#7414A0",
-        "#35C5C7",
-    ];
+    // カラーコード生成
+    for ($i = 0; $i < count($to_json["datasets"]["data"]); $i++) {
+        $color_dec = mt_rand(3000000000, 3900000000);
+        $color_hex = "#" . dechex($color_dec);
+        $colors[] = $color_hex;
+    }
+    // $to_json["datasets"]["backgroundColor"] = [
+    //     "#ff0000",  //赤
+    //     "#E7556E",  //ピンク
+    //     "#ffaa55",  //薄茶
+    //     "#ffff80",  //黄色
+    //     "#aae272",  //緑
+    //     "#7414A0",
+    //     "#35C5C7",
+    // ];
+    $to_json["datasets"]["backgroundColor"] = $colors;
+    
 
     // echo "<br>-----<br>";
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);

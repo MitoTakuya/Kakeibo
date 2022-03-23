@@ -82,7 +82,7 @@ include('../dashboard_process.php');
                                             <?php foreach($categorized_outgo_list as $outgo): ?>
                                             <tr>
                                                 <td scope="row"> <!-- 別タブで開くように設定予定 getメソッドで送る 送信先は仮置き-->
-                                                <form action="../test.php" method="get" :ref="to_detail">
+                                                <form action="../test.php" method="get">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="category_id" value=<?= $outgo['category_id'] ?>>
                                                 </form>
