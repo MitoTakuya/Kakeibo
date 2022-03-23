@@ -17,12 +17,6 @@ abstract class DB_Connector
     protected static string $connect_error = 'データベースへの接続に失敗しました';
     protected static string $transaction_error = '処理に失敗しました';
 
-    // 対象テーブルを選択
-    function __construct()
-    {
-        // self::connectDB(); //PDOオブジェクトを生成
-    }
-
     /****************************************************************************
     * DBへの接続関連メソッド
     *****************************************************************************/
