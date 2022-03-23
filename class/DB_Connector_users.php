@@ -10,53 +10,6 @@ class DB_Connector_users extends DB_Connector
     // 対象テーブルを選択
     protected static $target_table = 'users';
     
-    // ログイン入力確認
-    public static function loginConfirmation()
-    {
-        // POSTされていないときは処理を中断する
-        if (!filter_input_array(INPUT_POST)) {
-            return;
-        }
-        
-        // メールアドレスが入力されているか確認
-        if (trim($_POST['mail']) === "") {
-            self::$user_errors['login_mail'] = "メールアドレスを入力してください";
-        } else {
-            $mail = $_POST['mail'];
-        }
-
-        // パスワードが入力されているか確認
-        if (trim($_POST['password']) === "") {
-            self::$user_errors['login_password'] = "パスワードを入力してください";
-        } else {
-            $password = $_POST['password'];
-        }
-
-        // パスワード、メールアドレスが入力されていたらチェック
-        if (!empty($mail) && !empty($password)) {
-            $user_password = self::loginUser($mail);
-            if (!is_array($user_password)) {
-                self::$user_errors['login_mail'] = 'メールアドレスが見つかりません';
-            } else {
-                // 指定したハッシュがパスワードにマッチしているか
-                if (!password_verify($password, $user_password['password'])) {
-                    // ユーザー情報をセッションに保存
-                    self::$user_errors['login_password'] = "パスワードが違います。";
-                }
-            }
-        }
-        
-        // エラーがなければ保存
-        if (count(self::$user_errors) == 0) {
-            $_SESSION['id'] = $user_password['id'];
-            return "login_ok";
-        } else {
-            return self::$user_errors;
-        }
-    }
-
-
-
     // ログイン用メソッド
     public static function loginUser($mail)
     {
@@ -83,7 +36,6 @@ class DB_Connector_users extends DB_Connector
             $stmt->execute();
             // メールアドレスをカウント
             $record = $stmt->fetch();
-
             if ($record['cnt'] > 0) {
                 return "登録済みのメールアドレスです。";
             }
