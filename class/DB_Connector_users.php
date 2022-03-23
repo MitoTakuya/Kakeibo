@@ -263,6 +263,22 @@ class DB_Connector_users extends DB_Connector
         }
     }
 
+    // ユーザー詳細ページ
+    public function fetchUsersFullRecords($user_id) {
+        if (isset(self::$pdo) || self::connectDB()) {
+
+            $stmt = self::$pdo->prepare(
+                'SELECT users.id as user_id, users.user_name, users.password, users.user_image, is_deleted, user_groups.* FROM users INNER JOIN user_groups ON users.group_id = user_groups.id WHERE users.group_id in ( SELECT group_id FROM users WHERE id=:id)');
+
+            $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $results;
+        }
+    }
+
+
+
     // 論理的削除を行うメソッド
     public function disableUser($target_id)
     {
