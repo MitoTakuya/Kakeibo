@@ -27,12 +27,12 @@ require_once ("../users_do.php");
 						<div class="check"><h5><i class="fas fa-pen"></i>ログイン中ユーザー</h5></div>
 						<div class="ml-4">
 							<h5><span><?php echo $current_user['user_name']; ?>
-								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像" style="height:50px;width:50px;border-radius:50%"/>
+								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像"
+									style="height:50px;width:50px;border-radius:50%"/><span class="float-right"><button type="button" class="btn btn-primary">
+										更新する</button></span>
 							</span></h5>
-							<div class="text-right">
-								<button type="button" class="btn btn-primary" >更新する</button>
-							</div>
 						</div>
+						<div class="mt-4"></div>
 						<?php 
 						if (isset($other_users)):
 						foreach($other_users as $row) {
@@ -60,7 +60,12 @@ require_once ("../users_do.php");
 						// ユーザーグループ情報
 						foreach ($user_show as $group) {
 						?>
-						<div class="check"><h5><i class="fas fa-user-group"></i>グループ名</h5></div>
+						<div class="check">
+							<h5><i class="fas fa-user-group"></i>グループ名
+							<span class="float-right"><button type="button" class="btn btn-primary"
+							onclick="location.href='groupUpdate.php?id=<?php echo $group['id']; ?>'">更新する</button></span>
+							</h5>
+						</div>
 						<div class="ml-4">
 							<span><?php echo $group['group_name']; ?></span>
 						</div>
@@ -69,7 +74,7 @@ require_once ("../users_do.php");
 							<span><?php echo $group['goal']; ?>円</span>							
 						</div>
 						<h5 class="check"><i class="fas fa-lock"></i>家計簿パスワード <span><button class="btn btn-secondary btn-sm" @click="active">表示する</button></span>
-					</h5>
+						</h5>
 						<div class="ml-4">
 							<span v-if="isActive">*****************</span>
 							<span v-else><?php echo $group['group_password']; ?></span>
