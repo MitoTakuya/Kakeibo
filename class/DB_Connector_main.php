@@ -19,33 +19,29 @@ class DB_Connector_main extends DB_Connector {
         int $group_id,
         $memo = null
     ) {
-        if (isset(self::$pdo) || self::connectDB()) {
-            try {
-                self::$pdo->beginTransaction();
+        try {
+            self::$pdo->beginTransaction();
 
-                $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
-                        VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
-            
-                $stmt = self::$pdo->prepare($sql);
-                $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                $stmt->bindParam(':memo',$memo, PDO::PARAM_STR);
-                $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
-                $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
-                $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-                $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
-                $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-                $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+            $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
+                    VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
+        
+            $stmt = self::$pdo->prepare($sql);
+            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+            $stmt->bindParam(':memo',$memo, PDO::PARAM_STR);
+            $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
+            $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
+            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
 
-                $stmt->execute();
+            $stmt->execute();
 
-                self::$pdo->commit();
+            self::$pdo->commit();
 
-            } catch (PDOException $e) {
-                self::$pdo->rollBack();
-                return self::$transaction_error;
-            }
-        } else {
-            return self::$connect_error;
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::$transaction_error;
         }
     }
 
@@ -61,57 +57,48 @@ class DB_Connector_main extends DB_Connector {
         int $group_id,
         string $memo = null
     ) {
-        if (isset(self::$pdo) || self::connectDB()) {
-            try {
-                self::$pdo->beginTransaction();
-                $sql = 'UPDATE `main`
-                        SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at,
-                            `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
-                        WHERE `id`=:id;';
-                
-                $stmt = self::$pdo->prepare($sql);
+        try {
+            self::$pdo->beginTransaction();
+            $sql = 'UPDATE `main`
+                    SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at,
+                        `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
+                    WHERE `id`=:id;';
+            
+            $stmt = self::$pdo->prepare($sql);
 
-                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-                $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-                $stmt->bindParam(':memo', $memo, PDO::PARAM_STR);
-                $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
-                $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
-                $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-                $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
-                $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-                $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+            $stmt->bindParam(':memo', $memo, PDO::PARAM_STR);
+            $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
+            $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
+            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+            $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
+            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
+            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
 
-                $stmt->execute();
-                self::$pdo->commit();
-            } catch (PDOException $e) {
-                self::$pdo->rollBack();
-                return self::$transaction_error;
-            }
-        } else {
-            return self::$connect_error;
+            $stmt->execute();
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::$transaction_error;
         }
     }
 
     // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
     public static function fetchGroupRecords(int $group_id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
-            $sql = 'SELECT *
-                    FROM `full_records`
-                    WHERE `group_id`=:group_id;';
+        $sql = 'SELECT *
+                FROM `full_records`
+                WHERE `group_id`=:group_id;';
 
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
 
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // クエリ結果が0件の場合、空の配列を返す
-            return $results;
-
-        } else {
-            return self::$connect_error;
-        }
+        // クエリ結果が0件の場合、空の配列を返す
+        return $results;
     }
 
     // あるグループのレコードを一定数取り出す（画面に収まる数など
@@ -121,29 +108,24 @@ class DB_Connector_main extends DB_Connector {
         int $order = 0,
         int $offset = 0
     ){
-        if (isset(self::$pdo) || self::connectDB()) {
-            $order_clause = self::selectOrder($order);    // 昇順・降順を選択する
+        $order_clause = self::selectOrder($order);    // 昇順・降順を選択する
 
-            $sql = "SELECT * FROM `full_records`
-                    WHERE `group_id`=:group_id
-                    {$order_clause}
-                    LIMIT :limit
-                    OFFSET :offset;";
-            
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-            $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-            
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM `full_records`
+                WHERE `group_id`=:group_id
+                {$order_clause}
+                LIMIT :limit
+                OFFSET :offset;";
+        
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // クエリ結果が0件の場合、空の配列を返す
-            return $results;
-
-        } else {
-            return self::$connect_error;
-        }
+        // クエリ結果が0件の場合、空の配列を返す
+        return $results;
     }
 
     /**********************************************************
@@ -181,47 +163,39 @@ class DB_Connector_main extends DB_Connector {
     // 今までの合計支出を返す ダッシュボードに表示する
     public static function fetchOutgo(int $group_id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
-            $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
-                    FROM `main`
-                    WHERE `group_id` = :group_id
-                    AND `type_id` = :type_id;';
-            
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-            $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
+        $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
+                FROM `main`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id;';
+        
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
 
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            
-            return $result['outgo']; //格納されていなければ false を返す
-        } else {
-            return self::$connect_error;
-        }
+        
+        return $result['outgo']; //格納されていなければ false を返す
     }
 
     // 今までの合計収入を返す ダッシュボードに表示する
     public static function fetchIncome(int $group_id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
-            $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
-                    FROM `main`
-                    WHERE `group_id` = :group_id
-                    AND `type_id` = :type_id;';
-            
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-            $stmt->bindParam(':type_id', self::$income_type_id, PDO::PARAM_INT);
+        $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
+                FROM `main`
+                WHERE `group_id` = :group_id
+                AND `type_id` = :type_id;';
+        
+        $stmt = self::$pdo->prepare($sql);
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt->bindParam(':type_id', self::$income_type_id, PDO::PARAM_INT);
 
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            
-            return $result['income']; //格納されていなければ false を返す
-        } else {
-            return self::$connect_error;
-        }
+        
+        return $result['income']; //格納されていなければ false を返す
     }
 
     // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する
@@ -235,29 +209,25 @@ class DB_Connector_main extends DB_Connector {
         int $category_id = null,
         ?string $target_date = null
     ) {
-        if (isset(self::$pdo) || self::connectDB()) {
-            // 月別・週別の選択と、その基準日の選択
-            $period_filter = self::makePeriodFilter($period_param, $target_date);
+        // 月別・週別の選択と、その基準日の選択
+        $period_filter = self::makePeriodFilter($period_param, $target_date);
 
-            if (is_null($category_id)) {
-                // 期間のみでfilterする場合
-                $results = self::fetchDateFilteredOutgo(
-                                group_id: $group_id,
-                                period_filter: $period_filter
-                            );
-            } else {
-                // 期間とカテゴリでfilterする場合
-                $results = self::fetchFullyFilteredOutgo(
-                                group_id: $group_id,
-                                category_id: $category_id,
-                                period_filter: $period_filter
-                            );
-            }
-
-            return $results['sum']; //格納されていなければ false を返す
+        if (is_null($category_id)) {
+            // 期間のみでfilterする場合
+            $results = self::fetchDateFilteredOutgo(
+                            group_id: $group_id,
+                            period_filter: $period_filter
+                        );
         } else {
-            return self::$connect_error;
+            // 期間とカテゴリでfilterする場合
+            $results = self::fetchFullyFilteredOutgo(
+                            group_id: $group_id,
+                            category_id: $category_id,
+                            period_filter: $period_filter
+                        );
         }
+
+        return $results['sum']; //格納されていなければ false を返す
     }
 
     public static function fetchFilteredOutgoList(
@@ -265,27 +235,23 @@ class DB_Connector_main extends DB_Connector {
         int $period_param = 0,
         ?string $target_date = null,
     ){
-        if (isset(self::$pdo) || self::connectDB()) {
-            // 月別・週別の選択と、その基準日の選択
-            $period_filter = self::makePeriodFilter($period_param, $target_date);
+        // 月別・週別の選択と、その基準日の選択
+        $period_filter = self::makePeriodFilter($period_param, $target_date);
 
-            $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0)
-                    FROM `main`
-                    JOIN `categories` on `categories`.`id` = `main`.`category_id`
-                    WHERE `group_id` = :group_id
-                    AND {$period_filter}
-                    GROUP BY `category_id`";
+        $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0)
+                FROM `main`
+                JOIN `categories` on `categories`.`id` = `main`.`category_id`
+                WHERE `group_id` = :group_id
+                AND {$period_filter}
+                GROUP BY `category_id`";
 
-            $stmt = self::$pdo->prepare($sql);
-            
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = self::$pdo->prepare($sql);
+        
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $results;
-        } else {
-            return self::$connect_error;
-        }
+        return $results;
     }
 
     /**********************************************************
@@ -304,42 +270,38 @@ class DB_Connector_main extends DB_Connector {
         ?string $target_date = null,
         ?string $category_id = null
     ) {
-        if (isset(self::$pdo) || self::connectDB()) {
-            // 昇順・降順を選択する
-            $order_clause = self::selectOrder($order);
-            // 月別・週別の選択と、その基準日の選択
-            $period_filter = self::makePeriodFilter($period_param, $target_date);
-            // 支払い区分の指定, 文字列で返す
-            $type_filter = self::selectType($type_id);
+        // 昇順・降順を選択する
+        $order_clause = self::selectOrder($order);
+        // 月別・週別の選択と、その基準日の選択
+        $period_filter = self::makePeriodFilter($period_param, $target_date);
+        // 支払い区分の指定, 文字列で返す
+        $type_filter = self::selectType($type_id);
 
-            if (is_null($category_id)) {
-                // 期間のみでfilterする場合
-                $results = self::fetchDateFilteredRecords(
-                                group_id: $group_id,
-                                period_filter: $period_filter,
-                                order_clause: $order_clause,
-                                type_filter: $type_filter
-                            );
-            } else {
-                // 期間とカテゴリでfilterする場合
-                $results = self::fetchFullyFilteredRecords(
-                                group_id: $group_id,
-                                category_id: $category_id,
-                                period_filter: $period_filter,
-                                order_clause: $order_clause,
-                                type_filter: $type_filter
-                            );
-            }
-            
-            return $results; //格納されていなければ false を返す
+        if (is_null($category_id)) {
+            // 期間のみでfilterする場合
+            $results = self::fetchDateFilteredRecords(
+                            group_id: $group_id,
+                            period_filter: $period_filter,
+                            order_clause: $order_clause,
+                            type_filter: $type_filter
+                        );
         } else {
-            return self::$connect_error;
+            // 期間とカテゴリでfilterする場合
+            $results = self::fetchFullyFilteredRecords(
+                            group_id: $group_id,
+                            category_id: $category_id,
+                            period_filter: $period_filter,
+                            order_clause: $order_clause,
+                            type_filter: $type_filter
+                        );
         }
+        
+        return $results; //格納されていなければ false を返す
     }
 
     // 1列分の値だけを取り出す 
     public static function fetchCategoryColumns(int $order = 1) {
-        if (isset(self::$pdo) || self::connectDB()) {
+        
             // 昇順・降順を選択する
             $order_clause = self::selectOrder($order);
 
@@ -358,11 +320,6 @@ class DB_Connector_main extends DB_Connector {
             } else {
                 return $results;
             }
-
-        } else {
-            // 接続失敗時はstringでエラーメッセージを返す
-            return self::$connect_error;
-        }
     }
 
     /*****************************************
