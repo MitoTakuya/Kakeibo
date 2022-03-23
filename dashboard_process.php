@@ -66,22 +66,22 @@ if (DB_Connector::connectDB()) {
         $to_json["labels"][] = $row['category_name'];
         $to_json["datasets"]["data"][] = $row['payment'];
     }
-    // カラーコード生成
-    for ($i = 0; $i < count($to_json["datasets"]["data"]); $i++) {
-        $color_dec = mt_rand(3000000000, 3900000000);
-        $color_hex = "#" . dechex($color_dec);
-        $colors[] = $color_hex;
-    }
-    // $to_json["datasets"]["backgroundColor"] = [
-    //     "#ff0000",  //赤
-    //     "#E7556E",  //ピンク
-    //     "#ffaa55",  //薄茶
-    //     "#ffff80",  //黄色
-    //     "#aae272",  //緑
-    //     "#7414A0",
-    //     "#35C5C7",
-    // ];
-    $to_json["datasets"]["backgroundColor"] = $colors;
+    
+    $to_json["datasets"]["backgroundColor"] = [
+        "#ffb3cc",  //薄い赤
+        "#ffccee",  //ピンク
+        "#eeccff",  //薄紫
+        "#ccddff",  //薄青紫
+        "#b3ccff",  //薄い青
+        "#ccffff",  //空色
+        "#ccffee",  //薄黄緑
+        "#b3ffe6",  //ライム色
+        "#ccffcc",  //黄緑
+        "#ffffb3",  //明るい黄色
+        "#ffffcc",  //薄黄色
+        "#ffeecc",  //薄オレンジ
+        "#ffe6b3",  //オレンジ
+    ];
     
 
     // echo "<br>-----<br>";
