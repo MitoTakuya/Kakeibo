@@ -93,12 +93,6 @@ class UserController
         $mail = filter_input(INPUT_POST, 'mail');
         $password = filter_input(INPUT_POST, 'password');
 
-        // メールアドレス重複確認
-        $mail_error = DB_Connector_users::checkDuplicate($mail);
-        if (isset($mail_error)) {
-            self::$user_errors['mail'] = $mail_error;
-        }
-
         // 登録済みのアドレスか確認
         $mail_error = DB_Connector_users::checkEditMail($mail, $id);
         if (isset($mail_error)) {

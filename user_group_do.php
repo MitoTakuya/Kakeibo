@@ -3,6 +3,9 @@ require('class/DB_Connector_user_group.php');
 require('class/UserController.php');
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $user_group = new DB_Connector_user_group();
+    // ユーザーグループ情報取得
+    $row = $user_group->fetchUserGroup($_GET['id']);
     // POSTされたら入力チェック
     if (!empty($_POST)) {
         $group_errors = UserController::checkUserGroup();
