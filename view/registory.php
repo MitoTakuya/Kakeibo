@@ -39,7 +39,8 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     <link rel="stylesheet" href="../stylesheet/css/registory.css">
     <!-- <link rel="stylesheet" href="../stylesheet/css/user.css"> -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-			integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" 
         integrity="sha512-cp9JSDyi0CDCvBfFKYLWXevb3r8hRv5JxcxLkUq/LEtAmOg7X0yzR3p0x/g+S3aWcZw18mhxsCXyelKWmXgzzg==" 
         crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
@@ -150,9 +151,13 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
                     <td scope="col" class="delete-column">削除</td>          
                 </tr>
                 <?php foreach($records as $record) :?>
-                <tr id="<?php echo $record['id']; ?>">
+                    <tr id="<?php echo $record['id']; ?>">
                     <td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
-                    <td scope="row" id="type_name"><?= $record["type_name"] ?></td>
+                    <?php if($record["type_id"] === 1) :?>
+                        <td><i class="fa-solid fa-arrow-up-long" style="color: red; font-size:24px;"></i></td>
+                    <?php else :?>
+                        <td><i class="fa-solid fa-arrow-down-long" style="color: green; font-size:24px;"></i></td>
+                    <?php endif ;?>
                     <td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
                     <td scope="row" id="category_name"><?= $record["category_name"] ?></td>
                     <td scope="row" id="payment"><?= $record["payment"] ?>円</td>

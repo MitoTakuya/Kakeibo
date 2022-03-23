@@ -1,37 +1,6 @@
 <?php
-
-$error_messages = array();
-
-require_once __DIR__.'/../class/DB_Connector_main.php';
-
-
-    //★★★仮置きsessionIDを使用する予定
-    $user_id = 1;
-    $group_id = 1;
-    // $target_date = null; 
-    // $period_param = 0;
-    // $order = 0;
-    $category_id = (int)$_GET["id"];
-    var_dump($category_id);
-    
-    //インスタンス作成
-    $db_connect = new DB_Connector_main;
-
-    //メインTBLより特定グループのレコード取得する
-    $records = $db_connect->fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
-    
-    var_dump($records);
-
-
-    //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
-    if(!$records) {
-        $error_messages = $records;
-        
-        // exit;
-    }
-    
+require_once __DIR__.'/category_controller.php';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -40,14 +9,15 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../stylesheet/css/registory.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" integrity="sha512-cp9JSDyi0CDCvBfFKYLWXevb3r8hRv5JxcxLkUq/LEtAmOg7X0yzR3p0x/g+S3aWcZw18mhxsCXyelKWmXgzzg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>show</title>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <a href="#" class="navbar-brand">ログイン</a>
-        <a href="#" class="navbar-brand text-right">新規登録</a>
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <a href="login.php" class="navbar-brand">ログイン</a>
+        <a href="users_new.php" class="navbar-brand text-right">新規登録</a>
     </nav>
 
     <div class="container mt-5">
@@ -69,12 +39,17 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
                     <td scope="col" class="delet-column">削除</td>          
                 </tr>
                 <?php if(!$records) :?>
-                    <?= "対象のデータは存在しません。"; ?> 
+                    <p><?= "対象のデータは存在しません。"; ?></p> 
                 <?php else :?>
                     <?php foreach($records as $record) :?>
                     <tr id="<?php echo $record['id']; ?>">
                         <td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
-                        <td scope="row" id="type_name"><?= $record["type_name"] ?></td>
+                        <!-- <td scope="row" id="type_name"><?= $record["type_name"] ?></td> -->
+                        <?php if($record["type_id"] === 1) :?>
+                            <td><i class="fa-solid fa-arrow-up-long" style="color: red; font-size:24px;"></i></td>
+                        <?php else :?>
+                            <td><i class="fa-solid fa-arrow-down-long" style="color: green; font-size:24px;"></i></td>
+                        <?php endif ;?>
                         <td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
                         <td scope="row" id="category_name"><?= $record["category_name"] ?></td>
                         <td scope="row" id="payment"><?= $record["payment"] ?>円</td>
@@ -93,7 +68,7 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
 
 <!-- モーダルウィンドウ -->
 <div class="modal">
-    <div class="post_process">
+    <div class="modal_form">
     <h2 class="post_title">編集</h2>
     <form method="post" action="../modal_registory.php" enctype="multipart/form-data">
     <input type="hidden" id="record_id" name="record_id">
@@ -114,13 +89,15 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
         </div>
         <div class="amount pb-2">
                 <label>金額</label>
-                <input type="text" id="edit_payment" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="mt-5 form-control" name="payment" maxlength="12" min="1" required>
+                <input type="text" id="edit_payment" onblur="addComma(this);" 
+                    pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="form-control" 
+                    name="payment" maxlength="12" min="1" required>
             </div>
             <div class="pb-2">
             <div>
                 <label>メモ</label>
             </div>
-            <textarea name="content" id="edit_memo" class="form-control" cols="40" rows="10"></textarea><br>
+            <textarea name="content" id="edit_memo" class="form-control" cols="40" rows="5"></textarea><br>
         </div>
         <button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
         <button class="btn btn-danger" id="close" type="button">キャンセル</button>
@@ -128,11 +105,8 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     </div>
 </div>
 
-    <script src="../stylesheet/js/registory.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/flat-ui.min.js" integrity="sha512-GG/1z6B4MVJdQOw35lE4otrbjd2WYV+zhXgjUR+DTeaAc7s/ijgWsexEScSOIo8J4RlhC28CVerDjYQSH89ekQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/vendor/jquery.min.js" integrity="sha512-ju6u+4bPX50JQmgU97YOGAXmRMrD9as4LE05PdC3qycsGQmjGlfm041azyB1VfCXpkpt1i9gqXCT6XuxhBJtKg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/js/vendor/respond.min.js" integrity="sha512-qWVvreMuH9i0DrugcOtifxdtZVBBL0X75r9YweXsdCHtXUidlctw7NXg5KVP3ITPtqZ2S575A0wFkvgS2anqSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
-
+<script src="../stylesheet/js/registory.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ 
 </body>
 </html>
