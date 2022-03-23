@@ -57,7 +57,7 @@ class DB_Connector_users extends DB_Connector
             // メールアドレスをカウント
             $record = $stmt->fetch();
             if ($record['cnt'] > 0) {
-                self::$user_errors['mail'] = "登録済みのメールアドレスです。";
+                return "登録済みのメールアドレスです。";
             }
         } else {
             return self::$connect_error;
@@ -75,7 +75,7 @@ class DB_Connector_users extends DB_Connector
             //sqlを 実行
             $stmt->execute();
             // self::setGroupId(self::$pdo->lastInsertId());
-            return $group_id = self::$pdo->lastInsertId();
+            return self::$pdo->lastInsertId();
         } else {
             return self::$connect_error;
         }
