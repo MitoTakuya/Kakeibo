@@ -8,10 +8,7 @@ class DB_Connector_users extends DB_Connector
     private $group_id = 0;
 
     // 対象テーブルを選択
-    function __construct()
-    {
-        parent::__construct('users');
-    }
+    protected static $target_table = 'main';
 
     public function setGroupId($group_id)
     {
@@ -23,7 +20,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザー登録入力内容チェック
-    public function inputConfirmation()
+    public static function inputConfirmation()
     {
         if (!isset($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
             self::$user_errors['user_name'] = '名前を入力してください';
@@ -37,7 +34,7 @@ class DB_Connector_users extends DB_Connector
             self::$user_errors['mail'] = "メールアドレスを入力してください";
         } else {
             $mail = $_POST['mail'];
-            $this->checkDuplicate($mail);
+            self::checkDuplicate($mail);
         }
 
         if (trim($_POST['password']) === "") {
@@ -78,11 +75,11 @@ class DB_Connector_users extends DB_Connector
             } else {
                 $group_password = $_POST['group_form'];
                 // パスワードからuser_groupのidを検索
-                $error = $this->searchGroupId($group_password);
+                $error = self::searchGroupId($group_password);
                 if (!is_array($error)) {
                     self::$user_errors['group_form'] = 'グループパスワードが違います。';
                 } else {
-                    $this->setGroupId($error['id']);
+                    self::setGroupId($error['id']);
                 }
             }
         }
@@ -97,11 +94,11 @@ class DB_Connector_users extends DB_Connector
             
             if ($_POST['user_group'] ==  "new_group") {
                 // ユーザー、新規グループ登録
-                $this->createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image);
+                self::createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image);
             } else {
                 // ユーザー登録
-                $group_id = $this->getGroupId();
-                $this->insertUser($user_name, $hash, $mail, $user_image, $group_id);
+                $group_id = self::getGroupId();
+                self::insertUser($user_name, $hash, $mail, $user_image, $group_id);
             }
             return "ok";
         } else {
@@ -110,7 +107,7 @@ class DB_Connector_users extends DB_Connector
     }
     
     // ログイン入力確認
-    public function loginConfirmation()
+    public static function loginConfirmation()
     {
         // POSTされていないときは処理を中断する
         if (!filter_input_array(INPUT_POST)) {
@@ -133,7 +130,7 @@ class DB_Connector_users extends DB_Connector
 
         // パスワード、メールアドレスが入力されていたらチェック
         if (!empty($mail) && !empty($password)) {
-            $user_password = $this->loginUser($mail);
+            $user_password = self::loginUser($mail);
             if (!is_array($user_password)) {
                 self::$user_errors['login_mail'] = 'メールアドレスが見つかりません';
             } else {
@@ -160,14 +157,14 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザー・新規グループ登録
-    public function createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image)
+    public static function createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image)
     {
         try {
             self::$pdo->beginTransaction();
 
-            $this->insertUserGroup($group_name, $group_password);
-            $group_id = $this->getGroupId();
-            $this->insertUser($user_name, $hash, $mail, $user_image, $group_id);
+            self::insertUserGroup($group_name, $group_password);
+            $group_id = self::getGroupId();
+            self::insertUser($user_name, $hash, $mail, $user_image, $group_id);
 
             self::$pdo->commit();
         } catch (PDOException $e) {
@@ -177,7 +174,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ログイン用メソッド
-    public function loginUser($mail)
+    public static function loginUser($mail)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT `id`, `password` FROM users WHERE mail=:mail');
@@ -193,7 +190,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // メールアドレス重複確認
-    public function checkDuplicate($mail)
+    public static function checkDuplicate($mail)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail');
@@ -212,7 +209,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // 自分以外のユーザーがアドレスを登録済みかカウント
-    public function checkEditMail($mail, $id)
+    public static function checkEditMail($mail, $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail AND id NOT IN (id=:id)');
@@ -232,7 +229,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザーグループ登録
-    public function insertUserGroup($group_name, $group_password)
+    public static function insertUserGroup($group_name, $group_password)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
@@ -241,14 +238,14 @@ class DB_Connector_users extends DB_Connector
             $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
             //sqlを 実行
             $stmt->execute();
-            $this->setGroupId(self::$pdo->lastInsertId());
+            self::setGroupId(self::$pdo->lastInsertId());
         } else {
             return self::$connect_error;
         }
     }
 
     // ユーザーグループ検索
-    public function searchGroupId($group_password)
+    public static function searchGroupId($group_password)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
@@ -266,7 +263,7 @@ class DB_Connector_users extends DB_Connector
      * userテーブル操作用のメソッド
      **********************************************************************/
     // 
-    public function insertUser($user_name, $password, $mail, $user_image, $group_id)
+    public static function insertUser($user_name, $password, $mail, $user_image, $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) 
@@ -285,7 +282,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザー詳細ページ
-    public function fetchUsersFullRecords($user_id)
+    public static function fetchUsersFullRecords($user_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
 
@@ -302,7 +299,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザー情報取得
-    public function fetchUser(int $id)
+    public static function fetchUser(int $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT *
@@ -321,7 +318,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // ユーザー更新
-    public function editUser(string $user_name, string $password, string $mail, string $user_image, int $id)
+    public static function editUser(string $user_name, string $password, string $mail, string $user_image, int $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             try {
@@ -344,7 +341,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // 論理的削除を行うメソッド
-    public function disableUser($target_id)
+    public static function disableUser($target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
@@ -358,7 +355,7 @@ class DB_Connector_users extends DB_Connector
     }
 
     // 論理的削除を取り消すメソッド
-    public function deleteUser($target_id)
+    public static function deleteUser($target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
@@ -371,7 +368,7 @@ class DB_Connector_users extends DB_Connector
         }
     }
 
-    public function fetchImage($target_id)
+    public static function fetchImage($target_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
