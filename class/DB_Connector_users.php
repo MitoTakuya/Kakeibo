@@ -8,7 +8,7 @@ class DB_Connector_users extends DB_Connector
     private $group_id = 0;
 
     // 対象テーブルを選択
-    protected static $target_table = 'main';
+    protected static $target_table = 'users';
 
     public function setGroupId($group_id)
     {
