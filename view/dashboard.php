@@ -87,7 +87,7 @@ include('../dashboard_process.php');
                                                     <input type="hidden" name="category_id" value=<?= $outgo['category_id'] ?>>
                                                 </form>
                                                 </td>
-                                                <td scope="row"><?= $outgo['payment'] ?></td>
+                                                <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
                                                 <!-- <td>なにかしらのデータ</td> -->
                                             </tr>
                                             <?php endforeach; ?>
