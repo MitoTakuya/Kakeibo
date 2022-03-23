@@ -47,7 +47,7 @@ include('../dashboard_process.php');
 
                         <!-- 日付選択 -->
                         <form action="#" method="post" id="selecting_date" :ref="selecting_date">
-                            <select class="w-25 form-control select_period" name="date" v-model="selected_date" @input="selfPostDate">
+                            <select class="w-25 form-control select_period float-right" name="date" v-model="selected_date" @input="selfPostDate">
                                 <option disabled value="">--月を選択--</option> <!-- 最新月をデフォルト値にする -->
                                 <option v-for="date in selectable_dates" :value="date.year_month">{{date.year}}年{{date.month}}月</option>
                             </select>
