@@ -1,5 +1,5 @@
 <?php
-include('../class/DB_Connector_main.php');
+require('../class/DB_Connector_main.php');
 
 if (DB_Connector::connectDB()) {
     $DB_connector = new DB_Connector_main();
