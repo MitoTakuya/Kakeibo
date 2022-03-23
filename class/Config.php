@@ -10,7 +10,7 @@ class Config {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
-    //入力値の空白除去し、空の場合はfalseを返す
+    //入力値の前後の空白を除去し、空の場合はfalseを返す
     public static function delete_space($str) {
         $replace = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str);
         if (!$replace === '') {
@@ -20,22 +20,20 @@ class Config {
         }
     }
 
-    //userクラスに作ってしまうか？
-    //メールアドレスチェック 不正の場合はfalseを返す。
-    public static function check_mail($email){
-        $check = filter_var($email, FILTER_VALIDATE_EMAIL); 
-        if ($check) {
-            return $check;
-        } else {
-            return false;
-        }
-    }
-
-    //トークンの作成　Config::createToken() で使用可能
+    //トークンの作成　ログイン時に実行しセッションとして使用する。
     public static function create_token() {
         $token_byte = openssl_random_pseudo_bytes(16);
         $csrf_token = bin2hex($token_byte);
-        $_SESSION['csrf_token'] = $csrf_token;
+        $_SESSION['token'] = $csrf_token;
+    }
+
+    //トークンチェック　データのPOST先で以下メソッドを実行して確認する。
+    function check_token() {
+        if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
+            // include('error.php');
+            echo "不正な通信です。";
+            die();
+        }
     }
 
     //セッション削除
@@ -52,6 +50,6 @@ class Config {
         session_destroy();
         header('Location: http://localhost/');
         exit;
-        }
+    }
 
 } 
