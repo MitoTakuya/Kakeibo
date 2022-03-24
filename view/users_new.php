@@ -1,5 +1,5 @@
 <?php
-require_once ("../users_do.php");
+require_once ("../user_registory.php");
 ?>
 <!doctype html>
 <html lang="ja">

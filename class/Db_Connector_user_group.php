@@ -7,13 +7,10 @@ class DB_Connector_user_group extends DB_Connector
     public static $user_errors = array();
 
     // 対象テーブルを選択
-    function __construct()
-    {
-        parent::__construct('user_groups');
-    }
+    protected static $target_table = 'user_groups';
 
     // ユーザーグループ取得
-    public function fetchUserGroup(int $group_id)
+    public static function fetchUserGroup(int $group_id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             $stmt = self::$pdo->prepare('SELECT *
@@ -33,7 +30,7 @@ class DB_Connector_user_group extends DB_Connector
     }
 
     // ユーザーグループ編集
-    public function editUserGroup(string $group_name, int $goal, int $id)
+    public static function editUserGroup(string $group_name, int $goal, int $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
             try {
