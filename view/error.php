@@ -1,5 +1,5 @@
 <?php
-require_once ("../users_do.php");
+session_start();
 ?>
 <!doctype html>
 <html lang="ja">
