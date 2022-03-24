@@ -74,6 +74,7 @@ require_once __DIR__ . "/../user_edit.php";
                     </div>
                     <div class="divider-form"></div>
                     <input type="submit" class="btn btn-block btn-lg btn-primary" value="送信" name="user_update">
+                    <button type="button" class="btn btn-block btn-lg btn-secondary" onclick="history.back()">戻る</button>
                 </form>
                 </div>
             </div>  

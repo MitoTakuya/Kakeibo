@@ -49,6 +49,7 @@ require_once ("../user_group_do.php");
 
 				<div class="divider-form"></div>
 				<input type="submit" class="btn btn-block btn-lg btn-primary" value="送信">
+				<button type="button" class="btn btn-block btn-lg btn-secondary" onclick="history.back()">戻る</button>
 			</form>
 			</div>
 		</div>  
