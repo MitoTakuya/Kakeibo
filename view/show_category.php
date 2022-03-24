@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/category_controller.php';
+require_once __DIR__.'/../category_controller.php';
 ?>
 
 <!DOCTYPE html>
