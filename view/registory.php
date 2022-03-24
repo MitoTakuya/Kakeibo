@@ -3,12 +3,11 @@
 $error_messages = array();
 require_once __DIR__.'/../class/DB_Connector_main.php';
 if (DB_Connector::connectDB()) {
+    //★仮置き sessionグループIDを使用する予定
+    $group_id = 1;
 
-        //★仮置き sessionグループIDを使用する予定
-        $group_id = 1;
-        
-        //インスタンス作成
-        $db_connect = new DB_Connector_main;
+    //インスタンス作成
+    $db_connect = new DB_Connector_main;
 
         //メインTBLより特定グループのレコード取得する
         $records = $db_connect->fetchGroupRecords($group_id);
@@ -16,22 +15,21 @@ if (DB_Connector::connectDB()) {
         //カテゴリTBLよりカテゴリ名を取得する
         $categories = $db_connect->fetchCategoryColumns();
 
-        //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
-        if(!$categories) {
-            $error_messages = $categories;
-            var_dump($error_messages);
-            exit;
-        }
-        
-        //収支別カテゴリに分ける
-        $category_outgoes = $categories[1];
-        $category_incomes = $categories[2];
+    //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
+    if(!$categories) {
+        $error_messages = $categories;
+        var_dump($error_messages);
+        exit;
+    }
+    
+    //収支別カテゴリに分ける
+    $category_outgoes = $categories[1];
+    $category_incomes = $categories[2];
 } else {
     // include('error.php');
     echo "error view should be displayed";
     die();
 }
-
 ?>
 
 
