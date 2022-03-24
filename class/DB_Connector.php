@@ -34,7 +34,6 @@ abstract class DB_Connector
                 return true;
             } catch (PDOException $e) {
                 // print('Error:'.$e->getMessage());
-                die();
                 return false;
             }
         }
