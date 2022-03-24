@@ -16,10 +16,8 @@ require_once __DIR__ . "/../user_registory.php";
 		<title>ログイン</title>
 	</head>
 	<body>
-		<nav class="navbar navbar-dark bg-dark">
-			<a href="login.php" class="navbar-brand">ログイン</a>
-			<a href="users_new.php" class="navbar-brand text-right">新規登録</a>
-		</nav>
+		<!-- ヘッダー -->
+		<?php include __DIR__ . "/_beforeHeader.php" ?>
 		<div class="container">
 			<div class="mt-4"></div>
 			<div class="mx-auto">
