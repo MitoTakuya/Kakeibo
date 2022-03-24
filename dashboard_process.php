@@ -1,5 +1,5 @@
 <?php
-require('../class/DB_Connector_main.php');
+require(__DIR__.'\class\DB_Connector_main.php');
 
 if (DB_Connector::connectDB()) {
     $DB_connector = new DB_Connector_main();
@@ -91,7 +91,7 @@ if (DB_Connector::connectDB()) {
 } else {
     // 接続失敗時にエラー画面を読み込む
     // $error = DB_Connector::$connect_error *$connect_errorはpublicな定数にしてしまう
-    include('../view/error.php');
+    include(__DIR__.'/view/error.php');
     die();
 }
 

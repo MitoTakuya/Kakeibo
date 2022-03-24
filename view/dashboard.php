@@ -1,5 +1,5 @@
 <?php
-include('../dashboard_process.php');
+include(__DIR__.'\../dashboard_process.php');
 ?>
 
 <!doctype html>
