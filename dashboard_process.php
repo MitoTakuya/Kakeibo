@@ -6,7 +6,7 @@ if (DB_Connector::connectDB()) {
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
-    $kakeibo_name = '家計簿(仮)'; // = $_SESSION['group_name'];
+    $kakeibo_name = '家計簿名'; // = $_SESSION['group_name'];
     $group_id = 1; // = $_SESSION['group_id'];
     $user_name; // = $_SESSION['user_name']; 
 

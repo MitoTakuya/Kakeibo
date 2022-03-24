@@ -14,7 +14,7 @@ include(__DIR__.'\../dashboard_process.php');
             <link rel="stylesheet" href="../stylesheet/css/dashboard.css">
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <title>ログイン</title>
+        <title>dashboard - (家計簿名)</title>
     </head>
 
     <body>
@@ -25,10 +25,10 @@ include(__DIR__.'\../dashboard_process.php');
                 <a href="#" class="navbar-brand"><?= $kakeibo_name ?></a> 
                 <div class="btn-group" role="group">
                     <button id="header_menu" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Menu
+                    Menu(仮置き)
                     </button>
                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a class="dropdown-item" href="#">記帳</a>
+                    <a class="dropdown-item" href="./registory.php">記帳</a>
                     <a class="dropdown-item" href="#">ログアウト</a>
                     </div>
                 </div>
