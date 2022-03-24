@@ -16,66 +16,68 @@ require_once __DIR__ . "/../user_edit.php";
 		<title>ユーザーグループ更新</title>
 	</head>
 	<body>
-	<div class="container">
-		<div class="mt-4"></div>
-		<div class="mx-auto">
-			<div class="box" style="border-radius: 10px;">
-			<span class="input-group-addon ">
-				<p><i class="fas fa-desktop"></i></i>ユーザー情報更新</p>
-			</span>
-			<form method="POST" action="" enctype="multipart/form-data">
-				<input type="hidden" name="id" value="<?php echo $current_user['user_id']; ?>">
-				<div class="divider-form"></div>
-				<div class="form-group">
-                <p><i class="fas fa-pen"></i>
-                    <label for="user_name">ニックネーム</label>
-                    <input type="text" id="user_name" name="user_name" class="form-control"
-                    value="<?php echo $current_user["user_name"]; ?>" required>
-                    <?php if(!empty($user_errors['user_name'])): ?>
-                        <span class="text-danger"><?php echo $user_errors['user_name']; ?></span>
-                    <?php endif; ?>
-                </p>
-				</div>
-
-				<div class="divider-form"></div>
-                <div class="form-group">
-                    <p><i class="far fa-envelope"></i>
-                        <label for="mail">メールアドレス</label>
-                        <input type="email" id="mail" name="mail" class="form-control"
-                            value="<?php echo $current_user["mail"]; ?>">
-                        <?php if(!empty($user_errors['mail'])): ?>
-                            <span class="text-danger"><?php echo $user_errors['mail']; ?></span>
+		<!-- ヘッダー -->
+		<?php include __DIR__ . "/_header.php" ?>
+        <div class="container">
+            <div class="mt-4"></div>
+            <div class="mx-auto">
+                <div class="box" style="border-radius: 10px;">
+                <span class="input-group-addon ">
+                    <p><i class="fas fa-desktop"></i></i>ユーザー情報更新</p>
+                </span>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="<?php echo $current_user['user_id']; ?>">
+                    <div class="divider-form"></div>
+                    <div class="form-group">
+                    <p><i class="fas fa-pen"></i>
+                        <label for="user_name">ニックネーム</label>
+                        <input type="text" id="user_name" name="user_name" class="form-control"
+                        value="<?php echo $current_user["user_name"]; ?>" required>
+                        <?php if(!empty($user_errors['user_name'])): ?>
+                            <span class="text-danger"><?php echo $user_errors['user_name']; ?></span>
                         <?php endif; ?>
                     </p>
-                </div>
+                    </div>
 
-                <div class="divider-form"></div>
-                <div class="form-group">
-                    <p><i class="fa fa-lock"></i>
-                        <label for="password">パスワード</label>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="新しく入力してください">
-                        <?php if(!empty($user_errors['password'])): ?>
-                            <span class="text-danger"><?php echo $user_errors['password']; ?></span>
-                        <?php endif; ?>
-                    </p>
-                </div>
+                    <div class="divider-form"></div>
+                    <div class="form-group">
+                        <p><i class="far fa-envelope"></i>
+                            <label for="mail">メールアドレス</label>
+                            <input type="email" id="mail" name="mail" class="form-control"
+                                value="<?php echo $current_user["mail"]; ?>">
+                            <?php if(!empty($user_errors['mail'])): ?>
+                                <span class="text-danger"><?php echo $user_errors['mail']; ?></span>
+                            <?php endif; ?>
+                        </p>
+                    </div>
 
-                <div class="divider-form"></div>
-                <div class="form-group">
-                    <p><i class="fa fa-image"></i>
-                        <label for="user_image">アイコン写真</label>
-                        <p><input type="file" name="user_image"></p>
-                        <?php if(!empty($user_errors['user_image'])): ?>
-                            <span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
-                        <?php endif; ?>
-                    </p>
+                    <div class="divider-form"></div>
+                    <div class="form-group">
+                        <p><i class="fa fa-lock"></i>
+                            <label for="password">パスワード</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="新しく入力してください">
+                            <?php if(!empty($user_errors['password'])): ?>
+                                <span class="text-danger"><?php echo $user_errors['password']; ?></span>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+
+                    <div class="divider-form"></div>
+                    <div class="form-group">
+                        <p><i class="fa fa-image"></i>
+                            <label for="user_image">アイコン写真</label>
+                            <p><input type="file" name="user_image"></p>
+                            <?php if(!empty($user_errors['user_image'])): ?>
+                                <span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <div class="divider-form"></div>
+                    <input type="submit" class="btn btn-block btn-lg btn-primary" value="送信" name="user_update">
+                </form>
                 </div>
-				<div class="divider-form"></div>
-				<input type="submit" class="btn btn-block btn-lg btn-primary" value="送信" name="user_update">
-			</form>
-			</div>
-		</div>  
-	</div>
+            </div>  
+        </div>
 	<!-- Optional JavaScript -->
 	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
