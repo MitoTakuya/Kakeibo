@@ -13,9 +13,9 @@ abstract class DB_Connector
     protected static int $outgo_type_id = 1;
     protected static int $income_type_id = 2;
 
-    // エラーメッセージ
-    protected static string $connect_error = 'データベースへの接続に失敗しました';
-    protected static string $transaction_error = '処理に失敗しました';
+    // エラーメッセージ定数
+    public static const CONNECT_ERROR = 'データベースへの接続に失敗しました';
+    public static const TRANSACTION_ERROR = '処理に失敗しました';
 
     /****************************************************************************
     * DBへの接続関連メソッド
@@ -96,7 +96,7 @@ abstract class DB_Connector
 
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
     //order by句を返す
