@@ -51,10 +51,28 @@ class LoginController
             //セッション固定攻撃対策
             session_regenerate_id(true);
             $_SESSION['id'] = $user_password['id'];
+            $_SESSION['user_image'] = $user_password['user_image'];
 
             return "login_ok";
         } else {
             return self::$user_errors;
         }
+    }
+
+    // ログイン済みか確認
+    public static function checkLogin()
+    {
+        if(!isset($_SESSION['id'])) {
+            header('Location: __DIR__ ./login.php');
+            exit();
+        }
+    }
+
+    // ログアウト
+    public static function logout()
+    {
+        session_start();
+        $_SESSION = array();
+        session_destroy();
     }
 }
