@@ -3,7 +3,7 @@
 $error_messages = array();
 
 require_once __DIR__.'/../class/DB_Connector_main.php';
-
+if (DB_Connector::connectDB()) {
     //★仮置き sessionグループIDを使用する予定
     $group_id = 1;
 
@@ -26,7 +26,11 @@ require_once __DIR__.'/../class/DB_Connector_main.php';
     //収支別カテゴリに分ける
     $category_outgoes = $categories[1];
     $category_incomes = $categories[2];
-
+} else {
+    // include('error.php');
+    echo "error view should be displayed";
+    die();
+}
 ?>
 
 
