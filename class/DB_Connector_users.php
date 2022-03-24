@@ -46,7 +46,7 @@ class DB_Connector_users extends DB_Connector
     public static function checkEditMail($mail, $id)
     {
         if (isset(self::$pdo) || self::connectDB()) {
-            $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail AND id NOT IN (:id)');
+            $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail AND id != (:id)');
             
             $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
             $stmt->bindParam( ':id', $id, PDO::PARAM_INT);
