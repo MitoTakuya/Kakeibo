@@ -2,6 +2,7 @@
 require('class/DB_Connector_users.php');
 require('class/UserController.php');
 require('class/LoginController.php');
+session_start();
 
 if (DB_Connector::connectDB()) {
 	if (!empty($_POST) && isset($_POST['new_user'])) {

@@ -1,6 +1,5 @@
 <?php
 require_once ("../user_registory.php");
-session_start();
 ?>
 <!doctype html>
 <html lang="ja">
@@ -33,7 +32,7 @@ session_start();
 						<div class="form-group">
 							<p><i class="far fa-envelope"></i>
 							<label for="mail">メールアドレス</label>
-							<input type="email" id="mail" name="mail" class="form-control">
+							<input type="email" id="mail" name="mail" class="form-control" value="<?php if( !empty($_SESSION['mail']) ){ echo $_SESSION['mail']; } ?>">
 							<?php if(!empty($user_errors['login_mail'])): ?>
 								<span class="text-danger"><?php echo $user_errors['login_mail']; ?></span>
 							<?php endif; ?>
@@ -43,7 +42,7 @@ session_start();
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label for="password">パスワード</label>
-							<input type="password" id="password" name="password" class="form-control">
+							<input type="password" id="password" name="password" class="form-control" value="<?php if( !empty($_SESSION['password']) ){ echo $_SESSION['password']; } ?>">
 							<?php if(!empty($user_errors['login_password'])): ?>
 								<span class="text-danger"><?php echo $user_errors['login_password']; ?></span>
 							<?php endif; ?>

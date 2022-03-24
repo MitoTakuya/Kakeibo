@@ -1,6 +1,7 @@
 <?php
 require('class/DB_Connector_user_group.php');
 require('class/UserController.php');
+session_start();
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $user_group = new DB_Connector_user_group();

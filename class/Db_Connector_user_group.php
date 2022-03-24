@@ -1,6 +1,5 @@
 <?php
 require_once dirname(__FILE__) . '/DB_Connector.php';
-session_start();
 
 class DB_Connector_user_group extends DB_Connector
 {
