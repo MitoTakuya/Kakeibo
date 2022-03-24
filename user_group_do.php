@@ -14,7 +14,7 @@ if (isset($_GET['id']) && is_numeric($_GET['id'])) {
         if (count($group_errors) == 0) {
             $user_group->editUserGroup($_POST['group_name'], $_POST['goal'], $_POST['id']);
 			// ユーザー詳細ページに飛ばす
-			header('Location: ../view/user_show.php?id='.$_SESSION['id']);
+            header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/user_show.php?id='.$_SESSION['id']);
             exit();
         }
     }

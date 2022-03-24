@@ -10,14 +10,14 @@ if (DB_Connector::connectDB()) {
         $user_errors = $new_user->inputConfirmation();
         if($user_errors == "ok") {
         // ログインに飛ばす
-        header('Location: ../view/login.php');
+        header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
         }
     } elseif (!empty($_POST) && isset($_POST['login_user'])) {
         $login_user = new LoginController();
         $user_errors = $login_user->loginConfirmation();
         if($user_errors == "login_ok") {
         // トップページに飛ばす
-        header('Location: ../view/index.php');
+        header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/dashboard.php');
         }
     }
 } else {

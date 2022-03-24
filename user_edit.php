@@ -11,7 +11,7 @@ if (DB_Connector::connectDB()) {
         $user_errors = $edit_user->checkConfirmation();
         if($user_errors == "ok") {
             // ユーザー詳細に飛ばす
-            header('Location: ../view/user_show.php?id='.$_SESSION['id']);
+            header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/user_show.php?id='.$_SESSION['id']);
             exit();
             }
     }
