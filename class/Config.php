@@ -4,7 +4,6 @@
 ############################################################
 
 class Config {
-
     //入力値のエスケープ処理　Config::h($変数) で使用可能
     public static function h($str) {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
