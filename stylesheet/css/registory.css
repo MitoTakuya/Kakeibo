@@ -1,3 +1,13 @@
+.registory-box {
+	background-color: #fff;
+	margin-top: 5px;
+	box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.divider {
+	border: 1px solid #EBEFF1;
+}
+
 .tab-group{
     padding: 0;
     margin: 0;
@@ -56,10 +66,6 @@
   width: 150px;
   }
 
-p {
-  font-size: 24px;
-}
-
 /* モーダルウィンドウの表示 */
 .modal_form {
   display: none;
@@ -89,12 +95,5 @@ p {
   top: 0;
   left: 0;
   }
+
   
-
-/* .show {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  } */
-
-
