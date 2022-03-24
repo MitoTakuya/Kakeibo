@@ -89,8 +89,9 @@ if (DB_Connector::connectDB()) {
     // var_dump($jsonized_outgo_list);
     DB_Connector::disconnectDB();
 } else {
-    // include('error.php');
-    echo "error view should be displayed";
+    // 接続失敗時にエラー画面を読み込む
+    // $error = DB_Connector::$connect_error *$connect_errorはpublicな定数にしてしまう
+    include('../view/error.php');
     die();
 }
 
