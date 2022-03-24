@@ -73,7 +73,7 @@ require_once __DIR__ . "/../user_edit.php";
 						</div>
 						<div class="check"><h5><i class="fas fa-piggy-bank"></i>目標貯金額</h5></div>
 						<div class="ml-4">
-							<span><?php echo $group['goal']; ?>円</span>							
+							<span><?php echo number_format($group['goal']); ?>円</span>							
 						</div>
 						<h5 class="check"><i class="fas fa-lock"></i>家計簿パスワード <span><button class="btn btn-secondary btn-sm" @click="active">表示する</button></span>
 						</h5>

@@ -135,7 +135,9 @@ class UserController
         }
         if (!isset($_POST['goal']) || str_replace(array(" ", "　"), "", $_POST['goal']) === '') {
             self::$user_errors['goal'] = '目標貯金額を入力してください';
-        } 
+        } elseif ($_POST['goal'] > 100000000) {
+            self::$user_errors['goal'] = '目標貯金額は100,000,000円以内で入力してください';
+        }
         return self::$user_errors;
     }
 
