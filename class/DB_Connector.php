@@ -50,7 +50,6 @@ abstract class DB_Connector
     // select * from 対象テーブル where = 指定したid
     public static function fetchOne(int $target_id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
             $target_table = static::$target_table;
 
             $sql = "SELECT *
@@ -64,16 +63,11 @@ abstract class DB_Connector
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
             return $results;
-        } else {
-            // 接続失敗時はstringでエラーメッセージを返す
-            return self::$connect_error;
-        }
     }
 
     // select * from 対象テーブル
     public static function fetchAll(int $order = 0)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
             $target_table = static::$target_table;
             // 昇順・降順を選択する
             $order_clause = self::selectOrder($order);
@@ -86,33 +80,24 @@ abstract class DB_Connector
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return $results;
-
-        } else {
-            // 接続失敗時はstringでエラーメッセージを返す
-            return self::$connect_error;
-        }
     }
     // delete from 対象テーブル
     public static function deleteOne(int $target_id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
-            try {
-                $target_table = static::$target_table;
-                self::$pdo->beginTransaction();
-                $sql = "DELETE FROM `{$target_table}`
-                        WHERE `id`=:id";
-                
-                $stmt = self::$pdo->prepare($sql);
-                $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-                $stmt->execute();
-                self::$pdo->commit();
+        try {
+            $target_table = static::$target_table;
+            self::$pdo->beginTransaction();
+            $sql = "DELETE FROM `{$target_table}`
+                    WHERE `id`=:id";
+            
+            $stmt = self::$pdo->prepare($sql);
+            $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            $stmt->execute();
+            self::$pdo->commit();
 
-            } catch (PDOException $e) {
-                self::$pdo->rollBack();
-                return self::$transaction_error;
-            }
-        } else {
-            return self::$connect_error;
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::$transaction_error;
         }
     }
     //order by句を返す
