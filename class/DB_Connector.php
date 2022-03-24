@@ -9,6 +9,13 @@ abstract class DB_Connector
     // 対象テーブル
     protected static $target_table = null;
 
+    // 一時格納用変数(関数間で共通してデータを扱えるようにするため)
+    protected static $temp_inputs = null;           // 入力値を格納する
+    protected static $temp_sql = null;              // 使用するSQL文を格納する
+    protected static $temp_stmt = null;             // PDOStatementを格納する
+    protected static $temp_set_clause = null;       // set句を格納する      e.g. SET `title` =:title, `memo` = :memo,...)
+    protected static $temp_where_clause = null;     // where句を格納する    e.g. WHERE `title` =:title AND `memo` = :memo ... AND type_id IN(1,2)
+
     // テーブル操作に使う変数
     protected static int $outgo_type_id = 1;
     protected static int $income_type_id = 2;
