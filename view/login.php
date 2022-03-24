@@ -1,5 +1,6 @@
 <?php
-require_once ("../users_do.php");
+require_once ("../user_registory.php");
+session_start();
 ?>
 <!doctype html>
 <html lang="ja">
