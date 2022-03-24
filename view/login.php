@@ -1,5 +1,5 @@
 <?php
-require_once ("../user_registory.php");
+require_once __DIR__ . "/../user_registory.php";
 ?>
 <!doctype html>
 <html lang="ja">

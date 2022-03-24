@@ -1,6 +1,6 @@
 <?php
-require('class/DB_Connector_users.php');
-require('class/UserController.php');
+require_once __DIR__ . '/class/DB_Connector_users.php';
+require_once __DIR__ . '/class/UserController.php';
 session_start();
 
 if (DB_Connector::connectDB()) {

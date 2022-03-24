@@ -1,7 +1,7 @@
 <?php
-require('class/DB_Connector_users.php');
-require('class/UserController.php');
-require('class/LoginController.php');
+require_once __DIR__ . '/class/DB_Connector_users.php';
+require_once __DIR__ . '/class/UserController.php';
+require_once __DIR__ . '/class/LoginController.php';
 session_start();
 
 if (DB_Connector::connectDB()) {

@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/DB_Connector_users.php';
+require_once __DIR__ . '/DB_Connector_users.php';
 
 class LoginController
 {
@@ -48,7 +48,10 @@ class LoginController
         }
         // エラーがなければ保存
         if (count(self::$user_errors) == 0) {
+            //セッション固定攻撃対策
+            session_regenerate_id(true);
             $_SESSION['id'] = $user_password['id'];
+
             return "login_ok";
         } else {
             return self::$user_errors;
