@@ -16,6 +16,8 @@ require_once __DIR__ . "/../user_group_do.php";
 		<title>ユーザーグループ更新</title>
 	</head>
 	<body>
+	<!-- ヘッダー -->
+	<?php include __DIR__ . "/_header.php" ?>
 	<div class="container">
 		<div class="mt-4"></div>
 		<div class="mx-auto">
