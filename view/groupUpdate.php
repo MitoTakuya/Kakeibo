@@ -1,5 +1,5 @@
 <?php
-require_once ("../user_group_do.php");
+require_once __DIR__ . "/../user_group_do.php";
 ?>
 <!doctype html>
 <html lang="ja">

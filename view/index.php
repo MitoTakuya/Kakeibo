@@ -1,7 +1,6 @@
-<?php 
-session_start()
+<?php
+require_once __DIR__ . "/../init.php";
 ?>
-
 <!doctype html>
 <html lang="ja">
 	<head>

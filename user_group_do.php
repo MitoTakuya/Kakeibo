@@ -1,7 +1,7 @@
 <?php
+require_once __DIR__ . '/init.php';
 require_once __DIR__ . '/class/DB_Connector_user_group.php';
 require_once __DIR__ . '/class/UserController.php';
-session_start();
 
 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
     $user_group = new DB_Connector_user_group();

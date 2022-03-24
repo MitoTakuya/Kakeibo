@@ -3,6 +3,7 @@ require_once __DIR__ . '/class/DB_Connector_users.php';
 require_once __DIR__ . '/class/UserController.php';
 require_once __DIR__ . '/class/LoginController.php';
 session_start();
+LoginController::notLogin();
 
 if (DB_Connector::connectDB()) {
 	if (!empty($_POST) && isset($_POST['new_user'])) {
