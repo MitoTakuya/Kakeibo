@@ -1,7 +1,7 @@
 <?php
-require(__DIR__.'\class\DB_Connector_main.php');
+require(__DIR__.'\class\DbConnector_main.php');
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
@@ -11,7 +11,7 @@ if (DB_Connector::connectDB()) {
 
     // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
     $goal = 1000000; // = DB_Connector_user_groups::メソッド
-    $total_balance = DB_Connector_main::fetchBalance($group_id);
+    $total_balance = DbConnectorMain::fetchBalance($group_id);
     $difference = $goal - $total_balance;   // *収支マイナスの場合、目標金額まで$goal+α円になるので違和感あるかも
 
 
@@ -25,7 +25,7 @@ if (DB_Connector::connectDB()) {
     }
 
     // カテゴリごとの支出を取り出す
-    $categorized_outgo_list = DB_Connector_main::fetchFilteredOutgoList(
+    $categorized_outgo_list = DbConnectorMain::fetchFilteredOutgoList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
@@ -88,7 +88,7 @@ if (DB_Connector::connectDB()) {
     ];
     
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
-    DB_Connector::disconnectDB();
+    DbConnector::disconnectDB();
 } else {
     // 接続失敗時にエラー画面を読み込む
     // $error = DB_Connector::$connect_error *$connect_errorはpublicな定数にしてしまう
