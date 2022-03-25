@@ -1,12 +1,11 @@
 <?php
 session_start();
-
 require_once __DIR__.'/class/DB_Connector_main.php';
 
-// ajaxでPOSTされたときに以下を実行する。
-// if (isset($_SESSION['csrf_token']) && isset($_SESSION['id']))  {
+if (DB_Connector::connectDB()) {
+    // ajaxでPOSTされたときに以下を実行する。
 	if($_POST['id']) {
-        
+        //check_token()
         $record_id = $_POST['id'];
         $method = $_POST['method'];
         //インスタンス作成
@@ -18,19 +17,15 @@ require_once __DIR__.'/class/DB_Connector_main.php';
             $result = $db_main->deleteOne($record_id);
 
         }elseif ($_POST['method'] === 'select') {
-
+            
             //mainテーブルの対象レコード取得
             $result = $db_main->fetchOne($record_id);
-            // ヘッダーを指定することによりjsonの動作を安定させる
+            //jsonの動作を安定させる
             header('Content-type: application/json');
-            //resultを配列からjsonに変換する
+            //resultをjsonに変換する
             echo json_encode($result);
 
         }
-        //★エラー時の処理追加します。
-        //起こりうることとして、更新ボタンを押したが、すでにデータが他者によって削除されていた時など。
 
-
-
-	}
-
+    } 
+}
