@@ -24,7 +24,7 @@ class DB_Connector_user_group extends DB_Connector
             return $row;
 
         } else {
-            return self::$connect_error;
+            return self::CONNECT_ERROR;
         }
     }
 
@@ -42,10 +42,10 @@ class DB_Connector_user_group extends DB_Connector
                 self::$pdo->commit();
             } catch (PDOException $e) {
                 self::$pdo->rollBack();
-                return self::$transaction_error;
+                return self::TRANSACTION_ERROR;
             }
         } else {
-            return self::$connect_error;
+            return self::CONNECT_ERROR;
         }
     }
 }

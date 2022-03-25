@@ -29,6 +29,13 @@ if (DB_Connector::connectDB()) {
 			}
 		}
     }
+    if(array_key_exists($_SESSION['id'],$_POST)){
+        // 退会、ログアウト
+        DB_Connector_users::disableUser($_SESSION['id']);
+        LoginController::logout();
+        header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/userDelete.php');
+        exit();
+    }
 } else {
 	// include('エラー画面');
 }

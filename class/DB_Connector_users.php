@@ -137,12 +137,12 @@ class DB_Connector_users extends DB_Connector
             self::$pdo->commit();
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
 
     // 論理的削除を行うメソッド
-    public static function disableUser($target_id)
+    public static function disableUser(int $target_id)
     {
         $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
         //SQL文中の プレース部を 定義しておいた変数に置き換える

@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/DB_Connector_users.php';
-require_once __DIR__ . '/DB_Connector.php';
 
 class UserController
 {
