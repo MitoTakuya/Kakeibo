@@ -26,9 +26,9 @@ if (DB_Connector::connectDB()) {
 
     // カテゴリごとの支出を取り出す
     $categorized_outgo_list = $DB_connector->fetchFilteredOutgoList(
-                                group_id: $group_id,
-                                target_date: $target_date->format('Ymd'),
-                            );
+        group_id: $group_id,
+        target_date: $target_date->format('Ymd'),
+    );
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');
@@ -64,12 +64,13 @@ if (DB_Connector::connectDB()) {
 
 
     /********** 円グラフ用のデータを用意する **********/
-    // var_dump($categorized_outgo_list);
+    // DBから取得したデータをグラフに使える形に直す
     foreach ($categorized_outgo_list as $row) {
         $to_json["labels"][] = $row['category_name'];
         $to_json["datasets"]["data"][] = $row['payment'];
     }
     
+    // パステルカラーで統一
     $to_json["datasets"]["backgroundColor"] = [
         "#ffb3cc",  //薄い赤
         "#ffccee",  //ピンク
@@ -86,10 +87,7 @@ if (DB_Connector::connectDB()) {
         "#ffe6b3",  //オレンジ
     ];
     
-
-    // echo "<br>-----<br>";
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
-    // var_dump($jsonized_outgo_list);
     DB_Connector::disconnectDB();
 } else {
     // 接続失敗時にエラー画面を読み込む
