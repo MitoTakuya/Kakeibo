@@ -84,8 +84,6 @@ class UserController
             // ユーザー情報をセッションに保存
             $_SESSION['mail'] = $mail;
             $_SESSION['password'] = $password;
-            $_SESSION['password'] = $password;
-
             return "ok";
         } else {
             return self::$user_errors;

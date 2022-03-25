@@ -5,17 +5,6 @@ class LoginController
 {
     public static $user_errors = array();
 
-    private $group_id = 0;
-
-    public function setGroupId($group_id)
-    {
-        $this->group_id = $group_id;
-    }
-    public function getGroupId()
-    {
-        return $this->group_id;
-    }
-
     // ログイン入力確認
     public static function loginConfirmation()
     {        
@@ -48,10 +37,13 @@ class LoginController
         }
         // エラーがなければ保存
         if (count(self::$user_errors) == 0) {
+            $login_user = DB_Connector_users::fetchUser($user_password['id']);
+
             //セッション固定攻撃対策
             session_regenerate_id(true);
-            $_SESSION['id'] = $user_password['id'];
-            $_SESSION['user_image'] = $user_password['user_image'];
+            $_SESSION['id'] = $login_user['id'];
+            $_SESSION['group_id'] = $login_user['group_id'];
+            $_SESSION['user_image'] = $login_user['user_image'];
 
             return "login_ok";
         } else {
