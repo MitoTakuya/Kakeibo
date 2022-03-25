@@ -41,7 +41,7 @@ class DB_Connector_main extends DB_Connector {
 
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
 
@@ -80,7 +80,7 @@ class DB_Connector_main extends DB_Connector {
             self::$pdo->commit();
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
 
@@ -141,7 +141,7 @@ class DB_Connector_main extends DB_Connector {
             self::$pdo->commit();
 
             if (!is_numeric($outgo) || !is_numeric($income)) {
-                return self::$connect_error;    // DB接続失敗時の処理
+                return self::CONNECT_ERROR;    // DB接続失敗時の処理
             }
             
             if ($outgo == false) {
@@ -156,7 +156,7 @@ class DB_Connector_main extends DB_Connector {
             
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
 
