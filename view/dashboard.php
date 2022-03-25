@@ -142,7 +142,9 @@ include(__DIR__.'\../dashboard_process.php');
             var h = $('.outgo_chart').height();
             $('#outgo_rate_chart').attr('width', w);
             $('#outgo_rate_chart').attr('height', h);
-            
+
+
+            /********** グラフ描画、更新処理 **********/
             let app = new Vue({
             el :'#dashboard',
             data : {
