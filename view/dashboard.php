@@ -43,36 +43,49 @@ include(__DIR__.'\../dashboard_process.php');
                 <div class="card card_property">
 
                     <!-- カードheader部分 -->
-                    <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
-                        <rect width="100%" height="100%" fill="#87CEEB"/>
-                        <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year ?>年 <?= $displayed_month ?>月 の支出</text>
-                    </svg>
+                    <div class="row">
+                        <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
+                            <rect width="100%" height="100%" fill="#87CEEB"/>
+                            <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year ?>年 <?= $displayed_month ?>月 の支出</text>
+                        </svg>
+                    </div>
 
                     <!-- 日付選択欄 -->
                     <div>
                         <form action="#" method="post" id="selecting_date" :ref="selecting_date">
-                            <select class="w-25 form-control select_period float-right" name="date" v-model="selected_date" @input="selfPostDate">
+                            <select class="w-25 form-control select_period text-left float-right" name="date" v-model="selected_date" @input="selfPostDate">
                                 <option disabled value="">--月を選択--</option>
                                 <option v-for="date in selectable_dates" :value="date.year_month">{{date.year}}年{{date.month}}月</option>
                             </select>
                         </form>
                     </div>
 
-                    <!-- グラフ部分 -->
-                    <div>
-                        <?php if (count($categorized_outgo_list) === 0):?>
-                            <!-- もしレコードが存在しなければ「記録がありません」 -->
-                            <p>記録がありません</p>
-                        <?php else:?> 
-                            <!-- 支出割合グラフ -->
-                            <div class="outgo_chart card-body mx-auto" style="width:600px">
-                                <canvas id="outgo_rate_chart" style="width:600px" :ref="outgo_rate_chart"></canvas>
-                            </div>
-                        <?php endif;?>
+                    <div class="row">
+                        <!-- 目標貯金額表示 -->
+                        <div class="goal_and_diff float-left w-25 col-4">
+                            <h4 class="h4">目標貯金額</h4><br>
+                            <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
+                            <h4 class="h4">目標まで</h4><br>
+                            <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
+                        </div>
+
+                        <!-- グラフ部分 -->
+                        <div class="outgo_chart_area w-100 float-right col-6">
+                            <?php if (count($categorized_outgo_list) === 0):?>
+                                <!-- もしレコードが存在しなければ「記録がありません」 -->
+                                <p>記録がありません</p>
+                            <?php else:?> 
+                                <!-- 支出割合グラフ -->
+                                <div class="outgo_chart card-body mx-auto text-center">
+                                    <canvas id="outgo_rate_chart" :ref="outgo_rate_chart"></canvas>
+                                </div>
+                            <?php endif;?>
+                        </div>
+
                     </div>
 
-                    <div class="outgo_chart card-body mx-auto">
-                        <table class="table table_layout">
+                    <div class="outgo_chart card-body">
+                        <table class="table w-100">
                             <?php if (count($categorized_outgo_list) === 0):?>
                                 <!--
                                     グラフ部分で「記録がありません」と表示するので
@@ -124,6 +137,12 @@ include(__DIR__.'\../dashboard_process.php');
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <script>
+            /********** Canvasのサイズ自動調整 **********/
+            var w = $('.outgo_chart').width();
+            var h = $('.outgo_chart').height();
+            $('#outgo_rate_chart').attr('width', w);
+            $('#outgo_rate_chart').attr('height', h);
+            
             let app = new Vue({
             el :'#dashboard',
             data : {

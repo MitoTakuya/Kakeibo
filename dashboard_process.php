@@ -7,6 +7,9 @@ if (DB_Connector::connectDB()) {
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
     $kakeibo_name = '家計簿名'; // = $_SESSION['group_name'];
+    $goal = 1000000; // = DB_Connector_user_groups::メソッド
+    $total_balance = 777777; // = DB_Connector_main::fetchBalance();
+    $difference = $goal - $total_balance;
     $group_id = 1; // = $_SESSION['group_id'];
     $user_name; // = $_SESSION['user_name']; 
 
