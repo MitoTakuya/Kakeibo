@@ -1,5 +1,5 @@
 <?php
-require_once dirname(__FILE__) . '/DB_Connector.php';
+require_once __DIR__ . '/DB_Connector.php';
 
 class DB_Connector_users extends DB_Connector
 {

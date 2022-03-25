@@ -1,5 +1,5 @@
 <?php
-require_once ("../user_group_do.php");
+require_once __DIR__ . "/../user_group_do.php";
 ?>
 <!doctype html>
 <html lang="ja">
@@ -16,6 +16,8 @@ require_once ("../user_group_do.php");
 		<title>ユーザーグループ更新</title>
 	</head>
 	<body>
+	<!-- ヘッダー -->
+	<?php include __DIR__ . "/_header.php" ?>
 	<div class="container">
 		<div class="mt-4"></div>
 		<div class="mx-auto">
@@ -49,6 +51,7 @@ require_once ("../user_group_do.php");
 
 				<div class="divider-form"></div>
 				<input type="submit" class="btn btn-block btn-lg btn-primary" value="送信">
+				<button type="button" class="btn btn-block btn-lg btn-secondary" onclick="history.back()">戻る</button>
 			</form>
 			</div>
 		</div>  

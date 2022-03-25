@@ -1,7 +1,7 @@
 <?php
-require('class/DB_Connector_users.php');
-require('class/UserController.php');
-session_start();
+require_once __DIR__ . '/init.php';
+require_once __DIR__ . '/class/DB_Connector_users.php';
+require_once __DIR__ . '/class/UserController.php';
 
 if (DB_Connector::connectDB()) {
     // ユーザー情報更新の際
@@ -11,7 +11,7 @@ if (DB_Connector::connectDB()) {
         $user_errors = $edit_user->checkConfirmation();
         if($user_errors == "ok") {
             // ユーザー詳細に飛ばす
-            header('Location: ../view/user_show.php?id='.$_SESSION['id']);
+            header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/user_show.php?id='.$_SESSION['id']);
             exit();
             }
     }

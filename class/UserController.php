@@ -1,6 +1,6 @@
 <?php
-require_once dirname(__FILE__) . '/DB_Connector_users.php';
-require_once dirname(__FILE__) . '/DB_Connector.php';
+require_once __DIR__ . '/DB_Connector_users.php';
+require_once __DIR__ . '/DB_Connector.php';
 
 class UserController
 {
@@ -78,6 +78,14 @@ class UserController
                 $group_id = self::getGroupId();
                 DB_Connector_users::insertUser($user_name, $hash, $mail, $user_image, $group_id);
             }
+
+            //セッション固定攻撃対策
+            session_regenerate_id(true);
+            // ユーザー情報をセッションに保存
+            $_SESSION['mail'] = $mail;
+            $_SESSION['password'] = $password;
+            $_SESSION['password'] = $password;
+
             return "ok";
         } else {
             return self::$user_errors;
@@ -127,7 +135,9 @@ class UserController
         }
         if (!isset($_POST['goal']) || str_replace(array(" ", "　"), "", $_POST['goal']) === '') {
             self::$user_errors['goal'] = '目標貯金額を入力してください';
-        } 
+        } elseif ($_POST['goal'] > 100000000) {
+            self::$user_errors['goal'] = '目標貯金額は100,000,000円以内で入力してください';
+        }
         return self::$user_errors;
     }
 
