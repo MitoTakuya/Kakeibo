@@ -1,7 +1,6 @@
 <?php
 
 $error_messages = array();
-
 require_once __DIR__.'/../class/DB_Connector_main.php';
 if (DB_Connector::connectDB()) {
     //★仮置き sessionグループIDを使用する予定
@@ -10,11 +9,11 @@ if (DB_Connector::connectDB()) {
     //インスタンス作成
     $db_connect = new DB_Connector_main;
 
-    //メインTBLより特定グループのレコード取得する
-    $records = $db_connect->fetchGroupRecords($group_id);
+        //メインTBLより特定グループのレコード取得する
+        $records = $db_connect->fetchGroupRecords($group_id);
 
-    //カテゴリTBLよりカテゴリ名を取得する
-    $categories = $db_connect->fetchCategoryColumns();
+        //カテゴリTBLよりカテゴリ名を取得する
+        $categories = $db_connect->fetchCategoryColumns();
 
     //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
     if(!$categories) {

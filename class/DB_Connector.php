@@ -9,13 +9,20 @@ abstract class DB_Connector
     // 対象テーブル
     protected static $target_table = null;
 
+    // 一時格納用変数(関数間で共通してデータを扱えるようにするため)
+    protected static $temp_inputs = null;           // 入力値を格納する
+    protected static $temp_sql = null;              // 使用するSQL文を格納する
+    protected static $temp_stmt = null;             // PDOStatementを格納する
+    protected static $temp_set_clause = null;       // set句を格納する      e.g. SET `title` =:title, `memo` = :memo,...)
+    protected static $temp_where_clause = null;     // where句を格納する    e.g. WHERE `title` =:title AND `memo` = :memo ... AND type_id IN(1,2)
+
     // テーブル操作に使う変数
     protected static int $outgo_type_id = 1;
     protected static int $income_type_id = 2;
 
-    // エラーメッセージ
-    protected static string $connect_error = 'データベースへの接続に失敗しました';
-    protected static string $transaction_error = '処理に失敗しました';
+    // エラーメッセージ定数
+    public static const CONNECT_ERROR = 'データベースへの接続に失敗しました';
+    public static const TRANSACTION_ERROR = '処理に失敗しました';
 
     /****************************************************************************
     * DBへの接続関連メソッド
@@ -34,7 +41,6 @@ abstract class DB_Connector
                 return true;
             } catch (PDOException $e) {
                 // print('Error:'.$e->getMessage());
-                die();
                 return false;
             }
         }
@@ -58,7 +64,7 @@ abstract class DB_Connector
             
             $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            echo $sql;
+
             $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -97,7 +103,7 @@ abstract class DB_Connector
 
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::$transaction_error;
+            return self::TRANSACTION_ERROR;
         }
     }
     //order by句を返す
