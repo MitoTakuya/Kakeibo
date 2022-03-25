@@ -38,7 +38,7 @@ abstract class DB_Connector
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
 
                 //print('接続に成功しました。<br>');
-                // return true;
+                return true;
             } catch (PDOException $e) {
                 // print('Error:'.$e->getMessage());
                 return false;
