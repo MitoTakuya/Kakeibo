@@ -20,7 +20,7 @@ require_once __DIR__ . "/../init.php";
 		<?php include __DIR__ . "/_header.php" ?>
         <!-- タイトル -->
         <?php echo var_dump($_SESSION); ?>
-    <a class="nav-link" href="user_show.php?id=<?php echo $_SESSION['id']; ?>">ユーザー詳細</a>
+    <a class="nav-link" href="user_show.php">ユーザー詳細</a>
 
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->

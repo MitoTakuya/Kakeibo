@@ -16,8 +16,8 @@ if (DB_Connector::connectDB()) {
             }
     }
     // ユーザー詳細ページにアクセスした時
-	if (isset($_GET['id']) && is_numeric(($_GET['id']))) {
-		$user_id = $_GET['id'];
+	if (isset($_SESSION['id'])) {
+		$user_id = $_SESSION['id'];
 		$user_show = DB_Connector_users::fetchUsersFullRecords($user_id);
 		foreach ($user_show as $row) {
 			// ログイン中ユーザーを抽出

@@ -31,7 +31,7 @@ require_once __DIR__ . "/../user_edit.php";
 							<h5><span><?php echo $current_user['user_name']; ?>
 								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像"
 									style="height:50px;width:50px;border-radius:50%"/><span class="float-right">
-										<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php?id=<?php echo $current_user['user_id']; ?>'">
+										<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php'">
 										更新する</button></span>
 						</div>
 						<div class="mt-4"></div>
