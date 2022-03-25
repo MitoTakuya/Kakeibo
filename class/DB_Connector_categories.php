@@ -1,6 +1,6 @@
 <?php
 require_once('DB_Connector.php');
-class DB_Connector_category extends DB_Connector {
+class DB_Connector_categories extends DB_Connector {
 
     protected static $target_table = 'categories';
 
