@@ -38,62 +38,69 @@ include(__DIR__.'\../dashboard_process.php');
         <!-- 内容部分 -->
         <div class="container">
             <div class="mx-auto">
+
+            <!-- カード開始部 -->
                 <div class="card card_property">
+
+                    <!-- カードheader部分 -->
                     <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                         <rect width="100%" height="100%" fill="#87CEEB"/>
                         <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year ?>年 <?= $displayed_month ?>月 の支出</text>
-                    </svg> <!-- フォントを後で変えたい -->
-                        <div class="style={direction: rtl;}"> <!-- 可能なら右に寄せたい -->
+                    </svg>
 
-                        <!-- 日付選択 -->
+                    <!-- 日付選択欄 -->
+                    <div>
                         <form action="#" method="post" id="selecting_date" :ref="selecting_date">
                             <select class="w-25 form-control select_period float-right" name="date" v-model="selected_date" @input="selfPostDate">
-                                <option disabled value="">--月を選択--</option> <!-- 最新月をデフォルト値にする -->
+                                <option disabled value="">--月を選択--</option>
                                 <option v-for="date in selectable_dates" :value="date.year_month">{{date.year}}年{{date.month}}月</option>
                             </select>
                         </form>
-                        </div>
+                    </div>
+
+                    <!-- グラフ部分 -->
+                    <div>
                         <?php if (count($categorized_outgo_list) === 0):?>
                             <!-- もしレコードが存在しなければ「記録がありません」 -->
-                                <p>記録がありません</p>
-                            <?php else:?> 
+                            <p>記録がありません</p>
+                        <?php else:?> 
                             <!-- 支出割合グラフ -->
                             <div class="outgo_chart card-body mx-auto" style="width:600px">
-                                    <canvas id="outgo_rate_chart" style="width:600px" :ref="outgo_rate_chart"></canvas>
+                                <canvas id="outgo_rate_chart" style="width:600px" :ref="outgo_rate_chart"></canvas>
                             </div>
                         <?php endif;?>
                     </div>
-            </div>
 
-            <div class="mx-auto">
-                <div class="card card_property">
-                        <div class="outgo_chart card-body mx-auto">
-                                <table class="table table_layout">
-                                    <?php if (count($categorized_outgo_list) === 0):?>
-                                        <!-- もしレコードが存在しなければ「記録がありません」 -->
-                                            <p>記録がありません</p>
-                                    <?php else:?> 
-                                        <!-- 後で colの属性を指定する -->
-                                        <thead>
-                                            <th scope="col">カテゴリー</th>
-                                            <th scope="col">支出額</th>
-                                            <!-- <th>前月比とか？</th> -->
-                                        </thead>
-                                            <?php foreach($categorized_outgo_list as $outgo): ?>
-                                            <tr>
-                                                <td scope="row"> <!-- 別タブで開くように設定予定 getメソッドで送る 送信先は仮置き-->
+                    <div class="outgo_chart card-body mx-auto">
+                        <table class="table table_layout">
+                            <?php if (count($categorized_outgo_list) === 0):?>
+                                <!--
+                                    グラフ部分で「記録がありません」と表示するので
+                                    レコードが存在しなければこちらには何も表示しない
+                                -->
+                            <?php else:?> 
+                                <!-- 後で colの属性を指定する -->
+                                <thead>
+                                    <th scope="col">カテゴリー</th>
+                                    <th scope="col">支出額</th>
+                                </thead>
+                                    <?php foreach($categorized_outgo_list as $outgo): ?>
+                                        <tr>
+                                            <!-- カテゴリー名、詳細リンク -->
+                                            <td scope="row">
                                                 <form action="./show_category.php" method="get">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="id" value=<?= $outgo['category_id'] ?>>
                                                 </form>
-                                                </td>
-                                                <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
-                                                <!-- <td>なにかしらのデータ</td> -->
-                                            </tr>
-                                            <?php endforeach; ?>
-                                    <?php endif;?>
-                                </table>
-                        </div>
+                                            </td>
+
+                                            <!-- 支出金額 -->
+                                            <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                            <?php endif;?>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div> <!-- container の終わり -->
