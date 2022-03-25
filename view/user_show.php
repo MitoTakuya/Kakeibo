@@ -65,7 +65,7 @@ require_once __DIR__ . "/../user_edit.php";
 						<div class="check">
 							<h5><i class="fas fa-user-group"></i>グループ名
 							<span class="float-right"><button type="button" class="btn btn-primary"
-							onclick="location.href='groupUpdate.php?id=<?php echo $group['id']; ?>'">更新する</button></span>
+							onclick="location.href='groupUpdate.php'">更新する</button></span>
 							</h5>
 						</div>
 						<div class="ml-4">
