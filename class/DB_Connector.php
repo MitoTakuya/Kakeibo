@@ -64,7 +64,7 @@ abstract class DB_Connector
             
             $stmt = self::$pdo->prepare($sql);
             $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-
+            // echo $sql;
             $stmt->execute();
             $results = $stmt->fetch(PDO::FETCH_ASSOC);
             
