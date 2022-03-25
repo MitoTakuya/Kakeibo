@@ -1,37 +1,7 @@
 <?php
+require_once __DIR__.'/../registory_controller.php';
 
-$error_messages = array();
-require_once __DIR__.'/../class/DB_Connector_main.php';
-if (DB_Connector::connectDB()) {
-    //★仮置き sessionグループIDを使用する予定
-    $group_id = 1;
-
-    //インスタンス作成
-    $db_connect = new DB_Connector_main;
-
-        //メインTBLより特定グループのレコード取得する
-        $records = $db_connect->fetchGroupRecords($group_id);
-
-        //カテゴリTBLよりカテゴリ名を取得する
-        $categories = $db_connect->fetchCategoryColumns();
-
-    //★接続エラーが起きた場合どうするか？ログイン画面にリダイレクトする？
-    if(!$categories) {
-        $error_messages = $categories;
-        var_dump($error_messages);
-        exit;
-    }
-    
-    //収支別カテゴリに分ける
-    $category_outgoes = $categories[1];
-    $category_incomes = $categories[2];
-} else {
-    // include('error.php');
-    echo "error view should be displayed";
-    die();
-}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -44,10 +14,7 @@ if (DB_Connector::connectDB()) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flat-ui/2.3.0/css/vendor/bootstrap/css/bootstrap.min.css" 
-        integrity="sha512-cp9JSDyi0CDCvBfFKYLWXevb3r8hRv5JxcxLkUq/LEtAmOg7X0yzR3p0x/g+S3aWcZw18mhxsCXyelKWmXgzzg==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
-    <title>registory</title>
+    <title>記帳画面</title>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark mb-4">
@@ -65,7 +32,7 @@ if (DB_Connector::connectDB()) {
             <div class="panel-group mt-1">
                 <!-- 支出用記帳フォーム -->
                 <div class="panel tab-A is-show p-2">
-                    <form action="../from_registory.php?type_id=1" method="post">
+                    <form action="../registory_controller.php?type_id=1" method="post">
                         <div class="pt-3 mb-3">
                             <label>日付</label>
                             <input type="date" class="form-control" name="payment_at" required>
@@ -99,7 +66,7 @@ if (DB_Connector::connectDB()) {
 
                 <!-- 収入用記帳フォーム -->
                 <div class="panel tab-B p-2">
-                    <form action="../from_registory.php?type_id=2" method="post">
+                    <form action="../registory_controller.php?type_id=2" method="post">
                         <div class="pt-3 mb-3">
                             <label>日付</label>
                             <input type="date" class="form-control" name="payment_at" required>
