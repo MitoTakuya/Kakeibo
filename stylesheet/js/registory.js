@@ -95,10 +95,6 @@ $('.edit-btn').on('click', function() {
     // element = element[0].innerText;
     console.log(element);
 
-    // let array = location.href.split('/')
-
-    // console.log(array);
-
     // 非同期処理
     $.ajax({
       // リクエスト方法
