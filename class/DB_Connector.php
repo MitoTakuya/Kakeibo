@@ -21,8 +21,8 @@ abstract class DB_Connector
     protected static int $income_type_id = 2;
 
     // エラーメッセージ定数
-    public static const CONNECT_ERROR = 'データベースへの接続に失敗しました';
-    public static const TRANSACTION_ERROR = '処理に失敗しました';
+    public const CONNECT_ERROR = 'データベースへの接続に失敗しました';
+    public const TRANSACTION_ERROR = '処理に失敗しました';
 
     /****************************************************************************
     * DBへの接続関連メソッド
@@ -38,7 +38,7 @@ abstract class DB_Connector
                 self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);        // エラー発生時にExceptionを投げるように設定
 
                 //print('接続に成功しました。<br>');
-                return true;
+                // return true;
             } catch (PDOException $e) {
                 // print('Error:'.$e->getMessage());
                 return false;
