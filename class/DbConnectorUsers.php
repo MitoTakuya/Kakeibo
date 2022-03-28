@@ -11,7 +11,7 @@ class DbConnectorUsers extends DbConnector
     // ログイン時メールアドレス検索
     public static function loginUser($mail)
     {
-        $stmt = self::$pdo->prepare('SELECT `id`, `password` FROM users WHERE mail=:mail');
+        $stmt = self::$pdo->prepare('SELECT `id`, `password` FROM users WHERE mail=:mail && `is_deleted`!=1');
         //SQL文中の プレース部を 定義しておいた変数に置き換える
         $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
         $stmt->execute();
@@ -23,7 +23,7 @@ class DbConnectorUsers extends DbConnector
     // メールアドレス重複確認
     public static function checkDuplicate($mail)
     {
-        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail');
+        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail && `is_deleted`!=1');
         $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
         //sqlを 実行
         $stmt->execute();
@@ -37,7 +37,7 @@ class DbConnectorUsers extends DbConnector
     // 自分以外のユーザーがアドレスを登録済みかカウント
     public static function checkEditMail($mail, $id)
     {
-        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail AND id != (:id)');
+        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail && id != (:id) && `is_deleted`!=1');
         
         $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
         $stmt->bindParam( ':id', $id, PDO::PARAM_INT);
@@ -93,14 +93,12 @@ class DbConnectorUsers extends DbConnector
     }
 
     // ユーザー詳細ページ
-    public static function fetchUsersFullRecords($user_id)
+    public static function fetchUsersFullRecords($group_id)
     {
         $stmt = self::$pdo->prepare(
             'SELECT users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*
-            FROM users INNER JOIN user_groups ON users.group_id = user_groups.id WHERE users.group_id
-            in ( SELECT group_id FROM users WHERE id=:id)');
-
-        $stmt->bindParam(':id', $user_id, PDO::PARAM_INT);
+            FROM users INNER JOIN user_groups ON users.group_id = user_groups.id where users.group_id = :group_id &&  `is_deleted`!=1');
+        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $results;
