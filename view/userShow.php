@@ -29,9 +29,10 @@ require_once __DIR__ . "/../userEditController.php";
 					<div class="card-text">
 						<div class="check"><h5><i class="fas fa-pen"></i>ログイン中ユーザー</h5></div>
 						<div class="ml-4">
-							<h5><span><?php echo Config::h($current_user['user_name']); ?>
+							<h5><span>
 								<img src="../images/<?php echo Config::h($current_user['user_image']); ?>" border-radius="50%" alt="アイコン画像"
-									style="height:50px;width:50px;border-radius:50%"/><span class="float-right">
+									style="height:50px;width:50px;border-radius:50%"/>
+								<?php echo Config::h($current_user['user_name']); ?><span class="float-right">
 								<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php'">
 								更新する</button></span>
 							</h5>
@@ -43,9 +44,10 @@ require_once __DIR__ . "/../userEditController.php";
 						?>
 						<div class="check"><h5><i class="fa fa-user"></i>グループメンバー</h5></div>
 						<div class="ml-4">
-							<h5><span><?php echo $row['user_name']; ?>
-								<img src="../images/<?php echo Config::h($row['user_image']); ?>" 
-									border-radius="50%" alt="アイコン画像" style="height:50px;width:50px;border-radius:50%"/>
+							<h5><span>
+								<img src="../images/<?php echo Config::h($row['user_image']); ?>" border-radius="50%" alt="アイコン画像"
+									style="height:50px;width:50px;border-radius:50%"/>
+								<?php echo $row['user_name']; ?>
 							</span></h5>
 						</div>
 						<?php
