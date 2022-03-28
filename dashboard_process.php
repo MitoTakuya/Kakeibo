@@ -1,5 +1,5 @@
 <?php
-require(__DIR__.'\class\DbConnector_main.php');
+require(__DIR__.'\class\DbConnectorMain.php');
 
 if (DbConnector::connectDB()) {
 
