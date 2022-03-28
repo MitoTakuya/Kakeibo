@@ -18,20 +18,21 @@ if (DbConnector::connectDB()) {
         $category_id = $_POST["category_id"];
         $memo = $_POST["content"];
 
-        //db_mainインスタンス作成
-        $db_main = new DbConnectorMain();
         //更新前に対象レコードがDBに存在するか確認
-        $confirm = $db_main->fetchOne($id);
+        $confirm = DbConnectorMain::fetchOne($id);
         
         if (is_array($confirm)) {
             //レコードを更新する
-            $db_main->updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
+            DbConnectorMain::updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
         }else {
             $error_message = "すでにデータが削除されております。";
             echo $error_messages;
         }
 
-        header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/view/registory.php');
+        //POST元のページにリダイレクトする。
+        $uri = $_SERVER['HTTP_REFERER'];
+        var_dump($uri);
+        header("Location: ".$uri);
 
     }else {
 

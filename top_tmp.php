@@ -1,8 +1,11 @@
 <?php
-//後で消すファイル
-$error_messages = array();
+require_once __DIR__.'/class/DbConnector.php';
 
-require_once __DIR__.'/class/DbConnectorMain.php';
+//後で消すファイル
+if (DbConnector::connectDB()) {
+    $error_messages = array();
+
+    require_once __DIR__.'/class/DbConnectorMain.php';
 
     //★仮置き sessionグループIDを使用する予定
     $group_id = 1;
@@ -22,12 +25,12 @@ require_once __DIR__.'/class/DbConnectorMain.php';
         var_dump($error_messages);
         exit;
     }
-    
+
     //収支別カテゴリに分ける
     $category_outgoes = $categories[1];
     $category_incomes = $categories[2];
 
-
+}
 ?>
 
 
@@ -46,7 +49,7 @@ require_once __DIR__.'/class/DbConnectorMain.php';
 	<label>カテゴリ（支出）</label>
 	<ul>
 		<?php foreach($category_outgoes as $key => $category_outgo) :?>
-			<a href="/kakeibo/view/show_category.php?id=<?= $key + 1 ?>">
+			<a href="/kakeibo/view/showCategory.php?id=<?= $key + 1 ?>">
 				<li value="<?= $key + 1 ?>"><?= $category_outgo ?></li>
 			</a>	
 		<?php endforeach; ?>
@@ -56,7 +59,7 @@ require_once __DIR__.'/class/DbConnectorMain.php';
 	<label>カテゴリ（収入）</label>
 	<ul>
 		<?php foreach($category_incomes as $key => $category_income) :?>
-			<a href="/kakeibo/view/show_category.php?id=<?= $key + 101 ?>">
+			<a href="/kakeibo/view/showCategory.php?id=<?= $key + 101 ?>">
 				<li value="<?= $key + 101 ?>"><?= $category_income ?></li>
 			</a>
 		<?php endforeach; ?>
