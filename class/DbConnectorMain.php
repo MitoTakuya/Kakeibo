@@ -114,9 +114,9 @@ class DbConnectorMain extends DbConnector {
         return $results;
     }
 
-    /**********************************************************
-     * ダッシュボードで集計を表示するための関数
-     **********************************************************/
+/**********************************************************
+ * ダッシュボードで集計を表示するための関数
+ **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
     public static function fetchBalance(int $group_id)
     {
@@ -130,6 +130,7 @@ class DbConnectorMain extends DbConnector {
                 return self::CONNECT_ERROR;    // DB接続失敗時の処理
             }
             
+            // 接続に失敗してエラーメッセージが格納されている場合は0を代入する
             if ($outgo == false) {
                 $outgo = 0;
             }
@@ -149,41 +150,31 @@ class DbConnectorMain extends DbConnector {
     // 今までの合計支出を返す ダッシュボードに表示する
     public static function fetchOutgo(int $group_id)
     {
-        static::$temp_sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
-                FROM `main`
-                WHERE `group_id` = :group_id
-                AND `type_id` = 1;';
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        // SELECTする対象を一時変数に格納する
+        static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
-        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        static::$temp_stmt->execute();
-        $result = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $result['outgo']; //格納されていなければ false を返す
+        // 親クラスのメソッドで結果を取り出す
+        $result = static::fetchPaticularCol(group_id:$group_id, type_id:self::$outgo_type_id);
+        return $result[0]['outgo'];
     }
 
     // 今までの合計収入を返す ダッシュボードに表示する
     public static function fetchIncome(int $group_id)
     {
-        static::$temp_sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
-                FROM `main`
-                WHERE `group_id` = :group_id
-                AND `type_id` = 2';
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        // SELECTする対象を一時変数に格納する
+        static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
-        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        static::$temp_stmt->execute();
-        $result = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-        
-        return $result['income']; //格納されていなければ false を返す
+        // 親クラスのメソッドで結果を取り出す
+        $result = static::fetchPaticularCol(group_id:$group_id, type_id:self::$income_type_id);
+        return $result[0]['income'];
     }
 
-    // あるグループの月別の特定カテゴリにおける支出合計を出力する
-    // カテゴリを指定しない場合は月別の支出合計を出力する
-    /*
-        使用例：get_filtered_outgo(group_id:1, target_date:'20220301')
-        (グループid1番の「2022年3月1日」の合計支出を出力)
-    */
+// あるグループの月別の特定カテゴリにおける支出合計を出力する
+// カテゴリを指定しない場合は月別の支出合計を出力する
+/*
+    使用例：get_filtered_outgo(group_id:1, target_date:'20220301')
+    (グループid1番の「2022年3月1日」の合計支出を出力)
+*/
     public static function fetchFilteredOutgo(
         int $group_id,
         int $category_id = null,
@@ -195,17 +186,20 @@ class DbConnectorMain extends DbConnector {
         unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         static::makeWhereClause();
 
-        // 月別・週別の選択と、その基準日の選択
-        $period_filter = self::makePeriodFilter($target_date);
+        
+        // $period_filter = self::makePeriodFilter($target_date);
 
         // SQL文をセットする
+        static::addPeriodFilter($target_date); // 月別・週別の選択と、その基準日の選択
         $where_clause = static::$temp_where_clause;
         $orderby_clause = static::$temp_orderby_clause;
+
         static::$temp_sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
                 FROM `main`
                 {$where_clause}
-                AND {$period_filter}
+                
                 {$orderby_clause}";
+                echo static::$temp_sql;
         static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
 
         // バインド後にSQL文を実行し、結果を取得する
@@ -239,14 +233,14 @@ class DbConnectorMain extends DbConnector {
         return $results;
     }
 
-    /**********************************************************
-     * 詳細画面で表示するためのレコードを取り出すメソッド
-     **********************************************************/
-    // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する *要order切り替え
-    /*
-        使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
-        (グループid1番の「2022年3月1日」の週の全レコードを出力)
-    */
+/**********************************************************
+ * 詳細画面で表示するためのレコードを取り出すメソッド
+ **********************************************************/
+// あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する *要order切り替え
+/*
+    使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
+    (グループid1番の「2022年3月1日」の週の全レコードを出力)
+*/
     public static function fetchFilteredRecords(
         int $group_id,
         int $type_id = null,
@@ -278,10 +272,10 @@ class DbConnectorMain extends DbConnector {
         return $results; //格納されていなければ false を返す
     }
 
-    /*****************************************
-     * メソッド内部からのみ呼び出されるメソッド
-     * DB切断は呼び出し元メソッドで行う
-     *******************************************/
+/*****************************************
+ * メソッド内部からのみ呼び出されるメソッド
+ * DB切断は呼び出し元メソッドで行う
+ *******************************************/
     // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
     private static function selectDate(?string $target_date = null)
     {
@@ -299,5 +293,20 @@ class DbConnectorMain extends DbConnector {
         }
         return "MONTH(payment_at) = MONTH({$target_date})
                 AND YEAR(payment_at) = YEAR({$target_date})";
+    }
+    // 期間選択のための句を返す(月別のみに変更)
+    protected static function addPeriodFilter(?string $target_date = null)
+    {
+        if (is_null($target_date)) {
+            $target_date = "NOW()";
+        }
+        $period = " MONTH(payment_at) = MONTH({$target_date})
+                    AND YEAR(payment_at) = YEAR({$target_date})";
+
+        if (static::$temp_where_clause === '') {
+            static::$temp_where_clause = " WHERE ".$period;
+        } else {
+            static::$temp_where_clause .= " AND ".$period;
+        }
     }
 }

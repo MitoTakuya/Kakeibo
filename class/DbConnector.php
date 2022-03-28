@@ -13,6 +13,7 @@ abstract class DbConnector
     protected static $temp_inputs = null;           // 入力値を格納する
     protected static $temp_sql = null;              // 使用するSQL文を格納する
     protected static $temp_stmt = null;             // PDOStatementを格納する
+    protected static $temp_selected_col = null;     // select対象のカラムを文字列で格納する
     protected static $temp_set_clause = null;       // set句を格納する      e.g. SET `title` =:title, `memo` = :memo,...)
     protected static $temp_where_clause = null;     // where句を格納する    e.g. WHERE `title` =:title AND `memo` = :memo ... AND type_id IN(1,2)
     protected static $temp_orderby_clause = null;   // orderby句を格納する
@@ -112,7 +113,43 @@ abstract class DbConnector
         return $results;
     }
 
-    // delete from 対象テーブル
+    // where句の条件を満たすレコードをすべて取得する
+    // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
+    protected static function fetchPaticularCol(
+        int $id = null,
+        string $title = null,
+        int $payment = null, 
+        string $payment_at = null,
+        int $user_id = null,
+        int $type_id = null,
+        int $category_id = null,
+        int $group_id = null,
+    ){
+        // 受け取った値に対応するwhere句を生成する
+        static::$temp_inputs['where'] = get_defined_vars();
+        static::makeWhereClause();
+
+        // SQL文をセットする
+        $selected_col = static::$temp_selected_col;
+        $target_table = static::$target_table;
+        $where_clause = static::$temp_where_clause;
+        $orderby_clause = static::$temp_orderby_clause;
+
+        static::$temp_sql ="SELECT {$selected_col}
+                            FROM `{$target_table}`
+                            {$where_clause}
+                            {$orderby_clause}";
+        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+
+        // バインド後にSQL文を実行し、結果を取得する
+        static::bind();
+        static::$temp_stmt->execute();
+        $results = static::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+        
+        return $results;
+    }
+
+    // idを指定してレコードを1つ削除するメソッド
     public static function deleteOne(int $target_id)
     {
         try {
@@ -168,6 +205,7 @@ abstract class DbConnector
             static::$temp_where_clause = 'WHERE ' . $temp_clause;
         }
     }
+    
     // SQL文のSET句を組み立てる
     protected static function makeSetClause()
     {
@@ -201,7 +239,7 @@ abstract class DbConnector
         }
     }
 
-    // orderby句の基準カラムと並び順を指定するメソッド
+    // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
     // SQL実行メソッドを呼び出す前に、コントローラー側で実行する
     public static function selectOrder(bool $desc = false, string $culmun = 'id')
     {
@@ -235,6 +273,7 @@ abstract class DbConnector
         static::$temp_inputs = null;
         static::$temp_sql = null;
         static::$temp_stmt = null;
+        static::$temp_selected_col = null;
         static::$temp_set_clause = null;
         static::$temp_where_clause = null;
         static::$temp_orderby_clause = null;
