@@ -7,8 +7,7 @@ class DbConnectorMain extends DbConnector {
     /**************************************************************************
      * mainテーブル操作用のメソッド
      **********************************************************************/
-    // $memo は引数を無い場合があるため、デフォルト値として''を設定する。
-    // （nullはそのままstringにバインドできないため）
+    // mainテーブルのレコードを1つ追加する
     public static function insertRecord(
         $title,
         int $payment, 
@@ -17,35 +16,35 @@ class DbConnectorMain extends DbConnector {
         int $type_id,
         int $category_id,
         int $group_id,
-        $memo = null
+        string $memo = null
     ) {
         try {
-            self::$pdo->beginTransaction();
+            // トランザクション開始
+            static::$pdo->beginTransaction();
 
-            $sql = 'INSERT INTO `main`(`title`, `memo`, `payment`, `payment_at`, `user_id`, `type_id`, `category_id`, `group_id`)
-                    VALUES(:title, :memo, :payment, :payment_at, :user_id, :type_id, :category_id, :group_id);';
-        
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-            $stmt->bindParam(':memo',$memo, PDO::PARAM_STR);
-            $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
-            $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
-            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
-            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+            // 受け取った値に対応するset句を生成する
+            static::$temp_inputs['set'] = get_defined_vars();
+            static::makeSetClause();
 
-            $stmt->execute();
+            // SQL文をセットする
+            $set_clause = static::$temp_set_clause;
+            static::$temp_sql = "INSERT INTO `main` {$set_clause};";
+            static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
 
-            self::$pdo->commit();
+            // バインド後、insert文を実行する
+            static::bind();
+            static::$temp_stmt->execute();
+
+            // トランザクション終了
+            static::$pdo->commit();
 
         } catch (PDOException $e) {
-            self::$pdo->rollBack();
-            return self::TRANSACTION_ERROR;
+            static::$pdo->rollBack();
+            return static::TRANSACTION_ERROR;
         }
     }
 
-    // レコードの更新
+    // mainテーブルのレコードを1つ更新する
     public static function updateRecord(
         int $id,
         string $title,
@@ -58,26 +57,29 @@ class DbConnectorMain extends DbConnector {
         string $memo = null
     ) {
         try {
-            self::$pdo->beginTransaction();
-            $sql = 'UPDATE `main`
-                    SET `title` =:title, `memo` = :memo, `payment` = :payment, `payment_at` = :payment_at,
-                        `user_id` = :user_id, `type_id` = :type_id, `category_id` = :category_id, `group_id` = :group_id
-                    WHERE `id`=:id;';
-            
-            $stmt = self::$pdo->prepare($sql);
+            // トランザクション開始
+            static::$pdo->beginTransaction();
 
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':title', $title, PDO::PARAM_STR);
-            $stmt->bindParam(':memo', $memo, PDO::PARAM_STR);
-            $stmt->bindParam(':payment', $payment, PDO::PARAM_STR);
-            $stmt->bindParam(':payment_at', $payment_at, PDO::PARAM_STR);
-            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-            $stmt->bindParam(':type_id', $type_id, PDO::PARAM_INT);
-            $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-            $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+            // 受け取った値に対応するset句を生成する
+            static::$temp_inputs['set'] = get_defined_vars();
+            static::makeSetClause();
 
-            $stmt->execute();
+            // SQL文をセットする
+            $set_clause = static::$temp_set_clause;
+            static::$temp_sql = "UPDATE `main`
+                                {$set_clause}
+                                WHERE `id`=:id;";
+            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+
+            echo static::$temp_sql;
+
+            // バインド後、insert文を実行する
+            static::bind();
+            static::$temp_stmt->execute();
+
+            // トランザクション終了
             self::$pdo->commit();
+
         } catch (PDOException $e) {
             self::$pdo->rollBack();
             return self::TRANSACTION_ERROR;

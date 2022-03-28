@@ -177,13 +177,12 @@ abstract class DbConnector
         $filters = array();
 
         // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
-        foreach(static::$temp_inputs['set'] as $key => $input) {
+        foreach(self::$temp_inputs['set'] as $key => $input) {
             if (!is_null($input)) {
                 // echo "{$key} => {$input}";
                 $filters[] = "`{$key}`=:{$key}";
             }
         }
-        // print_r($filters);
 
         // $filters に格納された値を文字列結合し、「WHERE `~id`=:~id,...」の形の文字列をつくる
         if (count($filters) > 0) {
@@ -196,9 +195,9 @@ abstract class DbConnector
         }
         // set句をstatic変数に格納する
         if ($temp_clause === '') {
-            static::$temp_where_clause = null;
+            self::$temp_set_clause = null;
         } else {
-            static::$temp_where_clause = 'SET ' . $temp_clause;
+            self::$temp_set_clause = 'SET ' . $temp_clause;
         }
     }
 
