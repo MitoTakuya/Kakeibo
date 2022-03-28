@@ -86,23 +86,6 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-    // あるグループの全レコードを取り出す * fetch_group_records_to_display に統合予定
-    public static function fetchGroupRecords(int $group_id)
-    {
-        $sql = 'SELECT *
-                FROM `full_records`
-                WHERE `group_id`=:group_id;';
-
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // クエリ結果が0件の場合、空の配列を返す
-        return $results;
-    }
-
     // あるグループのレコードを一定数取り出す（画面に収まる数など
     // DbConnector::selectOrder()で事前にorderby句の設定が必要
     public static function fetchGroupLimitedRecords(
@@ -166,15 +149,15 @@ class DbConnectorMain extends DbConnector {
     // 今までの合計支出を返す ダッシュボードに表示する
     public static function fetchOutgo(int $group_id)
     {
-        $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
+        static::$temp_sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`
                 FROM `main`
                 WHERE `group_id` = :group_id
                 AND `type_id` = 1;';
-        $stmt = self::$pdo->prepare($sql);
+        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
 
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        static::$temp_stmt->execute();
+        $result = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
         
         return $result['outgo']; //格納されていなければ false を返す
     }
@@ -182,15 +165,15 @@ class DbConnectorMain extends DbConnector {
     // 今までの合計収入を返す ダッシュボードに表示する
     public static function fetchIncome(int $group_id)
     {
-        $sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
+        static::$temp_sql = 'SELECT `type_id`, IFNULL(SUM(`payment`), 0) AS `income`
                 FROM `main`
                 WHERE `group_id` = :group_id
                 AND `type_id` = 2';
-        $stmt = self::$pdo->prepare($sql);
+        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
 
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        static::$temp_stmt->execute();
+        $result = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
         
         return $result['income']; //格納されていなければ false を返す
     }
@@ -240,7 +223,7 @@ class DbConnectorMain extends DbConnector {
         // 月別・週別の選択と、その基準日の選択
         $period_filter = self::makePeriodFilter($target_date);
 
-        $sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`
+        static::$temp_sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`
                 FROM `main`
                 JOIN `categories` on `categories`.`id` = `main`.`category_id`
                 WHERE `group_id` = :group_id
@@ -248,10 +231,10 @@ class DbConnectorMain extends DbConnector {
                 AND {$period_filter}
                 GROUP BY `category_id`";
 
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
+        static::$temp_stmt->execute();
+        $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return $results;
     }
@@ -299,26 +282,6 @@ class DbConnectorMain extends DbConnector {
      * メソッド内部からのみ呼び出されるメソッド
      * DB切断は呼び出し元メソッドで行う
      *******************************************/
-    // あるグループの月別、週別の支出合計を出力する * 直接呼び出さない
-    private static function fetchDateFilteredOutgo(
-        int $group_id,
-        string $period_filter
-    ){
-        $sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
-                FROM `main`
-                WHERE `group_id` = :group_id
-                AND `type_id` = :type_id
-                AND {$period_filter}";
-                //$target_date には関数も入るためバインドしない
-
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->bindParam(':type_id', self::$outgo_type_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $results;
-    }
-
     // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
     private static function selectDate(?string $target_date = null)
     {
