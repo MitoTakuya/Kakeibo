@@ -1,5 +1,5 @@
 <?php
-include(__DIR__.'\..\dashboardProcess.php');
+include(__DIR__.'\..\dashboardController.php');
 ?>
 
 <!doctype html>
@@ -108,7 +108,7 @@ include(__DIR__.'\..\dashboardProcess.php');
                                         <tr>
                                             <!-- カテゴリー名、詳細リンク -->
                                             <td scope="row">
-                                                <form action="./show_category.php" method="get">
+                                                <form action="./showCategory.php" method="get">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="id" value=<?= $outgo['category_id'] ?>>
                                                 </form>
