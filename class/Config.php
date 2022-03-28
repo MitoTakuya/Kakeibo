@@ -30,6 +30,7 @@ class Config {
     public static function check_token() {
         if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
             // include('error.php');
+            var_dump($_POST['token']);
             echo "不正な通信です。";
             die();
         }

@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . "/../class/LoginController.php";
-LoginController::logout();
+require_once __DIR__ . "/../class/UserLogin.php";
+UserLogin::logout();
 if ($_SERVER['REQUEST_URI'] === 'error.php') {
 	// header('Location: ') 遷移先;
 }

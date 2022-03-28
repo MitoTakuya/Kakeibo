@@ -1,22 +1,23 @@
 <?php
-require_once __DIR__ . '/class/DB_Connector_users.php';
-require_once __DIR__ . '/class/UserController.php';
-require_once __DIR__ . '/class/LoginController.php';
+require_once __DIR__ . '/class/DbConnectorUsers.php';
+require_once __DIR__ . '/class/UserRegistory.php';
+require_once __DIR__ . '/class/UserLogin.php';
+require_once __DIR__ . '/class/Config.php';
 session_start();
-LoginController::notLogin();
+UserLogin::notLogin();
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
 	if (!empty($_POST) && isset($_POST['new_user'])) {
-        // フォームとtokenが同じか確認
-        Config::check_token();
-        $new_user = new UserController();
+        $new_user = new UserRegistory();
         $user_errors = $new_user->inputConfirmation();
         if($user_errors == "ok") {
         // ログインに飛ばす
         header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
         }
     } elseif (!empty($_POST) && isset($_POST['login_user'])) {
-        $login_user = new LoginController();
+        // フォームとtokenが同じか確認
+        Config::check_token();
+        $login_user = new UserLogin();
         $user_errors = $login_user->loginConfirmation();
         if($user_errors == "login_ok") {
         // トップページに飛ばす

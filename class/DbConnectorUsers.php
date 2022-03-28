@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/DB_Connector.php';
+require_once __DIR__ . '/DbConnector.php';
 
-class DB_Connector_users extends DB_Connector
+class DbConnectorUsers extends DbConnector
 {
     public static $user_errors = array();
 

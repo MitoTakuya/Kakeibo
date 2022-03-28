@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../user_registory.php";
+require_once __DIR__ . "/../userController.php";
 ?>
 <!doctype html>
 <html lang="ja">
@@ -117,6 +117,6 @@ require_once __DIR__ . "/../user_registory.php";
 			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 		<!-- Vue.jsの読み込み -->
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<script src="../stylesheet/js/users_new.js"></script>
+		<script src="../stylesheet/js/userNew.js"></script>
 	</body>
 </html>

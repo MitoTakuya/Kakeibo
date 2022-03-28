@@ -20,7 +20,7 @@ require_once __DIR__ . "/../init.php";
 		<?php include __DIR__ . "/_header.php" ?>
         <!-- タイトル -->
         <?php echo var_dump($_SESSION); ?>
-    <a class="nav-link" href="user_show.php">ユーザー詳細</a>
+    <a class="nav-link" href="userShow.php">ユーザー詳細</a>
 
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -32,6 +32,6 @@ require_once __DIR__ . "/../init.php";
 			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 		<!-- Vue.jsの読み込み -->
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<script src="../stylesheet/js/users_new.js"></script>
+		<script src="../stylesheet/js/userNew.js"></script>
 	</body>
 </html>

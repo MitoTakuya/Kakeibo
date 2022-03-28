@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/DB_Connector_users.php';
+require_once __DIR__ . '/DbConnectorUsers.php';
 
-class LoginController
+class UserLogin
 {
     public static $user_errors = array();
 
@@ -24,7 +24,7 @@ class LoginController
 
         // パスワード、メールアドレスが入力されていたらチェック
         if (!empty($mail) && !empty($password)) {
-            $user_password = DB_Connector_users::loginUser($mail);
+            $user_password = DbConnectorUsers::loginUser($mail);
             if (!is_array($user_password)) {
                 self::$user_errors['login_mail'] = 'メールアドレスが見つかりません';
             } else {
@@ -37,7 +37,7 @@ class LoginController
         }
         // エラーがなければ保存
         if (count(self::$user_errors) == 0) {
-            $login_user = DB_Connector_users::fetchUser($user_password['id']);
+            $login_user = DbConnectorUsers::fetchUser($user_password['id']);
 
             //セッション固定攻撃対策
             session_regenerate_id(true);

@@ -29,7 +29,7 @@
 					<div class="input-group-addon text-center mb-5">
                         <p>ご利用ありがとうございました。</p>
 					</div>
-                    <button type="button" class="btn btn-block btn-lg btn-primary" onclick="location.href='users_new.php'" >ユーザー登録する</button></span>
+                    <button type="button" class="btn btn-block btn-lg btn-primary" onclick="location.href='userNew.php'" >ユーザー登録する</button></span>
 				</div>
 			</div>
 		</div>

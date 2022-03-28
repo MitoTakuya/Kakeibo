@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../user_edit.php";
+require_once __DIR__ . "/../userEditController.php";
 ?>
 <!doctype html>
 <html lang="ja">
@@ -96,6 +96,6 @@ require_once __DIR__ . "/../user_edit.php";
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 		<!-- Vue.jsの読み込み -->
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<script src="../stylesheet/js/user_show.js"></script>
+		<script src="../stylesheet/js/userShow.js"></script>
 	</body>
 </html>
