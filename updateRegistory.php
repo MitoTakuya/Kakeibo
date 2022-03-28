@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__.'/class/DB_Connector_main.php';
+require_once __DIR__.'/class/DbConnectorMain.php';
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
     //registory.phpからデータがPOSTされた時の処理
     if(!empty($_POST)) {
         
@@ -19,7 +19,7 @@ if (DB_Connector::connectDB()) {
         $memo = $_POST["content"];
 
         //db_mainインスタンス作成
-        $db_main = new DB_Connector_main();
+        $db_main = new DbConnectorMain();
         //更新前に対象レコードがDBに存在するか確認
         $confirm = $db_main->fetchOne($id);
         
@@ -40,7 +40,7 @@ if (DB_Connector::connectDB()) {
     }
 } else {
     //DB接続エラーの時、エラー画面を表示
-    $error_message = DB_Connector::$connect_error;
+    $error_message = DbConnector::$connect_error;
     require_once(__DIR__.'/view/error.php');
     die();
 

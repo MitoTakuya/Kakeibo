@@ -1,6 +1,5 @@
 <?php
-require_once __DIR__.'/../registory_controller.php';
-
+require_once __DIR__.'/../registoryController.php';
 ?>
 
 <!DOCTYPE html>
@@ -32,7 +31,7 @@ require_once __DIR__.'/../registory_controller.php';
             <div class="panel-group mt-1">
                 <!-- 支出用記帳フォーム -->
                 <div class="panel tab-A is-show p-2">
-                    <form action="../registory_controller.php?type_id=1" method="post">
+                    <form action="../registoryController.php?type_id=1" method="post">
                         <div class="pt-3 mb-3">
                             <label>日付</label>
                             <input type="date" class="form-control" name="payment_at" required>
@@ -66,7 +65,7 @@ require_once __DIR__.'/../registory_controller.php';
 
                 <!-- 収入用記帳フォーム -->
                 <div class="panel tab-B p-2">
-                    <form action="../registory_controller.php?type_id=2" method="post">
+                    <form action="../registoryController.php?type_id=2" method="post">
                         <div class="pt-3 mb-3">
                             <label>日付</label>
                             <input type="date" class="form-control" name="payment_at" required>
@@ -147,7 +146,7 @@ require_once __DIR__.'/../registory_controller.php';
 <div class="modal">
     <div class="modal_form">
     <h2 class="post_title">編集</h2>
-    <form method="post" action="../modal_registory.php" enctype="multipart/form-data">
+    <form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
     <input type="hidden" id="record_id" name="record_id">
     <input type="hidden" id="type_id" name="type_id">
     <div class="pb-2">
