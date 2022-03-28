@@ -4,7 +4,7 @@ abstract class DbConnector
     private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
     private const DB_USER = 'root';
     private const DB_PASSWORD = '';
-    protected static ?PDO $pdo;    //PDO か nullでなければいけない
+    protected static ?PDO $pdo;    //PDO か nullでなければならない
 
     // 対象テーブル
     protected static $target_table = null;
@@ -56,17 +56,20 @@ abstract class DbConnector
     // select * from 対象テーブル where = 指定したid
     public static function fetchOne(int $target_id)
     {
+            // SQL文をセットする
             $target_table = static::$target_table;
-
-            $sql = "SELECT *
-                    FROM `{$target_table}`
-                    WHERE `id`=:id";
+            static::$temp_sql = "SELECT *
+                            FROM `{$target_table}`
+                            WHERE `id`=:id";
             
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            // SQL文をバインド・実行し、結果を取得する
+            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+            static::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            static::$temp_stmt->execute();
+            $results = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
 
-            $stmt->execute();
-            $results = $stmt->fetch(PDO::FETCH_ASSOC);
+            // 一時変数を初期化する
+            static::resetTempVars();
             
             return $results;
     }
@@ -74,16 +77,15 @@ abstract class DbConnector
     // select * from 対象テーブル
     public static function fetchAll(int $order = 0)
     {
+            // SQL文をセットする
             $target_table = static::$target_table;
-            // 昇順・降順を選択する
-            $order_clause = self::selectOrder($order);
+            $order_clause = self::selectOrder($order);  // 昇順・降順を選択する
+            static::$temp_sql = "SELECT *
+                                FROM  `{$target_table}` " . $order_clause;
 
-            $sql = "SELECT *
-                    FROM  `{$target_table}` " . $order_clause;
-
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+            static::$temp_stmt->execute();
+            $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return $results;
     }
@@ -93,12 +95,12 @@ abstract class DbConnector
         try {
             $target_table = static::$target_table;
             self::$pdo->beginTransaction();
-            $sql = "DELETE FROM `{$target_table}`
+            static::$temp_sql = "DELETE FROM `{$target_table}`
                     WHERE `id`=:id";
             
-            $stmt = self::$pdo->prepare($sql);
-            $stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            $stmt->execute();
+            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+            static::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            static::$temp_stmt->execute();
             self::$pdo->commit();
 
         } catch (PDOException $e) {
@@ -118,5 +120,14 @@ abstract class DbConnector
                 $order_clause = "order by `{$culmun}` desc";
         }
         return $order_clause;
+    }
+    // SQL文実行に使った一時変数をすべて初期化する
+    protected static function resetTempVars()
+    {
+        static::$temp_inputs = null;
+        static::$temp_sql = null;
+        static::$temp_stmt = null;
+        static::$temp_set_clause = null;
+        static::$temp_where_clause = null;
     }
 }
