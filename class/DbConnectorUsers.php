@@ -54,7 +54,8 @@ class DbConnectorUsers extends DbConnector
     // ユーザーグループ登録
     public static function insertUserGroup($group_name, $group_password)
     {
-        $stmt = self::$pdo->prepare('INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
+        $stmt = self::$pdo->prepare(
+            'INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
         //SQL文中の プレース部を 定義しておいた変数に置き換える
         $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
         $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
@@ -97,7 +98,8 @@ class DbConnectorUsers extends DbConnector
     {
         $stmt = self::$pdo->prepare(
             'SELECT users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*
-            FROM users INNER JOIN user_groups ON users.group_id = user_groups.id where users.group_id = :group_id &&  `is_deleted`!=1');
+            FROM users INNER JOIN user_groups ON users.group_id = user_groups.id 
+            where users.group_id = :group_id &&  `is_deleted`!=1');
         $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);

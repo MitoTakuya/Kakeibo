@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . "/../userController.php";
-require_once __DIR__ . "/../class/Config.php";
 Config::create_token();
 ?>
 <!doctype html>
@@ -50,7 +49,7 @@ Config::create_token();
 						</div>
 						<div class="divider-form"></div>
 						<input type="submit" name="login_user" class="btn btn-block btn-lg btn-primary" value="送信">
-						<p class="text-center">登録はお済みですか？</p>
+							<p class="text-center">登録はお済みですか？</p>
 						<a href="userNew.php" class="nav-item nav-link text-center">登録する</a>
 					</form>
 				</div>
