@@ -29,6 +29,8 @@ if (DbConnector::connectDB()) {
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
+    echo $target_date->format('Ymd');
+    print_r($categorized_outgo_list);
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');
