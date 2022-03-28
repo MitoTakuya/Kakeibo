@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../user_edit.php";
+require_once __DIR__ . "/../userEditController.php";
 ?>
 <!doctype html>
 <html lang="ja">
@@ -75,6 +75,10 @@ require_once __DIR__ . "/../user_edit.php";
                     <div class="divider-form"></div>
                     <input type="submit" class="btn btn-block btn-lg btn-primary" value="送信" name="user_update">
                     <button type="button" class="btn btn-block btn-lg btn-secondary" onclick="history.back()">戻る</button>
+                </form>
+                <div class="divider-form"></div>
+                <form action="" method="post">
+                    <input type="submit" class="btn btn-block btn-lg btn-outline-danger" name="<?php echo $_SESSION['id']; ?>" value="退会する" name="user_update">
                 </form>
                 </div>
             </div>  

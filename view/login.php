@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . "/../user_registory.php";
+require_once __DIR__ . "/../userController.php";
+require_once __DIR__ . "/../class/Config.php";
+Config::create_token();
 ?>
 <!doctype html>
 <html lang="ja">
@@ -28,6 +30,7 @@ require_once __DIR__ . "/../user_registory.php";
 					<form method="POST" action="">
 						<div class="divider-form"></div>
 						<div class="form-group">
+							<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 							<p><i class="far fa-envelope"></i>
 							<label for="mail">メールアドレス</label>
 							<input type="email" id="mail" name="mail" class="form-control" value="<?php if( !empty($_SESSION['mail']) ){ echo $_SESSION['mail']; } ?>">
@@ -48,7 +51,7 @@ require_once __DIR__ . "/../user_registory.php";
 						<div class="divider-form"></div>
 						<input type="submit" name="login_user" class="btn btn-block btn-lg btn-primary" value="送信">
 						<p class="text-center">登録はお済みですか？</p>
-						<a href="users_new.php" class="nav-item nav-link text-center">登録する</a>
+						<a href="userNew.php" class="nav-item nav-link text-center">登録する</a>
 					</form>
 				</div>
 			</div>

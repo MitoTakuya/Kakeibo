@@ -1,8 +1,7 @@
 <?php
-require_once __DIR__ . '/DB_Connector_users.php';
-require_once __DIR__ . '/DB_Connector.php';
+require_once __DIR__ . '/DbConnectorUsers.php';
 
-class UserController
+class UserRegistory
 {
     public static $user_errors = array();
 
@@ -26,7 +25,7 @@ class UserController
         $password = filter_input(INPUT_POST, 'password');
 
         // メールアドレス重複確認
-        $mail_error = DB_Connector_users::checkDuplicate($mail);
+        $mail_error = DbConnectorUsers::checkDuplicate($mail);
         if (isset($mail_error)) {
             self::$user_errors['mail'] = $mail_error;
         }
@@ -53,7 +52,7 @@ class UserController
             } else {
                 $group_password = $_POST['group_form'];
                 // パスワードからuser_groupのidを検索
-                $error = DB_Connector_users::searchGroupId($group_password);
+                $error = DbConnectorUsers::searchGroupId($group_password);
                 if (!is_array($error)) {
                     self::$user_errors['group_form'] = 'グループパスワードが違います。';
                 } else {
@@ -76,7 +75,7 @@ class UserController
             } else {
                 // ユーザー登録
                 $group_id = self::getGroupId();
-                DB_Connector_users::insertUser($user_name, $hash, $mail, $user_image, $group_id);
+                DbConnectorUsers::insertUser($user_name, $hash, $mail, $user_image, $group_id);
             }
 
             //セッション固定攻撃対策
@@ -84,8 +83,6 @@ class UserController
             // ユーザー情報をセッションに保存
             $_SESSION['mail'] = $mail;
             $_SESSION['password'] = $password;
-            $_SESSION['password'] = $password;
-
             return "ok";
         } else {
             return self::$user_errors;
@@ -102,7 +99,7 @@ class UserController
         $password = filter_input(INPUT_POST, 'password');
 
         // 登録済みのアドレスか確認
-        $mail_error = DB_Connector_users::checkEditMail($mail, $id);
+        $mail_error = DbConnectorUsers::checkEditMail($mail, $id);
         if (isset($mail_error)) {
             self::$user_errors['mail'] = $mail_error;
         }
@@ -119,7 +116,7 @@ class UserController
             // 画像をアップロード
             move_uploaded_file($_FILES['user_image']['tmp_name'], '../images/'. $user_image);
             // 更新処理
-            DB_Connector_users::editUser($user_name, $hash, $mail, $user_image, $id);
+            DbConnectorUsers::editUser($user_name, $hash, $mail, $user_image, $id);
             return "ok";
         } else {
             return self::$user_errors;
@@ -173,7 +170,7 @@ class UserController
     // ユーザー・新規グループ登録
     public function createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image)
     {
-        $group_id = DB_Connector_users::insertUserGroup($group_name, $group_password);
-        DB_Connector_users::insertUser($user_name, $hash, $mail, $user_image, $group_id);
+        $group_id = DbConnectorUsers::insertUserGroup($group_name, $group_password);
+        DbConnectorUsers::insertUser($user_name, $hash, $mail, $user_image, $group_id);
     }
 }

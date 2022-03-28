@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../user_edit.php";
+require_once __DIR__ . "/../userEditController.php";
 ?>
 <!doctype html>
 <html lang="ja">
@@ -31,7 +31,7 @@ require_once __DIR__ . "/../user_edit.php";
 							<h5><span><?php echo $current_user['user_name']; ?>
 								<img src="../images/<?php echo $current_user['user_image']; ?>" border-radius="50%" alt="アイコン画像"
 									style="height:50px;width:50px;border-radius:50%"/><span class="float-right">
-										<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php?id=<?php echo $current_user['user_id']; ?>'">
+										<button type="button" class="btn btn-primary" onclick="location.href='userUpdate.php'">
 										更新する</button></span>
 						</div>
 						<div class="mt-4"></div>
@@ -65,7 +65,7 @@ require_once __DIR__ . "/../user_edit.php";
 						<div class="check">
 							<h5><i class="fas fa-user-group"></i>グループ名
 							<span class="float-right"><button type="button" class="btn btn-primary"
-							onclick="location.href='groupUpdate.php?id=<?php echo $group['id']; ?>'">更新する</button></span>
+							onclick="location.href='groupUpdate.php'">更新する</button></span>
 							</h5>
 						</div>
 						<div class="ml-4">
@@ -96,6 +96,6 @@ require_once __DIR__ . "/../user_edit.php";
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 		<!-- Vue.jsの読み込み -->
 		<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-		<script src="../stylesheet/js/user_show.js"></script>
+		<script src="../stylesheet/js/userShow.js"></script>
 	</body>
 </html>

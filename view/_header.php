@@ -7,7 +7,7 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
             <a class="dropdown-item" href="registory.php">記帳</a>
-            <a class="dropdown-item" href="user_show.php?id=<?php echo $_SESSION['id']; ?>">ユーザー詳細</a>
+            <a class="dropdown-item" href="userShow.php">ユーザー詳細</a>
             <a class="dropdown-item" href="logout.php">ログアウト</a>
             </div>
         </div>
