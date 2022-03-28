@@ -29,7 +29,7 @@ include(__DIR__.'\..\dashboardController.php');
                     </button>
                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <a class="dropdown-item" href="./registory.php">記帳</a>
-                    <a class="dropdown-item" href="#">ログアウト</a>
+                    <a class="dropdown-item" href="./logout.php">ログアウト</a>
                     </div>
                 </div>
             </nav>
@@ -126,11 +126,6 @@ include(__DIR__.'\..\dashboardController.php');
         </div> <!-- container の終わり -->
         </div> <!-- #app の終わり-->
 
-        <footer class="footer text-light bg-dark">
-            <nav class="navbar navbar-dark bg-dark">
-                <a href="#" class="navbar-brand "><?= $kakeibo_name ?></a> 
-            </nav>
-        </footer>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
