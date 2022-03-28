@@ -7,6 +7,8 @@ LoginController::notLogin();
 
 if (DB_Connector::connectDB()) {
 	if (!empty($_POST) && isset($_POST['new_user'])) {
+        // フォームとtokenが同じか確認
+        Config::check_token();
         $new_user = new UserController();
         $user_errors = $new_user->inputConfirmation();
         if($user_errors == "ok") {
