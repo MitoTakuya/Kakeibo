@@ -1,5 +1,5 @@
 <?php
-include(__DIR__.'\../dashboard_process.php');
+include(__DIR__.'\..\dashboardProcess.php');
 ?>
 
 <!doctype html>
@@ -52,7 +52,7 @@ include(__DIR__.'\../dashboard_process.php');
 
                     <!-- 日付選択欄 -->
                     <div>
-                        <form action="#" method="post" id="selecting_date" :ref="selecting_date">
+                        <form action="#" method="post" :ref="selecting_date">
                             <select class="w-25 form-control select_period text-left float-right" name="date" v-model="selected_date" @input="selfPostDate">
                                 <option disabled value="">--月を選択--</option>
                                 <option v-for="date in selectable_dates" :value="date.year_month">{{date.year}}年{{date.month}}月</option>
@@ -65,8 +65,15 @@ include(__DIR__.'\../dashboard_process.php');
                         <div class="goal_and_diff float-left w-25 col-4">
                             <h4 class="h4">目標貯金額</h4><br>
                             <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
+
                             <h4 class="h4">目標まで</h4><br>
-                            <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
+                            <?php if ($difference > $goal) :?>
+                                <h4 class="display-5"><?= number_format($goal) ?> 円</h4>
+                            <?php elseif ($difference > 0) : ?>
+                                <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
+                            <?php else : ?>
+                                <h3 class="h3">目標金額達成！</h3>
+                            <?php endif; ?>
                         </div>
 
                         <!-- グラフ部分 -->
@@ -137,7 +144,7 @@ include(__DIR__.'\../dashboard_process.php');
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
         <script>
-            /********** Canvasのサイズ自動調整 **********/
+            /********** Canvasタグのサイズ自動調整 **********/
             var w = $('.outgo_chart').width();
             var h = $('.outgo_chart').height();
             $('#outgo_rate_chart').attr('width', w);
@@ -149,13 +156,12 @@ include(__DIR__.'\../dashboard_process.php');
             el :'#dashboard',
             data : {
                 selected_date : '', // phpから直に最新月の直接を代入する
+                selectable_dates : <?= $jsonized_past_dates ?>,
+                selecting_date : "selecting_date",// selectタグのdomを格納する
 
-                selectable_dates : <?= $jsonized_past_dates ?>, //php から読み込む
-                selecting_date : "selecting_date",  // selectタグのdomを格納する
-
-                outgo_rate_chart : "outgo_rate_chart", // canvasタグのdomを格納する
-                chart_data : <?= $jsonized_outgo_list ?>, //グラフ用の
-                outgo_chart : null // chart.jsのインスタンスを格納する
+                outgo_rate_chart : "outgo_rate_chart",      // canvasタグのdomを格納する
+                chart_data : <?= $jsonized_outgo_list ?>,   //グラフ用のデータ
+                outgo_chart : null                          // chart.jsのインスタンスを格納する
             },
             methods : {
                 // ページを更新する
@@ -166,21 +172,20 @@ include(__DIR__.'\../dashboard_process.php');
                 }
             },
             mounted: function(){
-                //console.log(this.chart_data);
-                chart_data = JSON.stringify(<?= $jsonized_outgo_list ?>);
-                chart_data = JSON.parse(chart_data);
-                console.log(chart_data);
-                this.outgo_chart = new Chart(this.$refs['outgo_rate_chart'], {
-                    type: 'pie',
-                    data: {
-                        labels: chart_data.labels,
-                        datasets: [{
-                            data: chart_data.datasets.data,
-                            backgroundColor: chart_data.datasets.backgroundColor,
-                            weight: 100,
-                        }],
-                    },
-                });
+                // その月の記帳データがあればグラフを表示する
+                if (typeof this.chart_data.datasets.data !== "undefined") {
+                        this.outgo_chart = new Chart(this.$refs['outgo_rate_chart'], {
+                        type: 'pie',
+                        data: {
+                            labels: this.chart_data.labels,
+                            datasets: [{
+                                data: this.chart_data.datasets.data,
+                                backgroundColor: this.chart_data.datasets.backgroundColor,
+                                weight: 100,
+                            }],
+                        },
+                    });
+                }
             }
         })
         </script>
