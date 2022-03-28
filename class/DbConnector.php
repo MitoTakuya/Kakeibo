@@ -1,5 +1,5 @@
 <?php
-abstract class DB_Connector
+abstract class DbConnector
 {
     private const DNS = 'mysql:dbname=kakeibo_db;host=localhost;charset=utf8';
     private const DB_USER = 'root';
