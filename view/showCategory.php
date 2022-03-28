@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__.'/../category_controller.php';
+require_once __DIR__.'/../categoryController.php';
 ?>
 
 <!DOCTYPE html>
@@ -70,7 +70,7 @@ require_once __DIR__.'/../category_controller.php';
 <div class="modal">
     <div class="modal_form">
     <h2 class="post_title">編集</h2>
-    <form method="post" action="../modal_registory.php" enctype="multipart/form-data">
+    <form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
     <input type="hidden" id="record_id" name="record_id">
     <input type="hidden" id="type_id" name="type_id">
     <div class="pb-2">

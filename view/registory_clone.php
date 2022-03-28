@@ -1,14 +1,14 @@
 <?php
-
+//後で消すファイル
 $error_messages = array();
 
-require_once __DIR__.'/../class/DB_Connector_main.php';
+require_once __DIR__.'/../class/DbConnectorMain.php';
 
     //★仮置き sessionグループIDを使用する予定
     $group_id = 1;
 
     //インスタンス作成
-    $db_connect = new DB_Connector_main;
+    $db_connect = new DbConnectorMain;
 
     //メインTBLより特定グループのレコード取得する
     $records = $db_connect->fetchGroupRecords($group_id);
