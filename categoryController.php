@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__.'/class/DB_Connector_main.php';
+require_once __DIR__.'/class/DbConnectorMain.php';
 $error_messages = array();
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
     //★★★仮置きsessionIDを使用する予定
     $user_id = 1;
     $group_id = 1;
@@ -10,7 +10,7 @@ if (DB_Connector::connectDB()) {
     var_dump($category_id);
 
     //インスタンス作成
-    $db_connect = new DB_Connector_main;
+    $db_connect = new DbConnectorMain;
 
     //特定グループのカテゴリ別レコード取得する
     $records = $db_connect->fetchFilteredRecords(group_id: $group_id, category_id: $category_id);

@@ -1,10 +1,3 @@
-<?php
-require_once __DIR__ . "/../class/UserLogin.php";
-UserLogin::logout();
-if ($_SERVER['REQUEST_URI'] === 'error.php') {
-	// header('Location: ') 遷移先;
-}
-?>
 <!doctype html>
 <html lang="ja">
     <head>
@@ -29,14 +22,14 @@ if ($_SERVER['REQUEST_URI'] === 'error.php') {
 				<div class="box">
 					<div class="input-group-addon text-center mb-5">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
-						ログアウトしました
+						退会しました。
 						<div class="divider-form"></div>
 					</div>
 
 					<div class="input-group-addon text-center mb-5">
-                        <p>ログインしてください</p>
+                        <p>ご利用ありがとうございました。</p>
 					</div>
-                    <button type="button" class="btn btn-block btn-lg btn-primary" onclick="location.href='login.php'" >再ログイン</button></span>
+                    <button type="button" class="btn btn-block btn-lg btn-primary" onclick="location.href='userNew.php'" >ユーザー登録する</button></span>
 				</div>
 			</div>
 		</div>

@@ -27,28 +27,13 @@ class Config {
     }
 
     //トークンチェック　データのPOST先で以下メソッドを実行して確認する。
-    function check_token() {
+    public static function check_token() {
         if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
             // include('error.php');
+            var_dump($_POST['token']);
             echo "不正な通信です。";
             die();
         }
-    }
-
-    //セッション削除
-    public static function destroy_session() {
-        // セッション開始
-        session_start();  
-        // セッション変数を全て削除
-        $_SESSION = array();
-        // セッションクッキーを削除
-        if (isset($_COOKIE["PHPSESSID"])) {
-        setcookie("PHPSESSID", '', time() - 1800, '/');
-        }
-        // セッションの登録データを削除
-        session_destroy();
-        header('Location: http://localhost/');
-        exit;
     }
 
 } 

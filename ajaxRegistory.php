@@ -1,15 +1,15 @@
 <?php
 session_start();
-require_once __DIR__.'/class/DB_Connector_main.php';
+require_once __DIR__.'/class/DbConnectorMain.php';
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
     // ajaxでPOSTされたときに以下を実行する。
 	if($_POST['id']) {
         //check_token()
         $record_id = $_POST['id'];
         $method = $_POST['method'];
         //インスタンス作成
-        $db_main = new DB_Connector_main();
+        $db_main = new DbConnectorMain();
         
         if ($_POST['method'] === 'delete') {  
 
