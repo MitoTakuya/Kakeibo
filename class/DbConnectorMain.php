@@ -266,62 +266,33 @@ class DbConnectorMain extends DbConnector {
     */
     public static function fetchFilteredRecords(
         int $group_id,
-        int $period_param = 0,
-        int $order = 0,
-        int $type_id = 0,
+        int $type_id = null,
         ?string $target_date = null,
         ?string $category_id = null
     ) {
-        // 昇順・降順を選択する
-        $order_clause = self::selectOrder($order);
-        // 月別・週別の選択と、その基準日の選択
-        $period_filter = self::makePeriodFilter($period_param, $target_date);
-        // 支払い区分の指定, 文字列で返す
-        $type_filter = self::selectType($type_id);
+        // 受け取った値に対応するwhere句を生成する
+        static::$temp_inputs['where'] = get_defined_vars();
+        unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+        static::makeWhereClause();
 
-        if (is_null($category_id)) {
-            // 期間のみでfilterする場合
-            $results = self::fetchDateFilteredRecords(
-                            group_id: $group_id,
-                            period_filter: $period_filter,
-                            order_clause: $order_clause,
-                            type_filter: $type_filter
-                        );
-        } else {
-            // 期間とカテゴリでfilterする場合
-            $results = self::fetchFullyFilteredRecords(
-                            group_id: $group_id,
-                            category_id: $category_id,
-                            period_filter: $period_filter,
-                            order_clause: $order_clause,
-                            type_filter: $type_filter
-                        );
-        }
+        // SQL文をセットする
+        $period_filter = self::makePeriodFilter($target_date);
+        $orderby_clause = static::$temp_orderby_clause;
+        $where_clause = static::$temp_where_clause;
+        static::$temp_sql = "SELECT *
+                            FROM `full_records`
+                            {$where_clause}
+                            AND {$period_filter}
+                            {$orderby_clause}";           //$target_date には関数も入るためバインドしない
+        
+        // バインド後にSQL文を実行し、結果を取得する
+        echo static::$temp_sql;
+        static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
+        static::bind();
+        static::$temp_stmt->execute();
+        $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
         
         return $results; //格納されていなければ false を返す
-    }
-
-    // 1列分の値だけを取り出す 
-    public static function fetchCategoryColumns(int $order = 1) {
-        
-            // 昇順・降順を選択する
-            $order_clause = self::selectOrder($order);
-
-            $sql = "SELECT `type_id`, `category_name`
-                    FROM  `categories` " . $order_clause;
-
-            $stmt = self::$pdo->prepare($sql);
-            // $stmt->bindParam(':column', $column, PDO::PARAM_STR);
-            $stmt->execute();
-            $results = $stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
-
-
-            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
-            if (count($results) == 0) {
-                return false;
-            } else {
-                return $results;
-            }
     }
 
     /*****************************************
@@ -373,56 +344,6 @@ class DbConnectorMain extends DbConnector {
         return $results;
     }
 
-    // あるグループの月別、週別のレコードを取り出すメソッド * 直接呼び出さない
-    private static function fetchDateFilteredRecords(
-        int $group_id,
-        string $type_filter,
-        string $order_clause,
-        string $period_filter
-    ) {
-        $sql = "SELECT *
-                FROM `full_records`
-                WHERE `group_id` = :group_id
-                AND {$type_filter}
-                AND {$period_filter}
-                {$order_clause}";           //$target_date には関数も入るためバインドしない
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        
-        // クエリ結果が0件の場合、空の配列を返す
-        return $results;
-    }
-
-    // あるグループの月別、週別の、特定カテゴリにおけるレコードを取り出すメソッド * 直接呼び出さない
-    private static function fetchFullyFilteredRecords(
-        int $group_id,
-        int $category_id,
-        string $type_filter,
-        string $order_clause,
-        string $period_filter
-    ) {
-        $sql = "SELECT *
-                FROM `full_records`
-                WHERE `group_id` = :group_id
-                AND {$type_filter}
-                AND `category_id` = :category_id
-                AND {$period_filter}
-                {$order_clause}";           //$target_date には関数も入るためバインドしない
-
-        $stmt = self::$pdo->prepare($sql);
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->bindParam(':category_id', $category_id, PDO::PARAM_INT);
-        // var_dump($stmt);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        
-        // クエリ結果が0件の場合、空の配列を返す
-        return $results;
-    }
-
     // 月別か週別か期間を選ぶ * 直接呼び出さない
     private static function selectPeriod(int $period_param = 0)
     {
@@ -448,33 +369,13 @@ class DbConnectorMain extends DbConnector {
         return $target_date;
     }
 
-    // 期間選択のための句を返す
-    private static function makePeriodFilter(?int $period_param = 0, ?string $target_date = null)
+    // 期間選択のための句を返す(月別のみに変更)
+    private static function makePeriodFilter(?string $target_date = null)
     {
-        $period = self::selectPeriod($period_param);
-        $target_date = self::selectDate($target_date);
-        return "{$period}(payment_at) = {$period}({$target_date})
-                AND YEAR(payment_at) = YEAR({$target_date})";
-    }
-
-    // 「`type_id` IN」の文字列を返す
-    private static function selectType(int $type_id = null)
-    {
-        // type_id IN($type) に入れる文字列を返す
-        switch ($type_id) {
-            case self::$outgo_type_id:
-                $type_id = (string) self::$outgo_type_id;
-                break;
-            
-            case self::$income_type_id:
-                $type_id = (string) self::$income_type_id;
-                break;
-            
-            default:
-                $type_id = self::$outgo_type_id . "," . self::$income_type_id;
-                break;
+        if (is_null($target_date)) {
+            $target_date = "NOW()";
         }
-        $type_filter = "`type_id` IN({$type_id})";
-        return $type_filter;
+        return "MONTH(payment_at) = MONTH({$target_date})
+                AND YEAR(payment_at) = YEAR({$target_date})";
     }
 }
