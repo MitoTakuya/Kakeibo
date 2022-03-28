@@ -59,7 +59,7 @@ $('.delete-btn').on('click', function() {
     $.ajax({
       
       type: 'POST',
-      url: '../ajax_registory.php',
+      url: '../ajaxRegistory.php',
       data: {'id': record_id, 'method': 'delete'}
 
     })
@@ -100,7 +100,7 @@ $('.edit-btn').on('click', function() {
       // リクエスト方法
       type: 'POST',
       // 送信先ファイル名
-      url: '../ajax_registory.php',
+      url: '../ajaxRegistory.php',
       // 受け取りデータの種類
       datatype: "json",
       // 送信データ

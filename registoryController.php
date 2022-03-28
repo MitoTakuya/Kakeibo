@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__.'/class/DB_Connector_main.php';
-require_once __DIR__.'/class/DB_Connector_categories.php';
+require_once __DIR__.'/class/DbConnectorMain.php';
+require_once __DIR__.'/class/DbConnectorCategories.php';
 
-if (DB_Connector::connectDB()) {
+if (DbConnector::connectDB()) {
     //registory.phpからデータがPOSTされた時の処理
     if(!empty($_POST)) {
         //★仮置き
@@ -17,7 +17,7 @@ if (DB_Connector::connectDB()) {
         $category_id = $_POST["category_id"];
         $memo = $_POST["content"];
         //db_mainインスタンス作成
-        $db_main = new DB_Connector_main();
+        $db_main = new DbConnectorMain();
         //DB接続 & DBにデータ挿入
         $db_main->insertRecord($title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
         //記帳画面へリダイレクト
@@ -28,8 +28,8 @@ if (DB_Connector::connectDB()) {
     $group_id = 1; // = $_SESSION['group_id'];
 
     //インスタンス作成
-    $db_main = new DB_Connector_main;
-    $db_categories = new DB_Connector_categories;
+    $db_main = new DbConnectorMain;
+    $db_categories = new DbConnectorCategories;
 
     //メインTBLより特定グループのレコード取得する
     $records = $db_main->fetchGroupRecords($group_id);
@@ -38,8 +38,7 @@ if (DB_Connector::connectDB()) {
     $categories = $db_categories->fetchAll();
     //取得不可の時、エラー画面を表示
     if(!$categories) {
-        $error_message = DB_Connector::$transaction_error;
-        var_dump($error_message);
+        $error_message = DbConnector::$transaction_error;
         require(__DIR__.'/view/error.php');
         die();
     }
@@ -51,7 +50,7 @@ if (DB_Connector::connectDB()) {
     }
 } else {
     //DB接続エラーの時、エラー画面を表示
-    $error_message = DB_Connector::$connect_error;
+    $error_message = DbConnector::$connect_error;
     require_once __DIR__.'/view/error.php';
     die();
 
