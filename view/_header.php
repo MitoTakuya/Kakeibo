@@ -1,15 +1,23 @@
-<header>
-    <nav class="navbar navbar-dark bg-dark">
-        <a href="dashboard.php" class="navbar-brand">家計簿</a> 
-        <div class="btn-group" role="group">
-            <button id="header_menu" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Menu
-            </button>
-            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-            <a class="dropdown-item" href="registory.php">記帳</a>
-            <a class="dropdown-item" href="user_show.php?id=<?php echo $_SESSION['id']; ?>">ユーザー詳細</a>
-            <a class="dropdown-item" href="logout.php">ログアウト</a>
-            </div>
-        </div>
-    </nav>
-</header>
+<!-- ナビゲーションバー -->
+<nav class="navbar navbar-dark bg-dark">
+    <!-- タイトル -->
+    <a href="dashboard.php" class="navbar-brand">家計簿</a> 
+    <!-- ハンバーガーメニュー -->
+    <img class="circle" src="../images/<?php echo $_SESSION['user_image']; ?>" type="button"
+    style="height:50px;width:50px;border-radius:50%;cursor:pointer"  data-toggle="collapse" data-target="#navbarNav"
+    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"/>
+    <!-- ナビゲーションメニュー -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="registory.php">記帳</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="userShow.php">ユーザー詳細</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="logout.php">ログアウト</a>
+            </li>
+        </ul>
+    </div>
+</nav>
