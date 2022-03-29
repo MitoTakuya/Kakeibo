@@ -82,45 +82,11 @@ abstract class DbConnector
 
     // where句の条件を満たすレコードをすべて取得する
     // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    public static function fetchAll(
-        int $id = null,
-        string $title = null,
-        int $payment = null, 
-        string $payment_at = null,
-        int $user_id = null,
-        int $type_id = null,
-        int $category_id = null,
-        int $group_id = null,
-    ){
-        // 受け取った値に対応するwhere句を生成する
-        self::$temp_inputs['where'] = get_defined_vars();
-        self::makeWhereClause();
-
-        // SQL文をセットする
-        $target_table = self::$target_table;
-        $where_clause = self::$temp_where_clause;
-        $orderby_clause = self::$temp_orderby_clause;
-
-        self::$temp_sql ="SELECT *
-                            FROM `{$target_table}`
-                            {$where_clause}
-                            {$orderby_clause}";
-        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-
-        // バインド後にSQL文を実行し、結果を取得する
-        self::bind();
-        self::$temp_stmt->execute();
-        $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
-        
-        // 一時変数を初期化する
-        self::resetTemps();
-        return $results;
-    }
-
-    // where句の条件を満たすレコードをすべて取得する
-    // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    protected static function fetchSome($pdo_method = null)
+    protected static function fetch($pdo_method = null)
     {
+        if (is_null(self::$temp_selected_col)) {
+            self::$temp_selected_col = " * ";
+        }
         // SQL文をセットする
         $selected_col = self::$temp_selected_col;
         $target_table = static::$target_table;

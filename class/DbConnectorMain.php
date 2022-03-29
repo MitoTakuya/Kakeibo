@@ -115,7 +115,7 @@ class DbConnectorMain extends DbConnector {
         self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = self::fetchSome();
+        $result = self::fetch();
         return $result[0]['outgo'];
     }
 
@@ -131,7 +131,7 @@ class DbConnectorMain extends DbConnector {
         self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = self::fetchSome();
+        $result = self::fetch();
         return $result[0]['income'];
     }
 
@@ -158,7 +158,7 @@ class DbConnectorMain extends DbConnector {
         self::$temp_selected_col = "IFNULL(SUM(`payment`), 0) AS `sum`";
 
         // SQL文を実行し、結果を格納する
-        $results = self::fetchSome();
+        $results = self::fetch();
 
         print_r($results);
 
@@ -183,7 +183,7 @@ class DbConnectorMain extends DbConnector {
         self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
         // SQL文を実行する
-        $results = self::fetchSome();
+        $results = self::fetch();
 
         return $results;
     }
