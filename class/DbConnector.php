@@ -64,18 +64,18 @@ abstract class DbConnector
     {
             // SQL文をセットする
             $target_table = static::$target_table;
-            static::$temp_sql ="SELECT *
+            self::$temp_sql ="SELECT *
                                 FROM `{$target_table}`
                                 WHERE `id`=:id";
             
             // SQL文をバインド・実行し、結果を取得する
-            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
-            static::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            static::$temp_stmt->execute();
-            $results = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+            self::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            self::$temp_stmt->execute();
+            $results = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
 
             // 一時変数を初期化する
-            static::resetTempVars();
+            self::resetTempVars();
             
             return $results;
     }
@@ -93,24 +93,24 @@ abstract class DbConnector
         int $group_id = null,
     ){
         // 受け取った値に対応するwhere句を生成する
-        static::$temp_inputs['where'] = get_defined_vars();
-        static::makeWhereClause();
+        self::$temp_inputs['where'] = get_defined_vars();
+        self::makeWhereClause();
 
         // SQL文をセットする
-        $target_table = static::$target_table;
-        $where_clause = static::$temp_where_clause;
-        $orderby_clause = static::$temp_orderby_clause;
+        $target_table = self::$target_table;
+        $where_clause = self::$temp_where_clause;
+        $orderby_clause = self::$temp_orderby_clause;
 
-        static::$temp_sql ="SELECT *
+        self::$temp_sql ="SELECT *
                             FROM `{$target_table}`
                             {$where_clause}
                             {$orderby_clause}";
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
         // バインド後にSQL文を実行し、結果を取得する
-        static::bind();
-        static::$temp_stmt->execute();
-        $results = static::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+        self::bind();
+        self::$temp_stmt->execute();
+        $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
         
         return $results;
     }
@@ -120,25 +120,25 @@ abstract class DbConnector
     protected static function fetchSome()
     {
         // SQL文をセットする
-        $selected_col = static::$temp_selected_col;
+        $selected_col = self::$temp_selected_col;
         $target_table = static::$target_table;
-        $where_clause = static::$temp_where_clause;
-        $orderby_clause = static::$temp_orderby_clause;
-        $groupby_clause = static::$temp_groupby_clause;
-        $join_clause = static::$temp_join_clause;
+        $where_clause = self::$temp_where_clause;
+        $orderby_clause = self::$temp_orderby_clause;
+        $groupby_clause = self::$temp_groupby_clause;
+        $join_clause = self::$temp_join_clause;
 
-        static::$temp_sql ="SELECT {$selected_col}
+        self::$temp_sql ="SELECT {$selected_col}
                             FROM `{$target_table}` {$join_clause}
                             {$where_clause}
                             {$orderby_clause}
                             {$groupby_clause}";
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-        echo static::$temp_sql;
+        // echo self::$temp_sql;
         // バインド後にSQL文を実行し、結果を取得する
-        static::bind();
-        static::$temp_stmt->execute();
-        $results = static::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+        self::bind();
+        self::$temp_stmt->execute();
+        $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
         
         return $results;
     }
@@ -151,13 +151,13 @@ abstract class DbConnector
 
             // SQL文をセットする
             $target_table = static::$target_table;
-            static::$temp_sql ="DELETE FROM `{$target_table}`
+            self::$temp_sql ="DELETE FROM `{$target_table}`
                                 WHERE `id`=:id";
-            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
             
             // バインド後にSQL文を実行する
-            static::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            static::$temp_stmt->execute();
+            self::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            self::$temp_stmt->execute();
 
             self::$pdo->commit();
 
@@ -171,13 +171,13 @@ abstract class DbConnector
     protected static function insertOne() {
         // SQL文をセットする
         $target_table = static::$target_table;
-        $set_clause = static::$temp_set_clause;
-        static::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
-        static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
+        $set_clause = self::$temp_set_clause;
+        self::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
         // バインド後、insert文を実行する
-        static::bind();
-        static::$temp_stmt->execute();
+        self::bind();
+        self::$temp_stmt->execute();
     }
 
     // 子クラスで生成したset句を使って update文を実行するメソッド
@@ -204,7 +204,7 @@ abstract class DbConnector
         $filters = array();
 
         // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
-        foreach(static::$temp_inputs['where'] as $key => $input) {
+        foreach(self::$temp_inputs['where'] as $key => $input) {
             if (!is_null($input)) {
                 // echo "{$key} => {$input}";
                 $filters[] = "`{$key}`=:{$key}";
@@ -220,13 +220,13 @@ abstract class DbConnector
                 }
             }
         }
-        if (strpos(static::$temp_where_clause, 'WHERE')) {
-            static::$temp_where_clause .= ' AND ';
+        if (strpos(self::$temp_where_clause, 'WHERE')) {
+            self::$temp_where_clause .= ' AND ';
         } else {
-            static::$temp_where_clause = ' WHERE ';
+            self::$temp_where_clause = ' WHERE ';
         }
         if ($temp_clause !== '') {
-            static::$temp_where_clause .= $temp_clause;
+            self::$temp_where_clause .= $temp_clause;
         }
     }
     
@@ -268,9 +268,10 @@ abstract class DbConnector
     public static function makeOrderClause(bool $desc = false, string $culmun = 'id')
     {
         if ($desc) {
-            static::$temp_orderby_clause = "order by `{$culmun}` desc";
+            self::$temp_orderby_clause = "order by `{$culmun}` desc";
+        } else {
+            self::$temp_orderby_clause = "order by `{$culmun}` asc";
         }
-        static::$temp_orderby_clause = "order by `{$culmun}` asc";
     }
 
     // orderby句にlimit offset句を付与するメソッド
@@ -278,10 +279,10 @@ abstract class DbConnector
     {
         $limit = " LIMIT :limit ";
         $offset = " OFFSET :offset ";
-        if (static::$temp_orderby_clause === '') {
-            static::$temp_orderby_clause = " ORDER BY id ASC".$limit.$offset;
+        if (self::$temp_orderby_clause === '') {
+            self::$temp_orderby_clause = " ORDER BY id ASC".$limit.$offset;
         } else {
-            static::$temp_orderby_clause .= $limit.$offset;
+            self::$temp_orderby_clause .= $limit.$offset;
         }
     }
 

@@ -205,7 +205,6 @@ class DbConnectorMain extends DbConnector {
         unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         self::makeWhereClause();
         self::addPeriodFilter($target_date);
-        
 
         // SQL文の句を作る
         self::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', self::$temp_where_clause);
@@ -268,7 +267,7 @@ class DbConnectorMain extends DbConnector {
     // 期間選択のための句をwhere句に付与する(月別のみに変更)
     protected static function addPeriodFilter(?string $target_date = null)
     {
-        if (is_null($target_date)) {
+        if (is_null($target_date) || strlen($target_date) !== 8) {
             $target_date = "NOW()";
         }
         $period = " MONTH(payment_at) = MONTH({$target_date})
