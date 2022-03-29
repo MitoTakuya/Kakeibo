@@ -24,10 +24,10 @@ class DbConnectorMain extends DbConnector {
 
             // 受け取った値に対応するset句を生成する
             self::$temp_inputs['set'] = get_defined_vars();
-            static::makeSetClause();
+            self::makeSetClause();
 
             // SQL文を実行する
-            static::insertOne();
+            self::insertOne();
 
             // トランザクション終了
             self::$pdo->commit();
@@ -52,11 +52,11 @@ class DbConnectorMain extends DbConnector {
     ) {
         try {
             // トランザクション開始
-            static::$pdo->beginTransaction();
+            self::$pdo->beginTransaction();
 
             // 受け取った値に対応するset句を生成する
-            static::$temp_inputs['set'] = get_defined_vars();
-            static::makeSetClause();
+            self::$temp_inputs['set'] = get_defined_vars();
+            self::makeSetClause();
 
             // SQL文を実行する
             self::updateOne();
@@ -78,23 +78,23 @@ class DbConnectorMain extends DbConnector {
         int $offset = 0
     ){
         // 受け取った値に対応する一時変数に格納する
-        static::$temp_inputs['temp'] = get_defined_vars();
+        self::$temp_inputs['temp'] = get_defined_vars();
 
         // limitoffset句付きのorderby句
         self::addLimit();
-        $orderby_clause = static::$temp_orderby_clause;
+        $orderby_clause = self::$temp_orderby_clause;
 
         // SQL文をセットする
-        static::$temp_where_clause = "WHERE `group_id`=:group_id";
-        static::$temp_sql ="SELECT * FROM `full_records`
+        self::$temp_where_clause = "WHERE `group_id`=:group_id";
+        self::$temp_sql ="SELECT * FROM `full_records`
                             WHERE `group_id`=:group_id
                             {$orderby_clause};";
         
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
-        static::bind();
-        static::$temp_stmt->execute();
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+        self::bind();
+        self::$temp_stmt->execute();
 
-        $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
+        $results = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // クエリ結果が0件の場合、空の配列を返す
         return $results;
@@ -138,14 +138,14 @@ class DbConnectorMain extends DbConnector {
     {
         // where句をつくる
         $type_id = self::$outgo_type_id;
-        static::$temp_inputs['where'] = get_defined_vars();
+        self::$temp_inputs['where'] = get_defined_vars();
         self::makeWhereClause();
 
         // SELECTする対象を一時変数に格納する
-        static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
+        self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchSome();
+        $result = self::fetchSome();
         return $result[0]['outgo'];
     }
 
@@ -154,14 +154,14 @@ class DbConnectorMain extends DbConnector {
     {
         // where句をつくる
         $type_id = self::$income_type_id;
-        static::$temp_inputs['where'] = get_defined_vars();
+        self::$temp_inputs['where'] = get_defined_vars();
         self::makeWhereClause();
 
         // SELECTする対象を一時変数に格納する
-        static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
+        self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchSome();
+        $result = self::fetchSome();
         return $result[0]['income'];
     }
 
@@ -178,14 +178,14 @@ class DbConnectorMain extends DbConnector {
         ?string $target_date = null
     ) {
         // 受け取った値に対応するwhere句を生成する
-        $type_id = static::$outgo_type_id;
-        static::$temp_inputs['where'] = get_defined_vars();
-        unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
-        static::makeWhereClause();
+        $type_id = self::$outgo_type_id;
+        self::$temp_inputs['where'] = get_defined_vars();
+        unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+        self::makeWhereClause();
         static::addPeriodFilter($target_date); // where句に日時指定を追加
 
         // select対象を決定する
-        static::$temp_selected_col = "IFNULL(SUM(`payment`), 0) AS `sum`";
+        self::$temp_selected_col = "IFNULL(SUM(`payment`), 0) AS `sum`";
 
         // SQL文を実行し、結果を格納する
         $results = self::fetchSome();
@@ -200,21 +200,21 @@ class DbConnectorMain extends DbConnector {
         ?string $target_date = null,
     ){
         // 受け取った値に対応するwhere句を生成する
-        $type_id = static::$outgo_type_id;
-        static::$temp_inputs['where'] = get_defined_vars();
-        unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
-        static::makeWhereClause();
+        $type_id = self::$outgo_type_id;
+        self::$temp_inputs['where'] = get_defined_vars();
+        unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+        self::makeWhereClause();
         self::addPeriodFilter($target_date);
         
 
         // SQL文の句を作る
-        static::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', static::$temp_where_clause);
-        static::$temp_selected_col = "main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`";
-        static::$temp_groupby_clause = "GROUP BY `category_id`";
-        static::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
+        self::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', self::$temp_where_clause);
+        self::$temp_selected_col = "main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`";
+        self::$temp_groupby_clause = "GROUP BY `category_id`";
+        self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
         // SQL文を実行する
-        $results = static::fetchSome();
+        $results = self::fetchSome();
 
         return $results;
     }
@@ -234,24 +234,24 @@ class DbConnectorMain extends DbConnector {
         ?string $category_id = null
     ) {
         // 受け取った値に対応するwhere句を生成する
-        static::$temp_inputs['where'] = get_defined_vars();
-        unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
-        static::makeWhereClause();
+        self::$temp_inputs['where'] = get_defined_vars();
+        unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+        self::makeWhereClause();
         self::addPeriodFilter($target_date);
 
         // SQL文をセットする
-        $orderby_clause = static::$temp_orderby_clause;
-        $where_clause = static::$temp_where_clause;
-        static::$temp_sql = "SELECT *
+        $orderby_clause = self::$temp_orderby_clause;
+        $where_clause = self::$temp_where_clause;
+        self::$temp_sql = "SELECT *
                             FROM `full_records`
                             {$where_clause}
                             {$orderby_clause}";           //$target_date には関数も入るためバインドしない
         
         // バインド後にSQL文を実行し、結果を取得する
-        static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
-        static::bind();
-        static::$temp_stmt->execute();
-        $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+        self::bind();
+        self::$temp_stmt->execute();
+        $results = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
         if (count($results) == 0) {
@@ -274,10 +274,10 @@ class DbConnectorMain extends DbConnector {
         $period = " MONTH(payment_at) = MONTH({$target_date})
                     AND YEAR(payment_at) = YEAR({$target_date})";
 
-        if (static::$temp_where_clause === '') {
-            static::$temp_where_clause = " WHERE ".$period;
+        if (self::$temp_where_clause === '') {
+            self::$temp_where_clause = " WHERE ".$period;
         } else {
-            static::$temp_where_clause .= " AND ".$period;
+            self::$temp_where_clause .= " AND ".$period;
         }
     }
 }
