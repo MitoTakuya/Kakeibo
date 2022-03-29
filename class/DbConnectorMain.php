@@ -20,62 +20,14 @@ class DbConnectorMain extends DbConnector {
     ) {
         try {
             // トランザクション開始
-            static::$pdo->beginTransaction();
+            self::$pdo->beginTransaction();
 
             // 受け取った値に対応するset句を生成する
-            static::$temp_inputs['set'] = get_defined_vars();
+            self::$temp_inputs['set'] = get_defined_vars();
             static::makeSetClause();
 
-            // SQL文をセットする
-            $set_clause = static::$temp_set_clause;
-            static::$temp_sql = "INSERT INTO `main` {$set_clause};";
-            static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
-
-            // バインド後、insert文を実行する
-            static::bind();
-            static::$temp_stmt->execute();
-
-            // トランザクション終了
-            static::$pdo->commit();
-
-        } catch (PDOException $e) {
-            static::$pdo->rollBack();
-            return static::TRANSACTION_ERROR;
-        }
-    }
-
-    // mainテーブルのレコードを1つ更新する
-    public static function updateRecord(
-        int $id,
-        string $title,
-        int $payment,
-        string $payment_at,
-        int $user_id,
-        int $type_id,
-        int $category_id,
-        int $group_id,
-        string $memo = null
-    ) {
-        try {
-            // トランザクション開始
-            static::$pdo->beginTransaction();
-
-            // 受け取った値に対応するset句を生成する
-            static::$temp_inputs['set'] = get_defined_vars();
-            static::makeSetClause();
-
-            // SQL文をセットする
-            $set_clause = static::$temp_set_clause;
-            static::$temp_sql = "UPDATE `main`
-                                {$set_clause}
-                                WHERE `id`=:id;";
-            static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
-
-            echo static::$temp_sql;
-
-            // バインド後、insert文を実行する
-            static::bind();
-            static::$temp_stmt->execute();
+            // SQL文を実行する
+            static::insertOne();
 
             // トランザクション終了
             self::$pdo->commit();
@@ -86,8 +38,40 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-    // あるグループのレコードを一定数取り出す（画面に収まる数など
-    // DbConnector::selectOrder()で事前にorderby句の設定が必要
+    // mainテーブルのレコードを1つ更新する
+    public static function updateRecord(
+        int $id,
+        string $title = null,
+        int $payment = null,
+        string $payment_at = null,
+        int $user_id = null,
+        int $type_id = null,
+        int $category_id = null,
+        int $group_id = null,
+        string $memo = null
+    ) {
+        try {
+            // トランザクション開始
+            static::$pdo->beginTransaction();
+
+            // 受け取った値に対応するset句を生成する
+            static::$temp_inputs['set'] = get_defined_vars();
+            static::makeSetClause();
+
+            // SQL文を実行する
+            self::updateOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
+    }
+
+    // あるグループのレコードを一定数取り出す（画面に収まる数など *後で別クラスに移す
+    // DbConnector::makeOrderClauserder()で事前にorderby句の設定が必要
     public static function fetchGroupLimitedRecords(
         int $group_id,
         int $limit,
@@ -95,14 +79,16 @@ class DbConnectorMain extends DbConnector {
     ){
         // 受け取った値に対応する一時変数に格納する
         static::$temp_inputs['temp'] = get_defined_vars();
+
+        // limitoffset句付きのorderby句
+        self::addLimit();
         $orderby_clause = static::$temp_orderby_clause;
 
         // SQL文をセットする
+        static::$temp_where_clause = "WHERE `group_id`=:group_id";
         static::$temp_sql ="SELECT * FROM `full_records`
                             WHERE `group_id`=:group_id
-                            {$orderby_clause}
-                            LIMIT :limit
-                            OFFSET :offset;";
+                            {$orderby_clause};";
         
         static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
         static::bind();
@@ -154,7 +140,7 @@ class DbConnectorMain extends DbConnector {
         static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchPaticularCol(group_id:$group_id, type_id:self::$outgo_type_id);
+        $result = static::fetchSome(group_id:$group_id, type_id:self::$outgo_type_id);
         return $result[0]['outgo'];
     }
 
@@ -165,16 +151,17 @@ class DbConnectorMain extends DbConnector {
         static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchPaticularCol(group_id:$group_id, type_id:self::$income_type_id);
+        $result = static::fetchSome(group_id:$group_id, type_id:self::$income_type_id);
         return $result[0]['income'];
     }
 
-// あるグループの月別の特定カテゴリにおける支出合計を出力する
-// カテゴリを指定しない場合は月別の支出合計を出力する
-/*
-    使用例：get_filtered_outgo(group_id:1, target_date:'20220301')
-    (グループid1番の「2022年3月1日」の合計支出を出力)
-*/
+
+    // あるグループの月別の特定カテゴリにおける支出合計を出力する
+    // カテゴリを指定しない場合は月別の支出合計を出力する
+    /*
+        使用例：get_filtered_outgo(group_id:1, target_date:'20220301')
+        (グループid1番の「2022年3月1日」の合計支出を出力)
+    */
     public static function fetchFilteredOutgo(
         int $group_id,
         int $category_id = null,
@@ -185,21 +172,18 @@ class DbConnectorMain extends DbConnector {
         static::$temp_inputs['where'] = get_defined_vars();
         unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         static::makeWhereClause();
-
         
-        // $period_filter = self::makePeriodFilter($target_date);
+        // 条件を追加する
+        static::addPeriodFilter($target_date); // where句に日時指定を追加
 
         // SQL文をセットする
-        static::addPeriodFilter($target_date); // 月別・週別の選択と、その基準日の選択
         $where_clause = static::$temp_where_clause;
         $orderby_clause = static::$temp_orderby_clause;
 
         static::$temp_sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
                 FROM `main`
                 {$where_clause}
-                
                 {$orderby_clause}";
-                echo static::$temp_sql;
         static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
 
         // バインド後にSQL文を実行し、結果を取得する
@@ -238,8 +222,8 @@ class DbConnectorMain extends DbConnector {
  **********************************************************/
 // あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する *要order切り替え
 /*
-    使用例 : fetch_filtered_records(group_id:1, target_date:'20220301', period_param:1)
-    (グループid1番の「2022年3月1日」の週の全レコードを出力)
+    使用例 : fetch_filtered_records(group_id:1, target_date:'20220301')
+    (グループid1番の「2022年3月1日」の月の全レコードを出力)
 */
     public static function fetchFilteredRecords(
         int $group_id,
@@ -252,38 +236,36 @@ class DbConnectorMain extends DbConnector {
         unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         static::makeWhereClause();
 
+        // 条件の追加
+        self::addPeriodFilter($target_date);
+
         // SQL文をセットする
-        $period_filter = self::makePeriodFilter($target_date);
         $orderby_clause = static::$temp_orderby_clause;
         $where_clause = static::$temp_where_clause;
         static::$temp_sql = "SELECT *
                             FROM `full_records`
                             {$where_clause}
-                            AND {$period_filter}
                             {$orderby_clause}";           //$target_date には関数も入るためバインドしない
         
-        // バインド後にSQL文を実行し、結果を取得する
         echo static::$temp_sql;
+        // バインド後にSQL文を実行し、結果を取得する
         static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
         static::bind();
         static::$temp_stmt->execute();
         $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
         
-        return $results; //格納されていなければ false を返す
+        // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+        if (count($results) == 0) {
+            return false;
+        } else {
+            return $results;
+        }
     }
 
 /*****************************************
  * メソッド内部からのみ呼び出されるメソッド
  * DB切断は呼び出し元メソッドで行う
  *******************************************/
-    // 日付が渡されなければ、実行時点の日付を返す。 * 直接呼び出さない
-    private static function selectDate(?string $target_date = null)
-    {
-        if (is_null($target_date)) {
-            $target_date = "NOW()";
-        }
-        return $target_date;
-    }
 
     // 期間選択のための句を返す(月別のみに変更)
     private static function makePeriodFilter(?string $target_date = null)
@@ -294,7 +276,7 @@ class DbConnectorMain extends DbConnector {
         return "MONTH(payment_at) = MONTH({$target_date})
                 AND YEAR(payment_at) = YEAR({$target_date})";
     }
-    // 期間選択のための句を返す(月別のみに変更)
+    // 期間選択のための句をwhere句に付与する(月別のみに変更)
     protected static function addPeriodFilter(?string $target_date = null)
     {
         if (is_null($target_date)) {

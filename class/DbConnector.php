@@ -115,7 +115,7 @@ abstract class DbConnector
 
     // where句の条件を満たすレコードをすべて取得する
     // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    protected static function fetchPaticularCol(
+    protected static function fetchSome(
         int $id = null,
         string $title = null,
         int $payment = null, 
@@ -124,10 +124,16 @@ abstract class DbConnector
         int $type_id = null,
         int $category_id = null,
         int $group_id = null,
+        $filter = null
     ){
         // 受け取った値に対応するwhere句を生成する
         static::$temp_inputs['where'] = get_defined_vars();
         static::makeWhereClause();
+
+        // 条件追加メソッドを実行する
+        if (!is_null($filter)) {
+            $filter();
+        }
 
         // SQL文をセットする
         $selected_col = static::$temp_selected_col;
@@ -173,12 +179,40 @@ abstract class DbConnector
         }
     }
 
+    // 子クラスで生成したset句を使ってinsert set文を実行するメソッド
+    protected static function insertOne() {
+        // SQL文をセットする
+        $target_table = static::$target_table;
+        $set_clause = static::$temp_set_clause;
+        static::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
+        static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
+
+        // バインド後、insert文を実行する
+        static::bind();
+        static::$temp_stmt->execute();
+    }
+
+    // 子クラスで生成したset句を使って update文を実行するメソッド
+    protected static function updateOne() {
+        // SQL文をセットする
+        $target_table = static::$target_table;
+        $set_clause = self::$temp_set_clause;
+        self::$temp_sql = "UPDATE `{$target_table}` {$set_clause} WHERE id=:id;";
+        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+
+        // バインド後、insert文を実行する
+        self::bind();
+        self::$temp_stmt->execute();
+    }
+
+/*******************************************************************************
+ * SQL文を組み立てるメソッド
+ *******************************************************************************/
     // SQL文のWHERE句を組み立てる
     protected static function makeWhereClause()
     {
-        // 条件式を初期化する
+        // 条件式を格納するための一時変数を用意する
         $temp_clause = '';
-        // 条件格納用の空の配列を作る
         $filters = array();
 
         // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
@@ -188,7 +222,6 @@ abstract class DbConnector
                 $filters[] = "`{$key}`=:{$key}";
             }
         }
-        // print_r($filters);
 
         // $filters に格納された値を文字列結合し、「WHERE `~id`=:~id,...」の形の文字列をつくる
         if (count($filters) > 0) {
@@ -199,10 +232,13 @@ abstract class DbConnector
                 }
             }
         }
-        if ($temp_clause === '') {
-            static::$temp_where_clause = null;
+        if (strpos(static::$temp_where_clause, 'WHERE')) {
+            static::$temp_where_clause .= ' AND ';
         } else {
-            static::$temp_where_clause = 'WHERE ' . $temp_clause;
+            static::$temp_where_clause = ' WHERE ';
+        }
+        if ($temp_clause !== '') {
+            static::$temp_where_clause .= $temp_clause;
         }
     }
     
@@ -222,7 +258,7 @@ abstract class DbConnector
             }
         }
 
-        // $filters に格納された値を文字列結合し、「WHERE `~id`=:~id,...」の形の文字列をつくる
+        // $filters に格納された値を文字列結合し、「SET `~id`=:~id,...」の形の文字列をつくる
         if (count($filters) > 0) {
             for($i = 0; $i < count($filters); $i++) {
                 $temp_clause .= $filters[$i];
@@ -241,12 +277,24 @@ abstract class DbConnector
 
     // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
     // SQL実行メソッドを呼び出す前に、コントローラー側で実行する
-    public static function selectOrder(bool $desc = false, string $culmun = 'id')
+    public static function makeOrderClause(bool $desc = false, string $culmun = 'id')
     {
         if ($desc) {
             static::$temp_orderby_clause = "order by `{$culmun}` desc";
         }
         static::$temp_orderby_clause = "order by `{$culmun}` asc";
+    }
+
+    // orderby句にlimit offset句を付与するメソッド
+    protected static function addLimit()
+    {
+        $limit = " LIMIT :limit ";
+        $offset = " OFFSET :offset ";
+        if (static::$temp_orderby_clause === '') {
+            static::$temp_orderby_clause = " ORDER BY id ASC".$limit.$offset;
+        } else {
+            static::$temp_orderby_clause .= $limit.$offset;
+        }
     }
 
     // PDOStatement->bindValue()を一括で行うメソッド
