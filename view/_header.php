@@ -1,5 +1,5 @@
 <!-- ナビゲーションバー -->
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-dark" style="background-color: #1B435D">
     <!-- タイトル -->
     <a href="dashboard.php" class="navbar-brand">家計簿</a> 
     <!-- ハンバーガーメニュー -->

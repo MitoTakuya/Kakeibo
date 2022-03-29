@@ -100,7 +100,7 @@ require_once __DIR__ . "/../userController.php";
 						</div>
 
 						<div class="divider-form"></div>
-						<input type="submit" name="new_user" class="btn btn-block btn-lg btn-primary" value="確認する">
+						<input type="submit" name="new_user" class="btn btn-block btn-lg btn-primary" value="送信">
 						<p class="text-center">すでにアカウントをお持ちですか？</p>
 						<a href="login.php" class="nav-item nav-link text-center">ログインする</a>
 					</form>
