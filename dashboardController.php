@@ -25,7 +25,7 @@ if (DbConnector::connectDB()) {
     }
 
     // カテゴリごとの支出を取り出す
-    $categorized_outgo_list = DbConnectorMain::fetchFilteredOutgoList(
+    $categorized_outgo_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
