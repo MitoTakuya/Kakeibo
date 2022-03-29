@@ -3,7 +3,7 @@
     <!-- タイトル -->
     <a href="dashboard.php" class="navbar-brand">家計簿</a> 
     <!-- ハンバーガーメニュー -->
-    <img class="circle" src="../images/<?php echo $_SESSION['user_image']; ?>" type="button"
+    <img class="circle" src="../images/<?php echo Config::h($_SESSION['user_image']); ?>" type="button"
     style="height:50px;width:50px;border-radius:50%;cursor:pointer"  data-toggle="collapse" data-target="#navbarNav"
     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"/>
     <!-- ナビゲーションメニュー -->

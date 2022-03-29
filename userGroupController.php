@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/class/DbConnectorUserGroups.php';
-require_once __DIR__ . '/class/UserRegistory.php';
 
 if (isset($_SESSION['group_id'])) {
     $user_group = new DbConnectorUserGroups();
