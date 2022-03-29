@@ -47,7 +47,7 @@ require_once __DIR__ . "/../userEditController.php";
 							<h5><span>
 								<img src="../images/<?php echo Config::h($row['user_image']); ?>" border-radius="50%" alt="アイコン画像"
 									style="height:50px;width:50px;border-radius:50%"/>
-								<?php echo $row['user_name']; ?>
+								<?php echo Config::h($row['user_name']); ?>
 							</span></h5>
 						</div>
 						<?php
@@ -85,7 +85,7 @@ require_once __DIR__ . "/../userEditController.php";
 						</h5>
 						<div class="ml-4">
 							<span v-if="isActive">*****************</span>
-							<span v-else><?php echo $group['group_password']; ?></span>
+							<span v-else><?php echo Config::h($group['group_password']); ?></span>
 						</div>
 						<?php
 						break;

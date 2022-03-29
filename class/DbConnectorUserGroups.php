@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/DbConnector.php';
 
 class DbConnectorUserGroups extends DbConnector
 {

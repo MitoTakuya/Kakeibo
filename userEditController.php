@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/init.php';
-require_once __DIR__ . '/class/DbConnectorUsers.php';
-require_once __DIR__ . '/class/UserRegistory.php';
 
 if (DbConnector::connectDB()) {
     // ユーザー情報更新の際
