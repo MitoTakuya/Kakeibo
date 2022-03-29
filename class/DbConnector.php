@@ -102,7 +102,7 @@ abstract class DbConnector
                             {$groupby_clause}";
         self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-        // echo self::$temp_sql;
+        // echo self::$temp_sql."<br>";
         // バインド後にSQL文を実行し、結果を取得する
         self::bind();
         self::$temp_stmt->execute();
@@ -112,9 +112,9 @@ abstract class DbConnector
         } else {
             $results = $pdo_method();
         }
+        self::resetTemps();
         return $results;
         // 一時変数を初期化する
-        self::resetTemps();
     }
 
     // idを指定してレコードを1つ削除するメソッド
