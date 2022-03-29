@@ -27,7 +27,7 @@ require_once __DIR__ . "/../userEditController.php";
                     <p><i class="fas fa-desktop"></i></i>ユーザー情報更新</p>
                 </span>
                 <form method="POST" action="" enctype="multipart/form-data">
-                    <input type="hidden" name="id" value="<?php echo $current_user['user_id']; ?>">
+                    <input type="hidden" name="id" value="<?php echo Config::h($current_user['user_id']); ?>">
                     <div class="divider-form"></div>
                     <div class="form-group">
                     <p><i class="fas fa-pen"></i>
