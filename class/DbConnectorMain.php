@@ -70,35 +70,35 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-    // あるグループのレコードを一定数取り出す（画面に収まる数など *後で別クラスに移す
-    // DbConnector::makeOrderClauserder()で事前にorderby句の設定が必要
-    public static function fetchGroupLimitedRecords(
-        int $group_id,
-        int $limit,
-        int $offset = 0
-    ){
-        // 受け取った値に対応する一時変数に格納する
-        self::$temp_inputs['temp'] = get_defined_vars();
+    // // あるグループのレコードを一定数取り出す（画面に収まる数など *別クラスに移したので削除予定
+    // // DbConnector::makeOrderClauserder()で事前にorderby句の設定が必要
+    // public static function fetchGroupLimitedRecords(
+    //     int $group_id,
+    //     int $limit,
+    //     int $offset = 0
+    // ){
+    //     // 受け取った値に対応する一時変数に格納する
+    //     self::$temp_inputs['temp'] = get_defined_vars();
 
-        // limitoffset句付きのorderby句
-        self::addLimit();
-        $orderby_clause = self::$temp_orderby_clause;
+    //     // limitoffset句付きのorderby句
+    //     self::addLimit();
+    //     $orderby_clause = self::$temp_orderby_clause;
 
-        // SQL文をセットする
-        self::$temp_where_clause = "WHERE `group_id`=:group_id";
-        self::$temp_sql ="SELECT * FROM `full_records`
-                            WHERE `group_id`=:group_id
-                            {$orderby_clause};";
+    //     // SQL文をセットする
+    //     self::$temp_where_clause = "WHERE `group_id`=:group_id";
+    //     self::$temp_sql ="SELECT * FROM `full_records`
+    //                         WHERE `group_id`=:group_id
+    //                         {$orderby_clause};";
         
-        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-        self::bind();
-        self::$temp_stmt->execute();
+    //     self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+    //     self::bind();
+    //     self::$temp_stmt->execute();
 
-        $results = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
+    //     $results = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // クエリ結果が0件の場合、空の配列を返す
-        return $results;
-    }
+    //     // クエリ結果が0件の場合、空の配列を返す
+    //     return $results;
+    // }
 
 /**********************************************************
  * ダッシュボードで集計を表示するための関数
@@ -257,26 +257,6 @@ class DbConnectorMain extends DbConnector {
             return false;
         } else {
             return $results;
-        }
-    }
-
-/*****************************************
- * メソッド内部からのみ呼び出されるメソッド
- * DB切断は呼び出し元メソッドで行う
- *******************************************/
-    // 期間選択のための句をwhere句に付与する(月別のみに変更)
-    protected static function addPeriodFilter(?string $target_date = null)
-    {
-        if (is_null($target_date) || strlen($target_date) !== 8) {
-            $target_date = "NOW()";
-        }
-        $period = " MONTH(payment_at) = MONTH({$target_date})
-                    AND YEAR(payment_at) = YEAR({$target_date})";
-
-        if (self::$temp_where_clause === '') {
-            self::$temp_where_clause = " WHERE ".$period;
-        } else {
-            self::$temp_where_clause .= " AND ".$period;
         }
     }
 }

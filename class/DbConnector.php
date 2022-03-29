@@ -286,6 +286,21 @@ abstract class DbConnector
         }
     }
 
+    protected static function addPeriodFilter(?string $target_date = null)
+    {
+        if (is_null($target_date) || strlen($target_date) !== 8) {
+            $target_date = "NOW()";
+        }
+        $period = " MONTH(payment_at) = MONTH({$target_date})
+                    AND YEAR(payment_at) = YEAR({$target_date})";
+
+        if (self::$temp_where_clause === '') {
+            self::$temp_where_clause = " WHERE ".$period;
+        } else {
+            self::$temp_where_clause .= " AND ".$period;
+        }
+    }
+
     // PDOStatement->bindValue()を一括で行うメソッド
     protected static function bind()
     {
