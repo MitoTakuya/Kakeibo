@@ -6,7 +6,7 @@ class DbConnectorFullRecords extends DbConnector {
 
     // あるグループのレコードを一定数取り出す（画面に収まる数など *後で別クラスに移す
     // DbConnector::makeOrderClauserder()で事前にorderby句の設定が必要
-    public static function fetchGroupLimitedRecords(
+    public static function fetchLimitedRecords(
         int $group_id,
         int $limit,
         int $offset = 0
@@ -19,7 +19,7 @@ class DbConnectorFullRecords extends DbConnector {
         // limitoffset句付きのorderby句
         self::addLimit();
 
-        $results = self::fetchSome();
+        $results = self::fetch();
 
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
         if (count($results) == 0) {
@@ -52,7 +52,7 @@ class DbConnectorFullRecords extends DbConnector {
         // select対象を設定
         self::$temp_selected_col = ' * ';
 
-        $results = self::fetchSome();
+        $results = self::fetch();
         
         // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
         if (count($results) == 0) {
