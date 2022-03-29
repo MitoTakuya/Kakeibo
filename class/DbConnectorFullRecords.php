@@ -29,6 +29,14 @@ class DbConnectorFullRecords extends DbConnector {
         }
     }
 
+/**********************************************************
+ * 詳細画面で表示するためのレコードを取り出すメソッド
+ **********************************************************/
+// あるグループの月別、週別の、特定カテゴリにおける支出合計を出力する *要order切り替え
+/*
+    使用例 : fetch_filtered_records(group_id:1, target_date:'20220301')
+    (グループid1番の「2022年3月1日」の月の全レコードを出力)
+*/
     public static function fetchFilteredRecords(
         int $group_id,
         int $type_id = null,

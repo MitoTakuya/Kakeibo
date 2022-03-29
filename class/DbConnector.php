@@ -75,7 +75,7 @@ abstract class DbConnector
             $results = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
 
             // 一時変数を初期化する
-            self::resetTempVars();
+            self::resetTemps();
             
             return $results;
     }
@@ -112,6 +112,8 @@ abstract class DbConnector
         self::$temp_stmt->execute();
         $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
         
+        // 一時変数を初期化する
+        self::resetTemps();
         return $results;
     }
 
@@ -140,6 +142,9 @@ abstract class DbConnector
         self::$temp_stmt->execute();
         $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
         
+        // 一時変数を初期化する
+        self::resetTemps();
+
         return $results;
     }
 
@@ -161,6 +166,9 @@ abstract class DbConnector
 
             self::$pdo->commit();
 
+            // 一時変数を初期化する
+            self::resetTemps();
+
         } catch (PDOException $e) {
             self::$pdo->rollBack();
             return self::TRANSACTION_ERROR;
@@ -178,6 +186,9 @@ abstract class DbConnector
         // バインド後、insert文を実行する
         self::bind();
         self::$temp_stmt->execute();
+
+        // 一時変数を初期化する
+        self::resetTemps();
     }
 
     // 子クラスで生成したset句を使って update文を実行するメソッド
@@ -191,6 +202,9 @@ abstract class DbConnector
         // バインド後、insert文を実行する
         self::bind();
         self::$temp_stmt->execute();
+
+        // 一時変数を初期化する
+        self::resetTemps();
     }
 
 /*******************************************************************************
@@ -320,7 +334,7 @@ abstract class DbConnector
     }
 
     // SQL文実行に使った一時変数をすべて初期化する
-    protected static function resetTempVars()
+    protected static function resetTemps()
     {
         static::$temp_inputs = null;
         static::$temp_sql = null;
