@@ -25,7 +25,34 @@ require_once __DIR__ . "/../userController.php";
 					<span class="input-group-addon ">
 						<p><i class="fas fa-desktop"></i></i>ユーザー登録</p>
 					</span>
-					<form method="POST" action="" enctype="multipart/form-data">
+					<div id="app">
+					<!-- モーダル -->
+					<form method="POST" id="form" action="" enctype="multipart/form-data">
+						<!-- Modal -->
+						<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+							<div class="modal-dialog modal-dialog-centered" role="document">
+								<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="exampleModalLabel">ユーザー登録確認</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<!-- 確認画面 -->
+									<p><i class="fas fa-pen"></i>ニックネーム:<span class="ml-2"><span id="modalName"></span></span></p>
+									<p><i class="far fa-envelope"></i>メールアドレス:<span class="ml-2"><span id="modalMail"></span></span></p>
+									<p><i class="fa fa-lock"></i>パスワード:<span class="ml-2"><span id="modalPassword"></span></span></p>
+									<p><i class="fa fa-image"></i>ユーザーイメージ:<span class="ml-2">
+										<span v-if="url"><img :src="url" style="height:50px;width:50px;border-radius:50%;"></span></span></p>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">修正する</button>
+									<input type="submit" name="new_user" class="btn btn-primary" value="送信する">
+								</div>
+								</div>
+							</div>
+						</div>
 						<div class="divider-form"></div>
 						<div class="form-group">
 							<p><i class="fas fa-pen"></i>
@@ -66,7 +93,7 @@ require_once __DIR__ . "/../userController.php";
 						<div class="form-group">
 							<p><i class="fa fa-image"></i>
 								<label for="user_image">アイコン写真</label>
-								<p><input type="file" name="user_image"></p>
+								<p><input type="file" name="user_image" ref="preview" @change="uploadFile"></p>
 								<?php if(!empty($user_errors['user_image'])): ?>
 									<span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
 								<?php endif; ?>
@@ -100,10 +127,13 @@ require_once __DIR__ . "/../userController.php";
 						</div>
 
 						<div class="divider-form"></div>
-						<input type="submit" name="new_user" class="btn btn-block btn-lg btn-primary" value="送信">
+						<button id="js-submit" type="button" name="new_user" class="btn btn-block btn-lg btn-primary" data-toggle="modal" data-target="#exampleModal" >
+						確認する
+						</button>
 						<p class="text-center">すでにアカウントをお持ちですか？</p>
 						<a href="login.php" class="nav-item nav-link text-center">ログインする</a>
 					</form>
+					</div>
 				</div>
 			</div>
 		</div>
