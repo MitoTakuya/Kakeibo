@@ -165,12 +165,12 @@ class DbConnectorMain extends DbConnector {
         return $results[0]['sum']; //格納されていなければ false を返す
     }
 
-    public static function fetchFilteredOutgoList(
+    public static function fetchCategorizedList(
         int $group_id,
+        int $type_id = null,
         ?string $target_date = null,
     ){
         // 受け取った値に対応するwhere句を生成する
-        $type_id = self::$outgo_type_id;
         self::$temp_inputs['where'] = get_defined_vars();
         unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         self::makeWhereClause();
