@@ -119,7 +119,7 @@ abstract class DbConnector
 
     // where句の条件を満たすレコードをすべて取得する
     // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    protected static function fetchSome()
+    protected static function fetchSome($pdo_method = null)
     {
         // SQL文をセットする
         $selected_col = self::$temp_selected_col;
@@ -140,7 +140,12 @@ abstract class DbConnector
         // バインド後にSQL文を実行し、結果を取得する
         self::bind();
         self::$temp_stmt->execute();
-        $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+
+        if (is_null($pdo_method)) {
+            $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+        } else {
+            $results = $pdo_method();
+        }
         
         // 一時変数を初期化する
         self::resetTemps();
@@ -319,14 +324,16 @@ abstract class DbConnector
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
-        foreach (static::$temp_inputs as $inputs) {
-            foreach($inputs as $column => $input) {
-                if (!is_null($input)) {
-                    // echo "{$key} := {$input}<br>";
-                    if (is_int($input)) {
-                        static::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
-                    } else {
-                        static::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
+        if (!is_null(static::$temp_inputs)) {
+            foreach (static::$temp_inputs as $inputs) {
+                foreach($inputs as $column => $input) {
+                    if (!is_null($input)) {
+                        // echo "{$key} := {$input}<br>";
+                        if (is_int($input)) {
+                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
+                        } else {
+                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
+                        }
                     }
                 }
             }
