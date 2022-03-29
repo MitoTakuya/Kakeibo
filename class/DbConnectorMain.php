@@ -114,9 +114,14 @@ class DbConnectorMain extends DbConnector {
         // SELECTする対象を一時変数に格納する
         self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
+        // PDOメソッドの指定
+        $pdo_method = function() {
+            $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        };
         // 親クラスのメソッドで結果を取り出す
-        $result = self::fetch();
-        return $result[0]['outgo'];
+        $result = self::fetch($pdo_method);
+        return $result['outgo'];
     }
 
     // 今までの合計収入を返す ダッシュボードに表示する
@@ -130,9 +135,14 @@ class DbConnectorMain extends DbConnector {
         // SELECTする対象を一時変数に格納する
         self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
+        // PDOメソッドの指定
+        $pdo_method = function() {
+            $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        };
         // 親クラスのメソッドで結果を取り出す
-        $result = self::fetch();
-        return $result[0]['income'];
+        $result = self::fetch($pdo_method);
+        return $result['income'];
     }
 
 

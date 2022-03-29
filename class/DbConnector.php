@@ -112,11 +112,9 @@ abstract class DbConnector
         } else {
             $results = $pdo_method();
         }
-        
+        return $results;
         // 一時変数を初期化する
         self::resetTemps();
-
-        return $results;
     }
 
     // idを指定してレコードを1つ削除するメソッド
