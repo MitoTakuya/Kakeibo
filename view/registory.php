@@ -121,8 +121,8 @@ require_once __DIR__.'/../registoryController.php';
 	<p class="show-table text-center mb-5">記帳一覧</p>
 
     <div class="container mb-5">
-		<div class="registory-box">
-			<table class="table table-striped border border-5 border">
+		<div class="registory-box table-responsive">
+			<table class="table table-striped border border-5">
 				<tbody>
 					<!-- 一覧の項目名 -->
 					<tr>
