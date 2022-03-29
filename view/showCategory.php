@@ -21,12 +21,9 @@ require_once __DIR__.'/../categoryController.php';
     </nav>
 
     <div class="container mt-5">
-        <div>	
-            <p class="show-table text-center mb-4">カテゴリ別（<?= $records[0]["category_name"]; ?>）</p>
+        <div>
+            <p class="show-table text-center mb-4">カテゴリ別</p>
         </div>
-        <?php if(!$records) :?>
-            <p><?= "対象のデータが存在しません。"; ?></p> 
-        <?php endif ;?>
         <div class="registory-box table-responsive">
             <table class="table table-striped border border-5 border">
                 <tbody>
@@ -71,61 +68,94 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     </div>
 
-<!-- モーダルウィンドウ -->
-<div class="modal">
-    <div class="modal_form">
-    <h2 class="post_title">編集</h2>
-    <form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
-    <input type="hidden" id="record_id" name="record_id">
-    <input type="hidden" id="type_id" name="type_id">
-    <div class="pb-2">
-        <label>日付</label>
-        <input type="date" id="edit_payment_at" class="form-control" name="payment_at" required>
+    <!-- ページネーション -->
+    <div class="container mb-5">
+        <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <?php if($now > 1) :?>
+                <li class="page-item">
+                    <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $previous ?>">前へ</a>
+                </li>
+            <?php else :?>
+                <li class="page-item disabled">
+                    <a class="page-link">前へ</a>
+                </li>
+            <?php endif ;?>
+            <?php for($i = 1; $i <= $max_page; $i++) :?>
+                <?php if($i == $now) :?>
+                    <li class="page-item disabled"><a class="page-link"><?= $now ?></a></li>
+                <?php else :?>
+                    <li class="page-item"><a class="page-link" href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
+                <?php endif ;?>
+            <?php endfor ;?>
+            <?php if($now < $max_page) :?>
+                <li class="page-item">
+                    <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $next ?>">次へ</a>
+                </li>
+            <?php else :?>
+                <li class="page-item disabled">
+                    <a class="page-link">次へ</a>
+                </li>
+            <?php endif ;?>
+        </ul>
+        </nav>
     </div>
-    <div class="pb-2">
-        <label>タイトル</label>
-        <input type="text" id="edit_title" class="form-control"  name="title" required>
-    </div>
-    <div class="pb-2">
-        <p><i class="fa fa-lock"></i>
-        <label>カテゴリ</label>
-        <select id="outgoes" class="form-control" name="category_id">
-            <?php if($category_id <= 100) :?>
-                <?php foreach($category_outgoes as $key => $category_outgo) :?>
-                    <?php if($category_id === $key + 1) :?>
-                        <option value="<?= $key + 1 ?>" selected><?= $category_outgo ?></option>
-                    <?php else: ?>
-                        <option value="<?= $key + 1 ?>"><?= $category_outgo ?></option>
-                    <?php endif; ?>      
-                <?php endforeach; ?>
-            <?php else: ?>
-                <?php foreach($category_incomes as $key => $category_incomes) :?>
-                    <?php if($category_id === $key + 101) :?>
-                        <option value="<?= $key + 101 ?>" selected><?= $category_incomes ?></option>
-                    <?php else: ?>
-                        <option value="<?= $key + 101 ?>"><?= $category_incomes ?></option>
-                    <?php endif; ?> 
-                <?php endforeach; ?>
-            <?php endif; ?>      
-        </select>
-    </div>
-    <div class="amount pb-2">
-        <label>金額</label>
-        <input type="text" id="edit_payment" onblur="addComma(this);" 
-            pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="form-control" 
-            name="payment" maxlength="12" min="1" required>
-    </div>
-    <div class="pb-2">
-        <div>
-            <label>メモ</label>
+
+    <!-- モーダルウィンドウ -->
+    <div class="modal">
+        <div class="modal_form">
+        <h2 class="post_title">編集</h2>
+        <form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
+        <input type="hidden" id="record_id" name="record_id">
+        <input type="hidden" id="type_id" name="type_id">
+        <div class="pb-2">
+            <label>日付</label>
+            <input type="date" id="edit_payment_at" class="form-control" name="payment_at" required>
         </div>
-        <textarea name="content" id="edit_memo" class="form-control" cols="40" rows="5"></textarea><br>
+        <div class="pb-2">
+            <label>タイトル</label>
+            <input type="text" id="edit_title" class="form-control"  name="title" required>
+        </div>
+        <div class="pb-2">
+            <p><i class="fa fa-lock"></i>
+            <label>カテゴリ</label>
+            <select id="outgoes" class="form-control" name="category_id">
+                <?php if($category_id <= 100) :?>
+                    <?php foreach($category_outgoes as $key => $category_outgo) :?>
+                        <?php if($category_id === $key + 1) :?>
+                            <option value="<?= $key + 1 ?>" selected><?= $category_outgo ?></option>
+                        <?php else: ?>
+                            <option value="<?= $key + 1 ?>"><?= $category_outgo ?></option>
+                        <?php endif; ?>      
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <?php foreach($category_incomes as $key => $category_incomes) :?>
+                        <?php if($category_id === $key + 101) :?>
+                            <option value="<?= $key + 101 ?>" selected><?= $category_incomes ?></option>
+                        <?php else: ?>
+                            <option value="<?= $key + 101 ?>"><?= $category_incomes ?></option>
+                        <?php endif; ?> 
+                    <?php endforeach; ?>
+                <?php endif; ?>      
+            </select>
+        </div>
+        <div class="amount pb-2">
+            <label>金額</label>
+            <input type="text" id="edit_payment" onblur="addComma(this);" 
+                pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="form-control" 
+                name="payment" maxlength="12" min="1" required>
+        </div>
+        <div class="pb-2">
+            <div>
+                <label>メモ</label>
+            </div>
+            <textarea name="content" id="edit_memo" class="form-control" cols="40" rows="5"></textarea><br>
+        </div>
+            <button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
+            <button class="btn btn-danger" id="close" type="button">キャンセル</button>
+        </form>
+        </div>
     </div>
-        <button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
-        <button class="btn btn-danger" id="close" type="button">キャンセル</button>
-    </form>
-    </div>
-</div>
 
 <script src="../stylesheet/js/registory.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

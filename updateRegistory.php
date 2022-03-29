@@ -29,9 +29,8 @@ if (DbConnector::connectDB()) {
             echo $error_messages;
         }
 
-        //POST元のページにリダイレクトする。
-        $uri = $_SERVER['HTTP_REFERER'];
-        var_dump($uri);
+        //POST元(編集していた)ページにリダイレクトする。
+        $uri = filter_input(INPUT_SERVER,"HTTP_REFERER");
         header("Location: ".$uri);
 
     }else {

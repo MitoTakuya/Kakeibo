@@ -23,16 +23,38 @@ if (DbConnector::connectDB()) {
     $category_incomes = $categories[2];
 
     if($category_id <= 100) {
-        //支出
-        $type_id = 1;
+        $type_id = 1; //支出
     }else {
-        //収入
-        $type_id = 2;
+        $type_id = 2; //収入
     }
 
     //特定グループのカテゴリ別レコード取得する
     $records = DbConnectorMain::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
 
+    /***************************************
+    *ページネーション処理 
+    ***************************************/
+    // 1ページに表示するレコード数
+    define('MAX','5'); 
+    // トータルレコード件数
+    $total_records = count($records); 
+    // トータルページ数
+    $max_page = ceil($total_records / MAX); 
+    //URLに渡された現在のページを取得
+    if(!isset($_GET['page_id'])){ 
+        $now = 1;
+    }else{
+        $now = $_GET['page_id'];
+    }
+    // 取得したデータの何番目から表示するか
+    $start_no = ($now - 1) * MAX; 
+    // 1ページに表示するレコードを切り取る
+    $records = array_slice($records, $start_no, MAX, true);
+    //「前へ」のページ数
+    $previous =  $now -1;
+    //「次へ」ページ数
+    $next =  $now + 1;
+    
 } else {
     $error_message = DbConnector::CONNECT_ERROR;
     require_once __DIR__.'/view/error.php';

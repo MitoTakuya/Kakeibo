@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../registoryController.php';
+
 ?>
 
 <!doctype html>
@@ -117,7 +118,7 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<p class="show-table text-center mb-5">記帳一覧</p>
+	<p class="show-table text-center mb-5">記帳一覧（<?= $total_records ?>件）</p>
 
     <div class="container mb-5">
 		<div class="registory-box table-responsive">
@@ -145,11 +146,11 @@ require_once __DIR__.'/../registoryController.php';
 						<?php else :?>
 							<td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
 						<?php endif ;?>
-						<td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
+						<td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
 						<td scope="row" id="category_name"><?= $record["category_name"] ?></td>
 						<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
-						<td scope="row" id="memo"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
-						<td scope="row" id="user_name"><?= $record["user_name"] ?></td>
+						<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
+						<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
 						<td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
 						<td scope="row" id="created_at"><?= $record["created_at"] ?></td>
 						<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
@@ -158,8 +159,41 @@ require_once __DIR__.'/../registoryController.php';
 					<?php endforeach; ?>
 				</tbody>
 			</table>
-		<div>
-    <div>
+		</div>
+	</div>
+
+	<!-- ページネーション -->
+	<div class="container mb-5">
+		<nav aria-label="Page navigation example">
+		<ul class="pagination justify-content-end">
+			<?php if($now > 1) :?>
+				<li class="page-item">
+					<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">前へ</a>
+				</li>
+			<?php endif ;?>
+			<?php for($i = 1; $i <= $max_page; $i++) :?>
+				<?php if($i == $now) :?>
+					<li class="page-item disabled"><a class="page-link"><?= $now ?></a></li>
+				<?php else :?>
+					<li class="page-item"><a class="page-link" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
+				<?php endif ;?>
+			<?php endfor ;?>
+			<?php if($now < $max_page) :?>
+				<li class="page-item">
+					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">次へ</a>
+				</li>
+			<?php endif ;?>
+		</ul>
+		</nav>
+	</div>
 
 	<!-- モーダルウィンドウ -->
 	<div class="modal">
