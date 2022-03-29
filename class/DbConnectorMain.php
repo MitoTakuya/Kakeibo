@@ -136,22 +136,32 @@ class DbConnectorMain extends DbConnector {
     // 今までの合計支出を返す ダッシュボードに表示する
     public static function fetchOutgo(int $group_id)
     {
+        // where句をつくる
+        $type_id = self::$outgo_type_id;
+        static::$temp_inputs['where'] = get_defined_vars();
+        self::makeWhereClause();
+
         // SELECTする対象を一時変数に格納する
         static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchSome(group_id:$group_id, type_id:self::$outgo_type_id);
+        $result = static::fetchSome();
         return $result[0]['outgo'];
     }
 
     // 今までの合計収入を返す ダッシュボードに表示する
     public static function fetchIncome(int $group_id)
     {
+        // where句をつくる
+        $type_id = self::$income_type_id;
+        static::$temp_inputs['where'] = get_defined_vars();
+        self::makeWhereClause();
+
         // SELECTする対象を一時変数に格納する
         static::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
         // 親クラスのメソッドで結果を取り出す
-        $result = static::fetchSome(group_id:$group_id, type_id:self::$income_type_id);
+        $result = static::fetchSome();
         return $result[0]['income'];
     }
 
@@ -172,47 +182,39 @@ class DbConnectorMain extends DbConnector {
         static::$temp_inputs['where'] = get_defined_vars();
         unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         static::makeWhereClause();
-        
-        // 条件を追加する
         static::addPeriodFilter($target_date); // where句に日時指定を追加
 
-        // SQL文をセットする
-        $where_clause = static::$temp_where_clause;
-        $orderby_clause = static::$temp_orderby_clause;
+        // select対象を決定する
+        static::$temp_selected_col = "IFNULL(SUM(`payment`), 0) AS `sum`";
 
-        static::$temp_sql = "SELECT IFNULL(SUM(`payment`), 0) AS `sum`
-                FROM `main`
-                {$where_clause}
-                {$orderby_clause}";
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
+        // SQL文を実行し、結果を格納する
+        $results = self::fetchSome();
 
-        // バインド後にSQL文を実行し、結果を取得する
-        static::bind();
-        static::$temp_stmt->execute();
-        $results = static::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+        print_r($results);
 
-        return $results['sum']; //格納されていなければ false を返す
+        return $results[0]['sum']; //格納されていなければ false を返す
     }
 
     public static function fetchFilteredOutgoList(
         int $group_id,
         ?string $target_date = null,
     ){
-        // 月別・週別の選択と、その基準日の選択
-        $period_filter = self::makePeriodFilter($target_date);
+        // 受け取った値に対応するwhere句を生成する
+        $type_id = static::$outgo_type_id;
+        static::$temp_inputs['where'] = get_defined_vars();
+        unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+        static::makeWhereClause();
+        self::addPeriodFilter($target_date);
+        
 
-        static::$temp_sql = "SELECT main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`
-                FROM `main`
-                JOIN `categories` on `categories`.`id` = `main`.`category_id`
-                WHERE `group_id` = :group_id
-                AND `main`.`type_id` = 1
-                AND {$period_filter}
-                GROUP BY `category_id`";
+        // SQL文の句を作る
+        static::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', static::$temp_where_clause);
+        static::$temp_selected_col = "main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`";
+        static::$temp_groupby_clause = "GROUP BY `category_id`";
+        static::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
-        static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
-        static::$temp_stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        static::$temp_stmt->execute();
-        $results = static::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
+        // SQL文を実行する
+        $results = static::fetchSome();
 
         return $results;
     }
@@ -235,8 +237,6 @@ class DbConnectorMain extends DbConnector {
         static::$temp_inputs['where'] = get_defined_vars();
         unset(static::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
         static::makeWhereClause();
-
-        // 条件の追加
         self::addPeriodFilter($target_date);
 
         // SQL文をセットする
@@ -247,7 +247,6 @@ class DbConnectorMain extends DbConnector {
                             {$where_clause}
                             {$orderby_clause}";           //$target_date には関数も入るためバインドしない
         
-        echo static::$temp_sql;
         // バインド後にSQL文を実行し、結果を取得する
         static::$temp_stmt = static::$pdo->prepare(static::$temp_sql);
         static::bind();
@@ -266,16 +265,6 @@ class DbConnectorMain extends DbConnector {
  * メソッド内部からのみ呼び出されるメソッド
  * DB切断は呼び出し元メソッドで行う
  *******************************************/
-
-    // 期間選択のための句を返す(月別のみに変更)
-    private static function makePeriodFilter(?string $target_date = null)
-    {
-        if (is_null($target_date)) {
-            $target_date = "NOW()";
-        }
-        return "MONTH(payment_at) = MONTH({$target_date})
-                AND YEAR(payment_at) = YEAR({$target_date})";
-    }
     // 期間選択のための句をwhere句に付与する(月別のみに変更)
     protected static function addPeriodFilter(?string $target_date = null)
     {

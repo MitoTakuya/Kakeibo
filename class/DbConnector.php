@@ -17,6 +17,8 @@ abstract class DbConnector
     protected static $temp_set_clause = null;       // set句を格納する      e.g. SET `title` =:title, `memo` = :memo,...)
     protected static $temp_where_clause = null;     // where句を格納する    e.g. WHERE `title` =:title AND `memo` = :memo ... AND type_id IN(1,2)
     protected static $temp_orderby_clause = null;   // orderby句を格納する
+    protected static $temp_groupby_clause = null;
+    protected static $temp_join_clause = null;
 
     // テーブル操作に使う変数
     protected static int $outgo_type_id = 1;
@@ -115,38 +117,24 @@ abstract class DbConnector
 
     // where句の条件を満たすレコードをすべて取得する
     // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    protected static function fetchSome(
-        int $id = null,
-        string $title = null,
-        int $payment = null, 
-        string $payment_at = null,
-        int $user_id = null,
-        int $type_id = null,
-        int $category_id = null,
-        int $group_id = null,
-        $filter = null
-    ){
-        // 受け取った値に対応するwhere句を生成する
-        static::$temp_inputs['where'] = get_defined_vars();
-        static::makeWhereClause();
-
-        // 条件追加メソッドを実行する
-        if (!is_null($filter)) {
-            $filter();
-        }
-
+    protected static function fetchSome()
+    {
         // SQL文をセットする
         $selected_col = static::$temp_selected_col;
         $target_table = static::$target_table;
         $where_clause = static::$temp_where_clause;
         $orderby_clause = static::$temp_orderby_clause;
+        $groupby_clause = static::$temp_groupby_clause;
+        $join_clause = static::$temp_join_clause;
 
         static::$temp_sql ="SELECT {$selected_col}
-                            FROM `{$target_table}`
+                            FROM `{$target_table}` {$join_clause}
                             {$where_clause}
-                            {$orderby_clause}";
+                            {$orderby_clause}
+                            {$groupby_clause}";
         static::$temp_stmt = self::$pdo->prepare(static::$temp_sql);
 
+        echo static::$temp_sql;
         // バインド後にSQL文を実行し、結果を取得する
         static::bind();
         static::$temp_stmt->execute();
@@ -325,5 +313,7 @@ abstract class DbConnector
         static::$temp_set_clause = null;
         static::$temp_where_clause = null;
         static::$temp_orderby_clause = null;
+        static::$temp_groupby_clause = null;
+        static::$temp_join_clause = null;
     }
 }
