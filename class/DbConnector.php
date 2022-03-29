@@ -153,6 +153,7 @@ abstract class DbConnector
         self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
         // バインド後、insert文を実行する
+        echo self::$temp_sql;
         self::bind();
         self::$temp_stmt->execute();
 
@@ -184,25 +185,21 @@ abstract class DbConnector
     {
         // 条件式を格納するための一時変数を用意する
         $temp_clause = '';
-        $filters = array();
 
         // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
+        $i = 0;
         foreach(self::$temp_inputs['where'] as $key => $input) {
             if (!is_null($input)) {
-                // echo "{$key} => {$input}";
-                $filters[] = "`{$key}`=:{$key}";
-            }
-        }
-
-        // $filters に格納された値を文字列結合し、「WHERE `~id`=:~id,...」の形の文字列をつくる
-        if (count($filters) > 0) {
-            for($i = 0; $i < count($filters); $i++) {
-                $temp_clause .= $filters[$i];
-                if ($i < count($filters) - 1) {
+                // 句の頭以外を「,」で区切る
+                if ($i > 0) {
                     $temp_clause .= ' AND ';
                 }
+                // echo "{$key} => {$input}";
+                $temp_clause .= "`{$key}`=:{$key}";
+                $i++;
             }
         }
+        // where句をstatic変数に格納する
         if (strpos(self::$temp_where_clause, 'WHERE')) {
             self::$temp_where_clause .= ' AND ';
         } else {
@@ -218,26 +215,21 @@ abstract class DbConnector
     {
         // 条件式を初期化する
         $temp_clause = '';
-        // 条件格納用の空の配列を作る
-        $filters = array();
 
         // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
+        $i = 0;
         foreach(self::$temp_inputs['set'] as $key => $input) {
             if (!is_null($input)) {
+                // 句の頭以外を「,」で区切る
+                if ($i > 0) {
+                    $temp_clause .= ', ';
+                }
                 // echo "{$key} => {$input}";
-                $filters[] = "`{$key}`=:{$key}";
+                $temp_clause .= "`{$key}`=:{$key} ";
+                $i++;
             }
         }
 
-        // $filters に格納された値を文字列結合し、「SET `~id`=:~id,...」の形の文字列をつくる
-        if (count($filters) > 0) {
-            for($i = 0; $i < count($filters); $i++) {
-                $temp_clause .= $filters[$i];
-                if ($i < count($filters) - 1) {
-                    $temp_clause .= ', ';
-                }
-            }
-        }
         // set句をstatic変数に格納する
         if ($temp_clause === '') {
             self::$temp_set_clause = null;
