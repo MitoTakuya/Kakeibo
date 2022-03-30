@@ -28,6 +28,7 @@ require_once __DIR__ . "/../userGroupController.php";
 			</span>
 			<form method="POST" action="" enctype="multipart/form-data">
 				<input type="hidden" name="id" value="<?php echo Config::h($row['id']); ?>">
+				<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 				<div class="divider-form"></div>
 				<div class="form-group">
 					<p><i class="fas fa-user-group"></i>
