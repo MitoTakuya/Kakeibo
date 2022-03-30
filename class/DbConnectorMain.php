@@ -198,7 +198,7 @@ class DbConnectorMain extends DbConnector {
         return $results;
     }
 
-    // 購入日付が最も古いレコードidの記入日付を返す
+    // 支払い日付が最も古いレコードidの記入日付を返す
     public static function fetchOldestDate(int $group_id)
     {
         // バインド対象を一時変数に格納に格納する

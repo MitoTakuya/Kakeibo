@@ -14,7 +14,7 @@ include(__DIR__.'\..\dashboardController.php');
             <link rel="stylesheet" href="../stylesheet/css/dashboard.css">
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <title>dashboard - (家計簿名)</title>
+        <title>dashboard</title>
     </head>
 
     <body>
