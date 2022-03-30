@@ -7,6 +7,8 @@ if (isset($_SESSION['group_id'])) {
     $row = $user_group->fetchUserGroup($_SESSION['group_id']);
     // POSTされたら入力チェック
     if (!empty($_POST)) {
+        // フォームとtokenが同じか確認
+        Config::check_token();
         $group_errors = UserRegistory::checkUserGroup();
         // エラーがなければグループ情報更新
         if (count($group_errors) == 0) {
