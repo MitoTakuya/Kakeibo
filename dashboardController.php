@@ -8,7 +8,6 @@ if (DbConnector::connectDB()) {
     // 画面上部に表示したりpostしたりする用
     $user_id = $_SESSION['id']; 
     $group_id = $_SESSION['group_id'];
-    $session_token = $_SESSION['token'];
 
     // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
     $goal = DbConnectorUserGroups::fetchGoal($group_id);
