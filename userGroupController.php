@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-if (DbConnector::connectDB()) {
+try {
+    DbConnector::connectDB();
     if (isset($_SESSION['group_id'])) {
         $user_group = new DbConnectorUserGroups();
         // ユーザーグループ情報取得
@@ -20,8 +21,8 @@ if (DbConnector::connectDB()) {
             }
         }
     }
-} else {
+} catch (Exception $e) {
     $error_message = DbConnector::CONNECT_ERROR;
     require_once __DIR__.'/view/error.php';
-    die();
+    exit();
 }

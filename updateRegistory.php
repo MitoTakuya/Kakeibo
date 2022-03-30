@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__.'/class/DbConnectorMain.php';
+require_once __DIR__.'/init.php';
 
-if (DbConnector::connectDB()) {
+try {
+    DbConnector::connectDB();
     //registory.phpからデータがPOSTされた時の処理
     if(!empty($_POST)) {
         Config::check_token();
@@ -18,7 +19,7 @@ if (DbConnector::connectDB()) {
         $memo = $_POST["content"];
 
         //更新前に対象レコードがDBに存在するか確認
-        $confirm = DbConnector::fetchOne($id);
+        $confirm = DbConnectorMain::fetchOne($id);
         
         if (is_array($confirm)) {
             //レコードを更新する
@@ -34,10 +35,19 @@ if (DbConnector::connectDB()) {
         exit;
     }
 
-} else {
-    //DB接続エラーの時、エラー画面を表示
-    $error_message = DbConnector::$connect_error;
-    require_once(__DIR__.'/view/error.php');
+} catch (Exception $e) {
+    // print('Error:'.$e->getMessage());
+    switch ($e) {
+        case 2002:
+            $error_message = DbConnector::CONNECT_ERROR;
+            break;
+        case 1:
+            $error_message = DbConnector::CONNECT_ERROR;
+            break;
+        default:
+        $error_message = "予期せぬエラーが発生しました。";
+            break;
+    }
+    require_once __DIR__.'/view/error.php';
     die();
-
 }

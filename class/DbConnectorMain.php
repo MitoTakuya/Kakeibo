@@ -272,4 +272,28 @@ class DbConnectorMain extends DbConnector {
             throw $e;
         }
     }
+
+    // 支払い日付が最も古いレコードidの記入日付を返す
+    public static function fetchOldestDate(int $group_id)
+    {
+        // バインド対象を一時変数に格納に格納する
+        self::$temp_inputs['temp']['group_id'] = $group_id;
+
+        // where句とselect対象を指定する
+        self::$temp_where_clause = "WHERE group_id = :group_id";
+        self::$temp_selected_col = "id, payment_at ";
+
+        // 購入日付・昇順に設定
+        self::makeOrderClause(culmun: 'payment_at');
+
+        // PDOメソッドの指定（一番上のレコードだけを取り出す）
+        $pdo_method = function() {
+            $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+            return $result;
+        };
+
+        // SQL文を実行し、結果を得る
+        $result = self::fetch($pdo_method);
+        return $result['payment_at'];
+    }
 }
