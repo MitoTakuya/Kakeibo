@@ -99,6 +99,7 @@ include(__DIR__.'\..\dashboardController.php');
                                                 <form action="./showCategory.php" method="get">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="id" value=<?= $outgo['category_id'] ?>>
+                                                    <input type="hidden" name="id" value=<?= $session_token ?>>
                                                 </form>
                                             </td>
 
