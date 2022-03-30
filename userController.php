@@ -6,7 +6,8 @@ $loader = AutoLoader::register();
 session_start();
 UserLogin::notLogin();
 
-if (DbConnector::connectDB()) {
+try {
+    DbConnector::connectDB();
 	if (!empty($_POST) && isset($_POST['new_user'])) {
         $new_user = new UserRegistory();
         $user_errors = $new_user->inputConfirmation();
@@ -26,8 +27,8 @@ if (DbConnector::connectDB()) {
         exit();
         }
     }
-} else {
+} catch (Exception $e) {
     $error_message = DbConnector::CONNECT_ERROR;
     require_once __DIR__.'/view/error.php';
-    die();
+    exit();
 }
