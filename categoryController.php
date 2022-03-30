@@ -4,6 +4,7 @@ require_once __DIR__.'/init.php';
 try {
     DbConnector::connectDB();
     if(!empty($_GET)) {
+        Config::check_token();
         $user_id = $_SESSION['id'];
         $group_id = $_SESSION['group_id'];
         $category_id = (int)$_GET["id"];
