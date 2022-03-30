@@ -114,6 +114,7 @@ class UserRegistory
             $user_image = date('YmdHis') . $_FILES['user_image']['name'];
             // 画像をアップロード
             move_uploaded_file($_FILES['user_image']['tmp_name'], '../images/'. $user_image);
+            $_SESSION['user_image'] = $user_image;
             // 更新処理
             DbConnectorUsers::editUser($user_name, $hash, $mail, $user_image, $id);
             return "ok";
