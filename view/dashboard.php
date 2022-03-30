@@ -20,20 +20,8 @@ include(__DIR__.'\..\dashboardController.php');
     <body>
         <div id="dashboard">
 
-        <header>
-            <nav class="navbar navbar-dark bg-dark">
-                <a href="#" class="navbar-brand"><?= $kakeibo_name ?></a> 
-                <div class="btn-group" role="group">
-                    <button id="header_menu" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Menu(仮置き)
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a class="dropdown-item" href="./registory.php">記帳</a>
-                    <a class="dropdown-item" href="./logout.php">ログアウト</a>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <!-- ヘッダー -->
+        <?php include __DIR__ . "/_header.php" ?>
 
         <!-- 内容部分 -->
         <div class="container">

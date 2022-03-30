@@ -1,13 +1,14 @@
 <?php
+require_once __DIR__ . '/init.php';
 require(__DIR__.'\class\DbConnectorMain.php');
 
 if (DbConnector::connectDB()) {
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
-    $user_name = "nanashi";     // = $_SESSION['user_name']; 
-    $group_id = 1;              // = $_SESSION['group_id'];
-    $kakeibo_name = '家計簿名'; // = $_SESSION['group_name'];
+    $user_id = $_SESSION['id']; 
+    $group_id = $_SESSION['group_id'];
+    $session_token = $_SESSION['token'];
 
     // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
     $goal = 1000000; // = DB_Connector_user_groups::メソッド
