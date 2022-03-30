@@ -37,8 +37,9 @@ if (DbConnector::connectDB()) {
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 登録日を取得する *DBC_users にメソッド追加要相談
-    $registration_date = new DateTime('20190601');
+    // 最も購入日付が古いレコードの日付を取得する
+    $registration_date = DbConnectorMain::fetchOldestDate($group_id);
+    $registration_date = new DateTime($registration_date);
 
     // 現在日時を取得する
     $carrent_date = new DateTime();
@@ -91,7 +92,7 @@ if (DbConnector::connectDB()) {
     DbConnector::disconnectDB();
 } else {
     // 接続失敗時にエラー画面を読み込む
-    // $error = DB_Connector::$connect_error *$connect_errorはpublicな定数にしてしまう
+    $error = DbConnector::CONNECT_ERROR;
     include(__DIR__.'/view/error.php');
     die();
 }

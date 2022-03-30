@@ -56,7 +56,7 @@ class DbConnectorUserGroups extends DbConnector
 
         // where句とselect対象を指定する
         self::$temp_where_clause = "WHERE id = :id";
-        self::$temp_selected_col = " IFNULL(`goal`, 0) AS `goal` ";
+        self::$temp_selected_col = "`goal` ";
 
         // PDOメソッドの指定
         $pdo_method = function() {
