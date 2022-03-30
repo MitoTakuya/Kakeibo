@@ -96,10 +96,9 @@ include(__DIR__.'\..\dashboardController.php');
                                         <tr>
                                             <!-- カテゴリー名、詳細リンク -->
                                             <td scope="row">
-                                                <form action="./showCategory.php" method="get">
+                                                <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
-                                                    <input type="hidden" name="id" value=<?= $outgo['category_id'] ?>>
-                                                    <input type="hidden" name="id" value=<?= $_SESSION['token'] ?>>
+                                                    <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
                                                 </form>
                                             </td>
 

@@ -92,6 +92,7 @@ try {
     DbConnector::disconnectDB();
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
+
     $error_code = $e->getCode();
     switch ($error_code) {
         case 2002:
@@ -102,7 +103,6 @@ try {
             $error_message = '予期せぬエラーが発生しました';
             break;
     }
-
     include(__DIR__.'/view/error.php');
     die();
 }
