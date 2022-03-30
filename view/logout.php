@@ -5,6 +5,7 @@ UserLogin::logout();
 //エラー画面からの遷移はログイン画面へリダイレクトする。
 if ($_GET['error']) {
 	header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
+	exit;
 }
 ?>
 <!doctype html>

@@ -4,10 +4,9 @@ require_once __DIR__.'/class/DbConnectorMain.php';
 if (DbConnector::connectDB()) {
     //registory.phpからデータがPOSTされた時の処理
     if(!empty($_POST)) {
-        
-        //★★★sessionIDを使用する予定
-        $user_id = 1;
-        $group_id = 1;
+        Config::check_token();
+        $user_id = $_SESSION['id'];
+        $group_id = $_SESSION['group_id'];
         $id = (int)$_POST["record_id"];
         $title = $_POST["title"];
         $payment = $_POST["payment"];
@@ -19,7 +18,7 @@ if (DbConnector::connectDB()) {
         $memo = $_POST["content"];
 
         //更新前に対象レコードがDBに存在するか確認
-        $confirm = DbConnectorMain::fetchOne($id);
+        $confirm = DbConnector::fetchOne($id);
         
         if (is_array($confirm)) {
             //レコードを更新する
@@ -32,12 +31,8 @@ if (DbConnector::connectDB()) {
         //POST元(編集していた)ページにリダイレクトする。
         $uri = filter_input(INPUT_SERVER,"HTTP_REFERER");
         header("Location: ".$uri);
-
-    }else {
-
-        //★ログイン画面にリダイレクト処理を追記する予定
-        echo "不正なアクセスです。";
     }
+
 } else {
     //DB接続エラーの時、エラー画面を表示
     $error_message = DbConnector::$connect_error;

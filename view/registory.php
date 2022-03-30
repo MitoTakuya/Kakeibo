@@ -1,20 +1,16 @@
 <?php
 require_once __DIR__.'/../registoryController.php';
-
 ?>
 
 <!doctype html>
 <html lang="ja">
 <head>
-	<!-- Required meta tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="../stylesheet/css/user.css">
 	<link rel="stylesheet" href="../stylesheet/css/registory.css">
-	<!-- FontAwesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<title>記帳画面</title>
 </head>
@@ -34,6 +30,7 @@ require_once __DIR__.'/../registoryController.php';
 				<div class="panel-group mt-1">
 					<div class="panel tab-A is-show p-2">
 					<form action="../registoryController.php?type_id=1" method="post">
+					<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -75,6 +72,7 @@ require_once __DIR__.'/../registoryController.php';
 
 					<div class="panel tab-B p-2">
 					<form action="../registoryController.php?type_id=2" method="post">
+					<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -134,29 +132,29 @@ require_once __DIR__.'/../registoryController.php';
 						<td scope="col" class="memo text-center">メモ</td> 
 						<td scope="col" class="user_name text-center">ユーザ名</td> 
 						<td scope="col" class="updated_at text-center">更新日</td> 
-						<td scope="col" class="created_at text-center">登録日</td> 
 						<td scope="col" class="edit-column text-center">編集</td>          
 						<td scope="col" class="delete-column text-center">削除</td>          
 					</tr>
-					<?php foreach($records as $record) :?>
-						<tr id="<?php echo $record['id']; ?>">
-						<td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
-						<?php if($record["type_id"] === 1) :?>
-							<td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
-						<?php else :?>
-							<td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
-						<?php endif ;?>
-						<td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
-						<td scope="row" id="category_name"><?= $record["category_name"] ?></td>
-						<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
-						<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
-						<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-						<td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
-						<td scope="row" id="created_at"><?= $record["created_at"] ?></td>
-						<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
-						<td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
-					</tr>
-					<?php endforeach; ?>
+					<?php if($records) :?>
+						<?php foreach($records as $record) :?>
+							<tr id="<?php echo $record['id']; ?>">
+							<td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
+							<?php if($record["type_id"] === 1) :?>
+								<td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
+							<?php else :?>
+								<td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
+							<?php endif ;?>
+							<td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
+							<td scope="row" id="category_name"><?= $record["category_name"] ?></td>
+							<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
+							<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
+							<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
+							<td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
+							<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
+							<td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
+						</tr>
+						<?php endforeach; ?>
+					<?php endif; ?>
 				</tbody>
 			</table>
 		</div>
@@ -200,6 +198,7 @@ require_once __DIR__.'/../registoryController.php';
 		<div class="modal_form">
 		<h2 class="post_title">編集</h2>
 		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
+		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 		<input type="hidden" id="record_id" name="record_id">
 		<input type="hidden" id="type_id" name="type_id">
 		<div>
@@ -235,12 +234,6 @@ require_once __DIR__.'/../registoryController.php';
 
 	<script src="../stylesheet/js/registory.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-	<!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" 
-		integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" 
-		integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous">
-	</script> -->
-	</body>
+
+</body>
 </html>

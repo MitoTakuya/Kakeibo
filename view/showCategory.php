@@ -37,7 +37,6 @@ require_once __DIR__.'/../categoryController.php';
                         <td scope="col" class="memo">メモ</td> 
                         <td scope="col" class="user_name">ユーザ名</td> 
                         <td scope="col" class="updated_at">更新日</td> 
-                        <td scope="col" class="created_at">登録日</td> 
                         <td scope="col" class="edit-column">編集</td>          
                         <td scope="col" class="delet-column">削除</td>          
                     </tr>
@@ -49,13 +48,12 @@ require_once __DIR__.'/../categoryController.php';
                         <?php else :?>
                             <td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
                         <?php endif ;?>
-                        <td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
+                        <td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
                         <td scope="row" id="category_name"><?= $record["category_name"] ?></td>
                         <td scope="row" id="payment"><?= number_format($record["payment"]) ?>円</td>
-                        <td scope="row" id="memo"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
-                        <td scope="row" id="user_name"><?= $record["user_name"] ?></td>
+                        <td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
+                        <td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
                         <td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
-                        <td scope="row" id="created_at"><?= $record["created_at"] ?></td>
                         <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
                         <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                     </tr>
