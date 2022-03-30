@@ -13,6 +13,7 @@ if (DbConnector::connectDB()) {
         if($user_errors == "ok") {
         // ログインに飛ばす
         header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
+        exit();
         }
     } elseif (!empty($_POST) && isset($_POST['login_user'])) {
         // フォームとtokenが同じか確認
@@ -22,8 +23,11 @@ if (DbConnector::connectDB()) {
         if($user_errors == "login_ok") {
         // トップページに飛ばす
         header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/dashboard.php');
+        exit();
         }
     }
 } else {
-	// include('エラー画面');
+    $error_message = DbConnector::CONNECT_ERROR;
+    require_once __DIR__.'/view/error.php';
+    die();
 }

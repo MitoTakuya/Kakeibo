@@ -17,10 +17,12 @@ $(function() {
     var user_name = $('#user_name').val()
     var mail = $('#mail').val()
     var password = $('#password').val()
+    var group_name = $('#group_name').val()
     var modal = $(this)
     modal.find('#modalName').text(user_name)
     modal.find('#modalMail').text(mail)
     modal.find('#modalPassword').text(password)
+    modal.find('#modalGroup').text(group_name)
   })
 })
 
@@ -29,6 +31,7 @@ $(document).ready(function () {
   $submitBtn.prop('disabled', true);
   $('#form input').on('change', function () {
     if (
+      $('#form input[type="text"]').val() !== "" &&
       $('#form input[type="mail"]').val() !== "" &&
       $('#form input[type="password"]').val() !== "" &&
       $('#form input[type="file"]').val() !== ""

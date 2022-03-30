@@ -34,17 +34,15 @@ require_once __DIR__ . "/../userController.php";
 								<div class="modal-content">
 								<div class="modal-header">
 									<h5 class="modal-title" id="exampleModalLabel">ユーザー登録確認</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-									</button>
 								</div>
-								<div class="modal-body">
+								<div class="modal-body" style="word-wrap: break-word">
 									<!-- 確認画面 -->
 									<p><i class="fas fa-pen"></i>ニックネーム:<span class="ml-2"><span id="modalName"></span></span></p>
 									<p><i class="far fa-envelope"></i>メールアドレス:<span class="ml-2"><span id="modalMail"></span></span></p>
 									<p><i class="fa fa-lock"></i>パスワード:<span class="ml-2"><span id="modalPassword"></span></span></p>
 									<p><i class="fa fa-image"></i>ユーザーイメージ:<span class="ml-2">
 										<span v-if="url"><img :src="url" style="height:50px;width:50px;border-radius:50%;"></span></span></p>
+									<p><i class="fa fa-ticket"></i>グループ:<span class="ml-2"><span id="modalGroup"></span></span></p>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-secondary" data-dismiss="modal">修正する</button>

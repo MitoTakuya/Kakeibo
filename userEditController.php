@@ -4,6 +4,8 @@ require_once __DIR__ . '/init.php';
 if (DbConnector::connectDB()) {
     // ユーザー情報更新の際
     if (isset($_POST['user_update'])) {
+        // フォームとtokenが同じか確認
+        Config::check_token();
         // バリデーションチェック
         $edit_user = new UserRegistory();
         $user_errors = $edit_user->checkConfirmation();
@@ -35,5 +37,7 @@ if (DbConnector::connectDB()) {
         exit();
     }
 } else {
-	// include('エラー画面');
+    $error_message = DbConnector::CONNECT_ERROR;
+    require_once __DIR__.'/view/error.php';
+    die();
 }

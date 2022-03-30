@@ -28,6 +28,7 @@ require_once __DIR__ . "/../userEditController.php";
                 </span>
                 <form method="POST" action="" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="<?php echo Config::h($current_user['user_id']); ?>">
+                    <input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
                     <div class="divider-form"></div>
                     <div class="form-group">
                     <p><i class="fas fa-pen"></i>
