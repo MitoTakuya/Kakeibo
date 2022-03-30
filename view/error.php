@@ -34,7 +34,7 @@ session_start();
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
 					value="再読込み" onclick="window.location.reload(true);" />
-				<a href="login.php" class="nav-item nav-link text-center">再ログイン</a>
+				<a href="logout.php?error=1" class="nav-item nav-link text-center">再ログイン</a>
 			</div>
 		</div>
 	</div>
