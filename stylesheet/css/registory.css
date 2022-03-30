@@ -8,57 +8,63 @@
 	border: 1px solid #EBEFF1;
 }
 
+label {
+	text-transform: uppercase;
+	color: #FFF;
+}
+
 .tab-group{
-    padding: 0;
-    margin: 0;
-    font-size: 24px;
-    display: flex;
-  }
+  padding: 0;
+  margin: 0;
+  font-size: 24px;
+  display: flex;
+}
 
-  /* 収支タブ */
-  .tab{
-    flex-grow: 1;
-    padding:10px;
-    list-style:none;
-    border-radius: 10px 10px 0 0 ;
-    text-align:center;
-    cursor:pointer;
-  }
+/* 収支タブ */
+.tab{
+  flex-grow: 1;
+  padding:10px;
+  list-style:none;
+  border-radius: 10px 10px 0 0 ;
+  text-align:center;
+  cursor:pointer;
+}
 
-  /*アクティブではないtabにマウスが乗ったら文字色を変更する*/
-  .tab:not(.is-active):hover  {
-    color:gray;
+/*マウスオーバーしたら文字色を変更する*/
+.tab:not(.is-active):hover  {
+  color:gray;
+}
 
-  }
-  /* 収支ごとのフォーム部分 */
-  /* .panel-group{
-    height:800px;
-  } */
+.panel{
+  display:none;
+}
 
-  .panel{
-    display:none;
-  }
+.tab-A.is-active{
+  background:rgb(245, 195, 195);
+  color:#FFF;
+  transition: all 0.2s ease-out;
+}
 
-  .tab-A.is-active{
-    background:rgb(245, 195, 195);
-    color:#FFF;
-    transition: all 0.2s ease-out;
-  }
+.panel.tab-A.is-show{
+  display:block;
+  background:rgb(245, 195, 195);
+}
 
-  .panel.tab-A.is-show{
-    background:rgb(245, 195, 195);
-    display:block;
-  }
+.tab-B.is-active{
+  background:rgb(149, 213, 230);
+  color:#FFF;
+  transition: all 0.2s ease-out;
+}
 
-  .tab-B.is-active{
-    background:rgb(149, 213, 230);
-    color:#FFF;
-    transition: all 0.2s ease-out;
-  }
-  .panel.tab-B.is-show{
-    display:block;
-    background:rgb(149, 213, 230);
-  }
+.panel.tab-B.is-show{
+  display:block;
+  background:rgb(149, 213, 230);
+}
+
+.show-table {
+  font-size: 24px;
+  color: black;
+}
 
 /* 金額を入力する項目 */
 .amount input {

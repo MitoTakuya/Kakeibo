@@ -113,6 +113,9 @@ $('.edit-btn').on('click', function() {
       
       console.log('通信成功');
       console.log(data);
+      console.log(data.payment);
+      
+
 
       //DBより取得した値編集フォームにを入れる
       $("#record_id").val(data.id);
@@ -125,27 +128,32 @@ $('.edit-btn').on('click', function() {
       let type_id = (data.type_id);
       let category_id = (data.category_id);
 
-      //収入or支出で出力するカテゴリを分ける。
-      if (type_id == 1) {
+      //編集ボタン押下したときのページurlを取得
+      let uri = location.href;
 
-        //カテゴリ表示を複製
-        let clone_outgoes = $('#outgoes').clone(true);
-        // 複製した要素の属性を編集
-        clone_outgoes[0].id = "modal_outgoes";
-        //複製したカテゴリをhtmlに追加する
-        $('#modal_categories').html(clone_outgoes[0]);
-        //選択済みのカテゴリ名が初期値で設定される。
-        $("#modal_outgoes").val(category_id);
+      //記帳画面（registory.php）の編集ボタンを押下したときの処理
+      if (uri.match(/registory.php/)){
 
-      } else {
-
-        let clone_incomes = $('#incomes').clone(true);
-
-        clone_incomes[0].id = "modal_incomes";
-
-        $('#modal_categories').html(clone_incomes[0]);
-
-        $("#modal_incomes").val(category_id);
+        if (type_id == 1) {
+          //カテゴリ表示を複製
+          let clone_outgoes = $('#outgoes').clone(true);
+          // 複製した要素の属性を編集
+          clone_outgoes[0].id = "modal_outgoes";
+          //複製したカテゴリをhtmlに追加する
+          $('#modal_categories').html(clone_outgoes[0]);
+          //選択済みのカテゴリ名が初期値で設定される。
+          $("#modal_outgoes").val(category_id);
+  
+        } else {
+  
+          let clone_incomes = $('#incomes').clone(true);
+  
+          clone_incomes[0].id = "modal_incomes";
+  
+          $('#modal_categories').html(clone_incomes[0]);
+  
+          $("#modal_incomes").val(category_id);
+        }
       }
 
     })

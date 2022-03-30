@@ -1,5 +1,7 @@
 <?php
+// initファイルの読込みに差し替え予定
 require_once __DIR__.'/class/DbConnectorMain.php';
+require_once __DIR__.'/class/DbConnectorCategories.php';
 $error_messages = array();
 
 if (DbConnector::connectDB()) {
@@ -7,25 +9,33 @@ if (DbConnector::connectDB()) {
     $user_id = 1;
     $group_id = 1;
     $category_id = (int)$_GET["id"];
-    var_dump($category_id);
 
-    //インスタンス作成
-    $db_connect = new DbConnectorMain;
-
-    //特定グループのカテゴリ別レコード取得する
-    $records = $db_connect->fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
-    var_dump($records);
-
-    //データ取得不可の場合エラー取得し、エラー画面を出力する
-    if(!$records) {
-        $error_message = $records;
-        // include('error.php');
+    //カテゴリTBLよりカテゴリ名を取得する
+    $categories = DbConnectorCategories::fetchAll();
+    //取得失敗時、エラー画面を表示
+    if(!$categories) {
+        $error_message = DbConnector::TRANSACTION_ERROR;
+        require __DIR__.'/view/error.php';
         die();
     }
+    //収支別カテゴリに分ける
+    $category_outgoes = $categories[1];
+    $category_incomes = $categories[2];
+
+    if($category_id <= 100) {
+        //支出
+        $type_id = 1;
+    }else {
+        //収入
+        $type_id = 2;
+    }
+
+    //特定グループのカテゴリ別レコード取得する
+    $records = DbConnectorMain::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
+
 } else {
-    $error_message = $result;
-    // include('error.php');
-    echo $error_message;
+    $error_message = DbConnector::CONNECT_ERROR;
+    require_once __DIR__.'/view/error.php';
     die();
 }
 
