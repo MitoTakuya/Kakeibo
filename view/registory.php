@@ -193,9 +193,9 @@ require_once __DIR__.'/../registoryController.php';
 		</nav>
 	</div>
 
-	<!-- モーダルウィンドウ -->
-	<div class="modal">
-		<div class="modal_form">
+	<!-- 編集モーダル -->
+	<div class="modal"></div>
+	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
 		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
 		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
@@ -216,11 +216,11 @@ require_once __DIR__.'/../registoryController.php';
 			</div>
 		</div>
 		<div class="amount">
-				<label>金額</label>
-			</div>
-				<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
-					pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
-			<div class="pb-2">
+			<label>金額</label>
+		</div>
+		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
+			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
+		<div class="pb-2">
 			<div>
 				<label>メモ</label>
 			</div>
@@ -229,8 +229,18 @@ require_once __DIR__.'/../registoryController.php';
 		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
 		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
 		</form>
-		</div>
 	</div>
+	<!-- 削除モーダル -->
+	<div class="modal"></div>
+	<div class="delete_form">
+		<h2 class="post_title">削除</h2>
+		<div>
+			<p>削除してもよろしいですか？</p>
+		</div>
+		<button class="btn btn-primary" type="submit" name="delete" id="delete">削除</button>
+		<button class="btn btn-danger" id="cancel" type="button">キャンセル</button>
+	</div>
+	
 
 	<script src="../stylesheet/js/registory.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
