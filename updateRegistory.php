@@ -31,6 +31,7 @@ if (DbConnector::connectDB()) {
         //POST元(編集していた)ページにリダイレクトする。
         $uri = filter_input(INPUT_SERVER,"HTTP_REFERER");
         header("Location: ".$uri);
+        exit;
     }
 
 } else {

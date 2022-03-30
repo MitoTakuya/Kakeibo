@@ -69,6 +69,7 @@ if (DbConnector::connectDB()) {
         //POST元(登録した)ページにリダイレクトする。
         $uri = filter_input(INPUT_SERVER,"HTTP_REFERER");
         header("Location: ".$uri);
+        exit;
     }
 
 } else {
