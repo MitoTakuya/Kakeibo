@@ -14,26 +14,14 @@ include(__DIR__.'\..\dashboardController.php');
             <link rel="stylesheet" href="../stylesheet/css/dashboard.css">
         <!-- FontAwesome -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-        <title>dashboard - (家計簿名)</title>
+        <title>dashboard</title>
     </head>
 
     <body>
         <div id="dashboard">
 
-        <header>
-            <nav class="navbar navbar-dark bg-dark">
-                <a href="#" class="navbar-brand"><?= $kakeibo_name ?></a> 
-                <div class="btn-group" role="group">
-                    <button id="header_menu" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Menu(仮置き)
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                    <a class="dropdown-item" href="./registory.php">記帳</a>
-                    <a class="dropdown-item" href="./logout.php">ログアウト</a>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <!-- ヘッダー -->
+        <?php include __DIR__ . "/_header.php" ?>
 
         <!-- 内容部分 -->
         <div class="container">
@@ -111,6 +99,7 @@ include(__DIR__.'\..\dashboardController.php');
                                                 <form action="./showCategory.php" method="get">
                                                     <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="id" value=<?= $outgo['category_id'] ?>>
+                                                    <input type="hidden" name="id" value=<?= $_SESSION['token'] ?>>
                                                 </form>
                                             </td>
 
