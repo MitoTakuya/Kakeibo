@@ -11,18 +11,23 @@ class DbConnectorCategories extends DbConnector {
      */ 
     public static function fetchCategories()
     {
-        self::$temp_selected_col = "`type_id`, `category_name`";
-        $pdo_method = function () {
-            $results = self::$temp_stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
-            return $results;
-        };
-        $results = self::fetch($pdo_method);
+        try {
+            self::$temp_selected_col = "`type_id`, `category_name`";
+            $pdo_method = function () {
+                $results = self::$temp_stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+                return $results;
+            };
+            $results = self::fetch($pdo_method);
 
-        // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
-        if (count($results) == 0) {
-            return false;
-        } else {
-            return $results;
+            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
+            if (count($results) == 0) {
+                return false;
+            } else {
+                return $results;
+            }
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
         }
     }
 }
