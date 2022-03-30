@@ -1,18 +1,18 @@
 <?php
+require_once __DIR__ . '/init.php';
 require(__DIR__.'\class\DbConnectorMain.php');
 
 if (DbConnector::connectDB()) {
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
-    $user_name = "nanashi";     // = $_SESSION['user_name']; 
-    $group_id = 1;              // = $_SESSION['group_id'];
-    $kakeibo_name = '家計簿名'; // = $_SESSION['group_name'];
+    $user_id = $_SESSION['id']; 
+    $group_id = $_SESSION['group_id'];
 
     // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
-    $goal = 1000000; // = DB_Connector_user_groups::メソッド
+    $goal = DbConnectorUserGroups::fetchGoal($group_id);
     $total_balance = DbConnectorMain::fetchBalance($group_id);
-    $difference = $goal - $total_balance;   // *収支マイナスの場合、目標金額まで$goal+α円になるので違和感あるかも
+    $difference = $goal - $total_balance;
 
 
     /********** 表示する期間を決める処理 **********/
@@ -29,18 +29,16 @@ if (DbConnector::connectDB()) {
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
-    echo $target_date->format('Ymd');
-    print_r($categorized_outgo_list);
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');
     $displayed_month = $target_date->format('n');
-    //print_r($categorized_outgo_list);
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 登録日を取得する *DBC_users にメソッド追加要相談
-    $registration_date = new DateTime('20190601');
+    // 最も購入日付が古いレコードの日付を取得する
+    $registration_date = DbConnectorMain::fetchOldestDate($group_id);
+    $registration_date = new DateTime($registration_date);
 
     // 現在日時を取得する
     $carrent_date = new DateTime();
@@ -93,7 +91,7 @@ if (DbConnector::connectDB()) {
     DbConnector::disconnectDB();
 } else {
     // 接続失敗時にエラー画面を読み込む
-    // $error = DB_Connector::$connect_error *$connect_errorはpublicな定数にしてしまう
+    $error = DbConnector::CONNECT_ERROR;
     include(__DIR__.'/view/error.php');
     die();
 }
