@@ -29,7 +29,6 @@ require_once __DIR__.'/../registoryController.php';
 				<li class="tab tab-A is-active">支出</li>
 				<li class="tab tab-B">収入</li>
 			</ul>
-			<!-- 支出用記帳フォーム -->
 			<div class="registory-box mb-5">
 				<div class="panel-group mt-1">
 					<div class="panel tab-A is-show p-2">
@@ -121,22 +120,22 @@ require_once __DIR__.'/../registoryController.php';
 	<p class="show-table text-center mb-5">記帳一覧</p>
 
     <div class="container mb-5">
-		<div class="registory-box">
-			<table class="table table-striped border border-5 border">
+		<div class="registory-box table-responsive">
+			<table class="table table-striped border border-5">
 				<tbody>
 					<!-- 一覧の項目名 -->
 					<tr>
-						<td scope="col" class="payment_at">日付</td> 
-						<td scope="col" class="type_name">収支</td> 
-						<td scope="col" class="title">タイトル</td> 
-						<td scope="col" class="category_name">カテゴリー</td> 
-						<td scope="col" class="payment">金額</td> 
-						<td scope="col" class="memo">メモ</td> 
-						<td scope="col" class="user_name">ユーザ名</td> 
-						<td scope="col" class="updated_at">更新日</td> 
-						<td scope="col" class="created_at">登録日</td> 
-						<td scope="col" class="edit-column">編集</td>          
-						<td scope="col" class="delete-column">削除</td>          
+						<td scope="col" class="payment_at text-center">日付</td> 
+						<td scope="col" class="type_name text-center">収支</td> 
+						<td scope="col" class="title text-center">タイトル</td> 
+						<td scope="col" class="category_name text-center">カテゴリー</td> 
+						<td scope="col" class="payment text-center">金額</td> 
+						<td scope="col" class="memo text-center">メモ</td> 
+						<td scope="col" class="user_name text-center">ユーザ名</td> 
+						<td scope="col" class="updated_at text-center">更新日</td> 
+						<td scope="col" class="created_at text-center">登録日</td> 
+						<td scope="col" class="edit-column text-center">編集</td>          
+						<td scope="col" class="delete-column text-center">削除</td>          
 					</tr>
 					<?php foreach($records as $record) :?>
 						<tr id="<?php echo $record['id']; ?>">
@@ -148,7 +147,7 @@ require_once __DIR__.'/../registoryController.php';
 						<?php endif ;?>
 						<td scope="row" id="title"><?= mb_strimwidth($record["title"], 0, 25,'…') ?></td>
 						<td scope="row" id="category_name"><?= $record["category_name"] ?></td>
-						<td scope="row" id="payment"><?= number_format($record["payment"]) ?>円</td>
+						<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
 						<td scope="row" id="memo"><?= mb_strimwidth($record["memo"], 0, 25,'…') ?></td>
 						<td scope="row" id="user_name"><?= $record["user_name"] ?></td>
 						<td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>

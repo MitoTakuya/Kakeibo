@@ -8,6 +8,11 @@
 	border: 1px solid #EBEFF1;
 }
 
+label {
+	text-transform: uppercase;
+	color: #FFF;
+}
+
 .tab-group{
   padding: 0;
   margin: 0;
@@ -28,7 +33,6 @@
 /*マウスオーバーしたら文字色を変更する*/
 .tab:not(.is-active):hover  {
   color:gray;
-
 }
 
 .panel{
@@ -36,25 +40,25 @@
 }
 
 .tab-A.is-active{
-  background:#FFF;
-  color:red;
+  background:rgb(245, 195, 195);
+  color:#FFF;
   transition: all 0.2s ease-out;
 }
 
 .panel.tab-A.is-show{
   display:block;
-  /* background:rgb(245, 195, 195); */
+  background:rgb(245, 195, 195);
 }
 
 .tab-B.is-active{
-  background:#FFF;
-  color:blue;
+  background:rgb(149, 213, 230);
+  color:#FFF;
   transition: all 0.2s ease-out;
 }
 
 .panel.tab-B.is-show{
   display:block;
-  /* background:rgb(149, 213, 230); */
+  background:rgb(149, 213, 230);
 }
 
 .show-table {

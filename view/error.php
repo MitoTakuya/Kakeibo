@@ -33,7 +33,7 @@ session_start();
 					<span class="text-danger"><?= $error_message ?></span>
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
-					value="再読込みする" onclick="window.location.reload(true);" />
+					value="再読込み" onclick="window.location.reload(true);" />
 				<a href="login.php" class="nav-item nav-link text-center">再ログイン</a>
 			</div>
 		</div>
