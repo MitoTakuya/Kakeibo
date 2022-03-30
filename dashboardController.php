@@ -11,9 +11,9 @@ if (DbConnector::connectDB()) {
     $session_token = $_SESSION['token'];
 
     // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
-    $goal = 1000000; // = DB_Connector_user_groups::メソッド
+    $goal = DbConnectorUserGroups::fetchGoal($group_id);
     $total_balance = DbConnectorMain::fetchBalance($group_id);
-    $difference = $goal - $total_balance;   // *収支マイナスの場合、目標金額まで$goal+α円になるので違和感あるかも
+    $difference = $goal - $total_balance;
 
 
     /********** 表示する期間を決める処理 **********/
@@ -30,13 +30,10 @@ if (DbConnector::connectDB()) {
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
-    echo $target_date->format('Ymd');
-    print_r($categorized_outgo_list);
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');
     $displayed_month = $target_date->format('n');
-    //print_r($categorized_outgo_list);
 
 
     /********** 日付のselect-option用のデータを用意する **********/
