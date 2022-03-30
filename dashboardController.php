@@ -4,6 +4,7 @@ require(__DIR__.'\class\DbConnectorMain.php');
 
 try {
     DbConnector::connectDB();
+
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
     $user_id = $_SESSION['id']; 
@@ -94,11 +95,11 @@ try {
     $error_code = $e->getCode();
     switch ($error_code) {
         case 2002:
-            $error = DbConnector::CONNECT_ERROR;
+            $error_message = DbConnector::CONNECT_ERROR;
             break;
         
         default:
-            $error = '予期せぬエラーが発生しました';
+            $error_message = '予期せぬエラーが発生しました';
             break;
     }
 
