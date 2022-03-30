@@ -27,5 +27,7 @@ if (DbConnector::connectDB()) {
         }
     }
 } else {
-	// include('エラー画面');
+    $error_message = DbConnector::CONNECT_ERROR;
+    require_once __DIR__.'/view/error.php';
+    die();
 }
