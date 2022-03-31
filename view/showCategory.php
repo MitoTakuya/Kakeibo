@@ -5,12 +5,15 @@ require_once __DIR__.'/../categoryController.php';
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../stylesheet/css/registory.css">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="../stylesheet/css/registory.css">
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>show</title>
 </head>
@@ -19,7 +22,7 @@ require_once __DIR__.'/../categoryController.php';
     <?php include __DIR__ . "/_header.php" ?>
     <div class="container mt-5">
         <div>
-            <p class="show-table text-center mb-4">カテゴリ別</p>
+            <p class="show-table text-center mb-4">カテゴリ: <?php echo $current_cattegory['category_name'] ?></p>
         </div>
         <div class="registory-box table-responsive">
             <table class="table table-striped border border-5 border">
@@ -29,7 +32,6 @@ require_once __DIR__.'/../categoryController.php';
                         <td scope="col" class="payment_at">日付</td> 
                         <td scope="col" class="type_name">収支</td> 
                         <td scope="col" class="title">タイトル</td> 
-                        <td scope="col" class="category_name">カテゴリー</td> 
                         <td scope="col" class="payment">金額</td> 
                         <td scope="col" class="memo">メモ</td> 
                         <td scope="col" class="user_name">ユーザ名</td> 
@@ -39,18 +41,17 @@ require_once __DIR__.'/../categoryController.php';
                     </tr>
                     <?php foreach($records as $record) :?>
                     <tr id="<?= $record['id']; ?>">
-                        <td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
+                        <td scope="row" id="payment_at"><?= date('Y年m月d日', strtotime(Config::h($record["payment_at"]))) ?></td>
                         <?php if($record["type_id"] === 1) :?>
                             <td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
                         <?php else :?>
                             <td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
                         <?php endif ;?>
                         <td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
-                        <td scope="row" id="category_name"><?= $record["category_name"] ?></td>
                         <td scope="row" id="payment"><?= number_format($record["payment"]) ?>円</td>
                         <td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
                         <td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-                        <td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
+                        <td scope="row" id="updated_at"><?= date('Y年m月d日', strtotime(Config::h($record["updated_at"]))) ?></td>
                         <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
                         <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                     </tr>
@@ -62,7 +63,41 @@ require_once __DIR__.'/../categoryController.php';
             <a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/dashboard.php">カテゴリ一覧に戻る</a>
         </div>
     </div>
-
+    <div class="mt-3"></div>
+    <!-- 支出詳細のリンク -->
+    <?php if (isset($payment)): ?>
+        <div class="container-fluid">
+            <div class="row justifyr">
+                <div class="col-md-4"></div>
+                支出：
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <?php foreach($payment as $pay): ?>
+                        <form action="./showCategory.php?id=<?= $pay['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $pay['category_name'] ?>" class="btn btn-outline-dark">
+                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                        </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?> 
+    <!-- 収入詳細のリンク -->
+    <?php if (isset($income)): ?>
+        <div class="container-fluid">
+            <div class="row justifyr">
+                <div class="col-md-4"></div>
+                支出：
+                <div class="btn-group" role="group" aria-label="Basic example">
+                    <?php foreach($income as $in): ?>
+                        <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $in['category_name'] ?>" class="btn btn-outline-dark">
+                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                        </form>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    <?php endif; ?> 
     <!-- ページネーション -->
     <div class="container mb-5">
         <nav aria-label="Page navigation example">
@@ -103,6 +138,7 @@ require_once __DIR__.'/../categoryController.php';
         <form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
         <input type="hidden" id="record_id" name="record_id">
         <input type="hidden" id="type_id" name="type_id">
+        <input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
         <div class="pb-2">
             <label>日付</label>
             <input type="date" id="edit_payment_at" class="form-control" name="payment_at" required>
@@ -151,9 +187,17 @@ require_once __DIR__.'/../categoryController.php';
         </form>
         </div>
     </div>
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+			integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-<script src="../stylesheet/js/registory.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="../stylesheet/js/registory.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
  
 </body>
 </html>
