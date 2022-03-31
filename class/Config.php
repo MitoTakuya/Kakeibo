@@ -29,9 +29,8 @@ class Config {
     //トークンチェック　データのPOST先で以下メソッドを実行して確認する。
     public static function check_token() {
         if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
-            // include('error.php');
-            var_dump($_POST['token']);
-            echo "不正な通信です。";
+            $error_message = "不正な通信です。";
+            require_once __DIR__.'/../view/error.php';
             die();
         }
     }
