@@ -60,14 +60,32 @@ $('.delete-btn').on('click', function() {
       
       type: 'POST',
       url: '../ajaxRegistory.php',
+      datatype: "json",
       data: {'id': record_id, 'method': 'delete'}
 
     })
     
-    .done(function() {
+    .done(function(data) {
+      let total_record = data;
+      console.log(total_record);
+
       // 通信が成功したらレコード削除
       console.log('通信成功');
       element.remove();
+      // 画面のレコード数を更新
+      $("#total_record").html(total_record);
+      //1ページに表示するレコード数
+      const limit = 10;
+      //MAXのページ数を取得
+      const max_page = Math.ceil((total_record+1) / limit);
+      
+      //レコード削除に伴いページ数を減らすか否か確認
+      if(total_record % limit === 0) {
+        console.log('ページ一つ減らしたよ～');
+        $(`#page-num${max_page}`).remove();
+      }else {
+        console.log(total_record % limit === 0);
+      }
     })
 
     .fail(function() {
