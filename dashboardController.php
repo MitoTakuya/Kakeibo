@@ -2,7 +2,8 @@
 require_once __DIR__ . '/init.php';
 require(__DIR__.'\class\DbConnectorMain.php');
 
-if (DbConnector::connectDB()) {
+try {
+    DbConnector::connectDB();
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
@@ -89,9 +90,19 @@ if (DbConnector::connectDB()) {
     
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
     DbConnector::disconnectDB();
-} else {
+} catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
-    $error = DbConnector::CONNECT_ERROR;
+
+    $error_code = $e->getCode();
+    switch ($error_code) {
+        case 2002:
+            $error_message = DbConnector::CONNECT_ERROR;
+            break;
+        
+        default:
+            $error_message = '予期せぬエラーが発生しました';
+            break;
+    }
     include(__DIR__.'/view/error.php');
     die();
 }
