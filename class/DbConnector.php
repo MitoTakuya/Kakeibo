@@ -45,7 +45,7 @@ abstract class DbConnector
                 return true;
             } catch (PDOException $e) {
                 // print('Error:'.$e->getMessage());
-                return false;
+                throw $e;
             }
         }
     }
@@ -62,6 +62,7 @@ abstract class DbConnector
     // idを指定してレコードを1つ取り出すメソッド
     public static function fetchOne(int $target_id)
     {
+        try {
             // SQL文をセットする
             $target_table = static::$target_table;
             self::$temp_sql ="SELECT *
@@ -78,43 +79,53 @@ abstract class DbConnector
             self::resetTemps();
             
             return $results;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
+        }
     }
 
     // where句の条件を満たすレコードをすべて取得する
     // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
     protected static function fetch($pdo_method = null)
     {
-        if (is_null(self::$temp_selected_col)) {
-            self::$temp_selected_col = " * ";
+        try {
+            if (is_null(self::$temp_selected_col)) {
+                self::$temp_selected_col = " * ";
+            }
+            // SQL文をセットする
+            $selected_col = self::$temp_selected_col;
+            $target_table = static::$target_table;
+            $where_clause = self::$temp_where_clause;
+            $orderby_clause = self::$temp_orderby_clause;
+            $groupby_clause = self::$temp_groupby_clause;
+            $join_clause = self::$temp_join_clause;
+
+            self::$temp_sql ="SELECT {$selected_col}
+                                FROM `{$target_table}` {$join_clause}
+                                {$where_clause}
+                                {$orderby_clause}
+                                {$groupby_clause}";
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+
+            // echo self::$temp_sql."<br>";
+            // バインド後にSQL文を実行し、結果を取得する
+            self::bind();
+            self::$temp_stmt->execute();
+
+            if (is_null($pdo_method)) {
+                $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
+            } else {
+                $results = $pdo_method();
+            }
+            // 一時変数を初期化する
+            self::resetTemps();
+
+            return $results;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
         }
-        // SQL文をセットする
-        $selected_col = self::$temp_selected_col;
-        $target_table = static::$target_table;
-        $where_clause = self::$temp_where_clause;
-        $orderby_clause = self::$temp_orderby_clause;
-        $groupby_clause = self::$temp_groupby_clause;
-        $join_clause = self::$temp_join_clause;
-
-        self::$temp_sql ="SELECT {$selected_col}
-                            FROM `{$target_table}` {$join_clause}
-                            {$where_clause}
-                            {$orderby_clause}
-                            {$groupby_clause}";
-        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-
-        // echo self::$temp_sql."<br>";
-        // バインド後にSQL文を実行し、結果を取得する
-        self::bind();
-        self::$temp_stmt->execute();
-
-        if (is_null($pdo_method)) {
-            $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
-        } else {
-            $results = $pdo_method();
-        }
-        self::resetTemps();
-        return $results;
-        // 一時変数を初期化する
     }
 
     // idを指定してレコードを1つ削除するメソッド
@@ -140,41 +151,54 @@ abstract class DbConnector
 
         } catch (PDOException $e) {
             self::$pdo->rollBack();
-            return self::TRANSACTION_ERROR;
+            throw $e;
         }
     }
 
     // 子クラスで生成したset句を使ってinsert set文を実行するメソッド
     protected static function insertOne() {
-        // SQL文をセットする
-        $target_table = static::$target_table;
-        $set_clause = self::$temp_set_clause;
-        self::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
-        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+        try {
+            // SQL文をセットする
+            $target_table = static::$target_table;
+            $set_clause = self::$temp_set_clause;
+            self::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-        // バインド後、insert文を実行する
-        echo self::$temp_sql;
-        self::bind();
-        self::$temp_stmt->execute();
+            // バインド後、insert文を実行する
+            echo self::$temp_sql;
+            self::bind();
+            self::$temp_stmt->execute();
 
-        // 一時変数を初期化する
-        self::resetTemps();
+            // 一時変数を初期化する
+            self::resetTemps();
+
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            self::$pdo->rollBack();
+            throw $e;
+        }
     }
 
     // 子クラスで生成したset句を使って update文を実行するメソッド
     protected static function updateOne() {
-        // SQL文をセットする
-        $target_table = static::$target_table;
-        $set_clause = self::$temp_set_clause;
-        self::$temp_sql = "UPDATE `{$target_table}` {$set_clause} WHERE id=:id;";
-        self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+        try {
+            // SQL文をセットする
+            $target_table = static::$target_table;
+            $set_clause = self::$temp_set_clause;
+            self::$temp_sql = "UPDATE `{$target_table}` {$set_clause} WHERE id=:id;";
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-        // バインド後、insert文を実行する
-        self::bind();
-        self::$temp_stmt->execute();
+            // バインド後、insert文を実行する
+            self::bind();
+            self::$temp_stmt->execute();
 
-        // 一時変数を初期化する
-        self::resetTemps();
+            // 一時変数を初期化する
+            self::resetTemps();
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            self::$pdo->rollBack();
+            throw $e;
+        }
     }
 
 /*******************************************************************************
