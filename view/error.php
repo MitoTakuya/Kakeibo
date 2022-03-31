@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
 		integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	<link rel="stylesheet" href="../stylesheet/css/user.css">
+	<link rel="stylesheet" href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/stylesheet/css/user.css">
 	<title>エラー画面</title>
 </head>
 
@@ -30,7 +30,8 @@
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
 					value="再読込み" onclick="window.location.reload(true);" />
-				<a href="logout.php?error=1" class="nav-item nav-link text-center">再ログイン</a>
+					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/view/logout.php?error=1" 
+						class="nav-item nav-link text-center">再ログイン</a>
 			</div>
 		</div>
 	</div>

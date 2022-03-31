@@ -20,7 +20,6 @@ require_once __DIR__.'/../categoryController.php';
 <body>
     <!-- ヘッダー -->
     <?php include __DIR__ . "/_header.php" ?>
-
     <div class="container mt-5">
         <div>
             <p class="show-table text-center mb-4">カテゴリ: <?php echo $current_cattegory['category_name'] ?></p>
