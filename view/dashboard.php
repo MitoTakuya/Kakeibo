@@ -97,7 +97,7 @@ include(__DIR__.'\..\dashboardController.php');
                                             <!-- カテゴリー名、詳細リンク -->
                                             <td scope="row">
                                                 <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
-                                                    <input type="submit" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
+                                                    <input type="submit" name="category_name" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
                                                 </form>
                                             </td>
