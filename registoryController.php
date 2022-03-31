@@ -8,10 +8,8 @@ try{
         $group_id = $_SESSION['group_id'];
         // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
         DbConnector::makeOrderClause(desc: true);
-        //★仮置き　レコード数を取得する処理に書き換える
-        $record_num = 30;
         // トータルレコード件数
-        $total_records = $record_num;
+        $total_record = DbConnectorMain::countRecords($group_id);
         // 1ページに表示するレコード数
         $limit = 10;
         //URLに渡された現在のページ数
@@ -24,7 +22,7 @@ try{
         // 取得したデータの何番目から表示するか
         $offset = ($now - 1) * $limit;
         //全ページ数を決める 
-        $max_page = ceil($total_records / $limit); 
+        $max_page = ceil($total_record / $limit);
         //「前へ」のページ数
         $previous =  $now -1;
         //「次へ」ページ数

@@ -116,7 +116,7 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<p class="show-table text-center mb-5">記帳一覧（<?= $total_records ?>件）</p>
+	<p class="show-table text-center mb-5">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
 
     <div class="container mb-5">
 		<div class="registory-box table-responsive">
@@ -160,39 +160,6 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<!-- ページネーション -->
-	<div class="container mb-5">
-		<nav aria-label="Page navigation example">
-		<ul class="pagination justify-content-end">
-			<?php if($now > 1) :?>
-				<li class="page-item">
-					<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">前へ</a>
-				</li>
-			<?php endif ;?>
-			<?php for($i = 1; $i <= $max_page; $i++) :?>
-				<?php if($i == $now) :?>
-					<li class="page-item disabled"><a class="page-link"><?= $now ?></a></li>
-				<?php else :?>
-					<li class="page-item"><a class="page-link" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
-				<?php endif ;?>
-			<?php endfor ;?>
-			<?php if($now < $max_page) :?>
-				<li class="page-item">
-					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">次へ</a>
-				</li>
-			<?php endif ;?>
-		</ul>
-		</nav>
-	</div>
-
 	<!-- モーダルウィンドウ -->
 	<div class="modal">
 		<div class="modal_form">
@@ -231,6 +198,41 @@ require_once __DIR__.'/../registoryController.php';
 		</form>
 		</div>
 	</div>
+
+	<!-- ページネーション -->
+	<div class="container mb-5">
+		<nav aria-label="Page navigation example">
+		<ul class="pagination justify-content-end">
+			<?php if($now > 1) :?>
+				<li class="page-item">
+					<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">前へ</a>
+				</li>
+			<?php endif ;?>
+			<?php for($i = 1; $i <= $max_page; $i++) :?>
+				<?php if($i == $now) :?>
+					<li class="page-item disabled"><a class="page-link"><?= $now ?></a></li>
+				<?php else :?>
+					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
+				<?php endif ;?>
+			<?php endfor ;?>
+			<?php if($now < $max_page) :?>
+				<li class="page-item">
+					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">次へ</a>
+				</li>
+			<?php endif ;?>
+		</ul>
+		</nav>
+	</div>
+
+
 
 	<script src="../stylesheet/js/registory.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
