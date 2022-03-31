@@ -109,7 +109,7 @@ abstract class DbConnector
                                 {$groupby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-            // echo self::$temp_sql."<br>";
+            echo self::$temp_sql."<br>";
             // バインド後にSQL文を実行し、結果を取得する
             self::bind();
             self::$temp_stmt->execute();
@@ -299,6 +299,22 @@ abstract class DbConnector
         } else {
             self::$temp_where_clause .= " AND ".$period;
         }
+    }
+
+    //　受け取った配列から不要な要素と、値がnullの要素を取り除く
+    protected static function validateInputs($array)
+    {
+        // target_dateキー 使わないためunset
+        unset($array['target_date']);
+
+        // 値がnullの
+        $remove_null = function($vars)
+        {
+            return ($vars <> null);
+        };
+        $result = array_filter($array, $remove_null);
+        
+        return $result;
     }
 
     // PDOStatement->bindValue()を一括で行うメソッド
