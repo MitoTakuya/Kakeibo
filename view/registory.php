@@ -172,13 +172,13 @@ require_once __DIR__.'/../registoryController.php';
 			<?php endif ;?>
 			<?php for($i = 1; $i <= $max_page; $i++) :?>
 				<?php if($i == $now) :?>
-					<li class="page-item disabled"><a class="page-link"><?= $now ?></a></li>
+					<li class="page-item disabled"><a class="page-link" id="carrent"><?= $now ?></a></li>
 				<?php else :?>
 					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
 				<?php endif ;?>
 			<?php endfor ;?>
 			<?php if($now < $max_page) :?>
-				<li class="page-item">
+				<li class="page-item" id="next-page">
 					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
 				</li>
 			<?php else :?>

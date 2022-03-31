@@ -78,11 +78,21 @@ $('.delete-btn').on('click', function() {
       const limit = 10;
       //MAXのページ数を取得
       const max_page = Math.ceil((total_record+1) / limit);
-      
+      // const carrent = $("#carrent").html();
+      // console.log(carrent);
+      console.log($("#next-page").parent());
+      // const exist_next = max_page - carrent;
+      // console.log(exist_next);
+
       //レコード削除に伴いページ数を減らすか否か確認
       if(total_record % limit === 0) {
         console.log('ページ一つ減らしたよ～');
         $(`#page-num${max_page}`).remove();
+        if(exist_next === 1 ) {
+          $("#next-page").html('<p class="page-link">次へ</p>');
+          // $("#next-page").disabled = true;
+          // $("#next-page").prop("disabled", true);
+        }
       }else {
         console.log(total_record % limit === 0);
       }
