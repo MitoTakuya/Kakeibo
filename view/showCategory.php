@@ -15,11 +15,8 @@ require_once __DIR__.'/../categoryController.php';
     <title>show</title>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark mb-4">
-        <a href="login.php" class="navbar-brand">ログイン</a>
-        <a href="users_new.php" class="navbar-brand text-right">新規登録</a>
-    </nav>
-
+    <!-- ヘッダー -->
+    <?php include __DIR__ . "/_header.php" ?>
     <div class="container mt-5">
         <div>
             <p class="show-table text-center mb-4">カテゴリ別</p>

@@ -165,7 +165,7 @@ abstract class DbConnector
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
             // バインド後、insert文を実行する
-            echo self::$temp_sql;
+            // echo self::$temp_sql;
             self::bind();
             self::$temp_stmt->execute();
 
@@ -264,12 +264,12 @@ abstract class DbConnector
 
     // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
     // SQL実行メソッドを呼び出す前に、コントローラー側で実行する
-    public static function makeOrderClause(bool $desc = false, string $culmun = 'id')
+    public static function makeOrderClause(bool $desc = false, string $column = 'id')
     {
         if ($desc) {
-            self::$temp_orderby_clause = "order by `{$culmun}` desc";
+            self::$temp_orderby_clause = "ORDER BY `{$column}` DESC";
         } else {
-            self::$temp_orderby_clause = "order by `{$culmun}` asc";
+            self::$temp_orderby_clause = "ORDER BY `{$column}` ASC";
         }
     }
 

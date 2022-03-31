@@ -102,105 +102,110 @@ $('.delete-btn').on('click', function() {
 ***********************************************/
 window.addEventListener('DOMContentLoaded',function() {
 
-$('.edit-btn').on('click', function() {
-
-    //ボタンの親の親要素（tr）のid値を取得
-    let id = $(this).parent().parent().attr("id");
-    let record_id = id;
-    console.log(record_id);
-    //編集対象のレコード要素（tr…/tr）を取得
-    let element = $(this).parent().parent();
-    // element = element[0].innerText;
-    console.log(element);
-
-    // 非同期処理
-    $.ajax({
-      // リクエスト方法
-      type: 'POST',
-      // 送信先ファイル名
-      url: '../ajaxRegistory.php',
-      // 受け取りデータの種類
-      datatype: "json",
-      // 送信データ
-      data: {'id': record_id, 'method': 'select'}
-
-    })
-
-    // 通信が成功した時
-    .done( function(data) {
-      
-      console.log('通信成功');
-      console.log(data);
-      console.log(data.payment);
-      
-
-
-      //DBより取得した値編集フォームにを入れる
-      $("#record_id").val(data.id);
-      $("#type_id").val(data.type_id);
-      $("#edit_payment_at").val(data.payment_at);
-      $("#edit_title").val(data.title);
-      $("#edit_payment").val(data.payment);
-      $("#edit_memo").val(data.memo);
-      
-      let type_id = (data.type_id);
-      let category_id = (data.category_id);
-
-      //編集ボタン押下したときのページurlを取得
-      let uri = location.href;
-
-      //記帳画面（registory.php）の編集ボタンを押下したときの処理
-      if (uri.match(/registory.php/)){
-
-        if (type_id == 1) {
-          //カテゴリ表示を複製
-          let clone_outgoes = $('#outgoes').clone(true);
-          // 複製した要素の属性を編集
-          clone_outgoes[0].id = "modal_outgoes";
-          //複製したカテゴリをhtmlに追加する
-          $('#modal_categories').html(clone_outgoes[0]);
-          //選択済みのカテゴリ名が初期値で設定される。
-          $("#modal_outgoes").val(category_id);
+  $('.edit-btn').on('click', function() {
   
-        } else {
+      //ボタンの親の親要素（tr）のid値を取得
+      let id = $(this).parent().parent().attr("id");
+      let record_id = id;
+      console.log(record_id);
+      //編集対象のレコード要素（tr…/tr）を取得
+      let element = $(this).parent().parent();
+      // element = element[0].innerText;
+      console.log(element);
   
-          let clone_incomes = $('#incomes').clone(true);
+      // 非同期処理
+      $.ajax({
+        // リクエスト方法
+        type: 'POST',
+        // 送信先ファイル名
+        url: '../ajaxRegistory.php',
+        // 受け取りデータの種類
+        datatype: "json",
+        // 送信データ
+        data: {'id': record_id, 'method': 'select'}
   
-          clone_incomes[0].id = "modal_incomes";
+      })
   
-          $('#modal_categories').html(clone_incomes[0]);
+      // 通信が成功した時
+      .done( function(data) {
+        
+        console.log('通信成功');
+        console.log(data);
+        console.log(data.payment);
+        
+        //DBより取得した値編集フォームにを入れる
+        $("#record_id").val(data.id);
+        $("#type_id").val(data.type_id);
+        $("#edit_payment_at").val(data.payment_at);
+        $("#edit_title").val(data.title);
+        $("#edit_payment").val(data.payment);
+        $("#edit_memo").val(data.memo);
+        
+        let type_id = (data.type_id);
+        let category_id = (data.category_id);
   
-          $("#modal_incomes").val(category_id);
-        }
-      }
-
-    })
-
-    // 通信が失敗した時
-    .fail( function(data) {
-      console.log('通信失敗');
-      console.log(data);
-    });
-
-
-    let scroll_position = $(window).scrollTop();
-    console.log(scroll_position);
-    $('body').addClass('fixed').css({ 'top': -scroll_position });
-
-    //モーダルウィンドウの表示
-    $('.modal_form').fadeIn();
-    $('.modal').fadeIn();
+        //編集ボタン押下したときのページurlを取得
+        let uri = location.href;
+  
+        //記帳画面（registory.php）の編集ボタンを押下したときの処理
+        if (uri.match(/registory.php/)){
+  
+          if (type_id == 1) {
+            //カテゴリ表示を複製
+            let clone_outgoes = $('#outgoes').clone(true);
+            // 複製した要素の属性を編集
+            clone_outgoes[0].id = "modal_outgoes";
+            //複製したカテゴリをhtmlに追加する
+            $('#modal_categories').html(clone_outgoes[0]);
+            //選択済みのカテゴリ名が初期値で設定される。
+            $("#modal_outgoes").val(category_id);
     
-    });
-    // モーダルを閉じる
-    $('#close').on('click',function(){
-        $('.modal_form').fadeOut();
+          } else {
+    
+            let clone_incomes = $('#incomes').clone(true);
+    
+            clone_incomes[0].id = "modal_incomes";
+    
+            $('#modal_categories').html(clone_incomes[0]);
+    
+            $("#modal_incomes").val(category_id);
+          }
+        }
+  
+      })
+  
+      // 通信が失敗した時
+      .fail( function(data) {
+        console.log('通信失敗');
+        console.log(data);
+      });
+  
+  
+      //スクロールを固定
+      // let scrollTop = $(window).scrollTop();
+      // $('body').css({ position: 'fixed', top: -scrollTop });
+  
+      //モーダルウィンドウの表示
+      $('.edit_form').fadeIn();
+      $('.modal').fadeIn();
+      
+      });
+  
+      // モーダルを閉じる
+      $('#close').on('click',function() {
+        $('.edit_form').fadeOut();
         $('.modal').fadeOut();
-
-});
-
-}, false);
-
+      });
+  
+      //モーダルを閉じる
+      $('.modal').on('click', function() {
+        $('.edit_form').fadeOut();
+        $('.modal').fadeOut();
+      });
+  
+  
+  
+  }, false);
 
 ////////////////////////////////////////////////////////////
 //画面上のデータをそのまま編集画面に当てはめるやり方
