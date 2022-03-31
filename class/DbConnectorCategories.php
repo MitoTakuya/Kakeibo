@@ -12,15 +12,17 @@ class DbConnectorCategories extends DbConnector {
     public static function fetchCategories()
     {
         try {
+            // select対象を選択する
             self::$temp_selected_col = "`type_id`, `category_name`";
-            $pdo_method = function () {
-                $results = self::$temp_stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
-                return $results;
-            };
-            $results = self::fetch($pdo_method);
+
+            // PDOメソッドを選択する
+            $pdo_method = 'pdoFetchColGr';
+
+            // SQL文を実行する
+            self::fetch($pdo_method);
 
             // クエリ結果が0件の場合、空の配列を返す
-            return $results;
+            return self::$temp_result;
             
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
