@@ -116,7 +116,7 @@ abstract class DbConnector
             self::$temp_stmt->execute();
 
             // PDO::fetch系のメソッドを実行し、static変数に一時格納する
-            self::$temp_result = static::$pdo_fetch_method();
+            static::$pdo_fetch_method();
 
             // 一時変数を初期化する
             self::resetTemps();
