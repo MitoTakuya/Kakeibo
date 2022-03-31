@@ -113,7 +113,7 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<p class="show-table text-center mb-5">記帳一覧（<?= $total_records ?>件）</p>
+	<p class="show-table text-center mb-5">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
 
     <div class="container mb-5">
 		<div class="registory-box table-responsive">
