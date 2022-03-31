@@ -19,6 +19,7 @@ abstract class DbConnector
     protected static $temp_orderby_clause = null;   // orderby句を格納する
     protected static $temp_groupby_clause = null;
     protected static $temp_join_clause = null;
+    protected static $temp_result = null;
 
     // テーブル操作に使う変数
     protected static int $outgo_type_id = 1;
@@ -304,15 +305,15 @@ abstract class DbConnector
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
-        if (!is_null(static::$temp_inputs)) {
-            foreach (static::$temp_inputs as $inputs) {
+        if (!is_null(self::$temp_inputs)) {
+            foreach (self::$temp_inputs as $inputs) {
                 foreach($inputs as $column => $input) {
                     if (!is_null($input)) {
                         // echo "{$key} := {$input}<br>";
                         if (is_int($input)) {
-                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
+                            self::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
                         } else {
-                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
+                            self::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
                         }
                     }
                 }
@@ -323,14 +324,15 @@ abstract class DbConnector
     // SQL文実行に使った一時変数をすべて初期化する
     protected static function resetTemps()
     {
-        static::$temp_inputs = null;
-        static::$temp_sql = null;
-        static::$temp_stmt = null;
-        static::$temp_selected_col = null;
-        static::$temp_set_clause = null;
-        static::$temp_where_clause = null;
-        static::$temp_orderby_clause = null;
-        static::$temp_groupby_clause = null;
-        static::$temp_join_clause = null;
+        self::$temp_inputs = null;
+        self::$temp_sql = null;
+        self::$temp_stmt = null;
+        self::$temp_selected_col = null;
+        self::$temp_set_clause = null;
+        self::$temp_where_clause = null;
+        self::$temp_orderby_clause = null;
+        self::$temp_groupby_clause = null;
+        self::$temp_join_clause = null;
+        self::$temp_result = null;
     }
 }
