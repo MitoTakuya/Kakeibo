@@ -62,7 +62,7 @@ class DbConnectorUserGroups extends DbConnector
         $pdo_method = 'pdoFetchAssoc';
 
         // SQL文を実行し、結果を得る
-        $result = self::fetch($pdo_method);
-        return $result['goal'];
+        self::fetch($pdo_method);
+        return self::$temp_result['goal'];
     }
 }
