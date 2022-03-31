@@ -38,7 +38,18 @@ try {
         exit();
     }
 } catch (Exception $e) {
-    $error_message = DbConnector::CONNECT_ERROR;
-    require_once __DIR__.'/view/error.php';
-    exit();
+    // 接続失敗時にエラー画面を読み込む
+
+    $error_code = $e->getCode();
+    switch ($error_code) {
+        case 2002:
+            $error_message = DbConnector::CONNECT_ERROR;
+            break;
+        
+        default:
+            $error_message = '予期せぬエラーが発生しました';
+            break;
+    }
+    include(__DIR__.'/view/error.php');
+    die();
 }
