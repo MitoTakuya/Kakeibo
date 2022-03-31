@@ -193,7 +193,7 @@ class DbConnectorMain extends DbConnector {
     public static function fetchCategorizedList(
         int $group_id,
         int $type_id = null,
-        ?string $target_date = null,
+        ?string $target_date = null
     ){
         try {
             // 受け取った値に対応するwhere句を生成する
@@ -218,6 +218,28 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
+    public static function fetchCategories(int $group_id){
+        try {
+            // 受け取った値に対応するwhere句を生成する
+            self::$temp_inputs['where'] = get_defined_vars();
+            self::makeWhereClause();
+            self::makeOrderClause(desc: false, column: 'main`.`category_id');
+            self::$temp_where_clause = str_replace('`group_id`', '`main`.`group_id`', self::$temp_where_clause);
+
+            // SQL文の句を作る
+            self::$temp_selected_col = "DISTINCT main.`category_id`, categories.category_name ";
+            self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
+
+            // SQL文を実行する
+            $results = self::fetch();
+
+            return $results;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
+        }
+    }
+
     // 支払い日付が最も古いレコードidの記入日付を返す
     public static function fetchOldestDate(int $group_id)
     {
@@ -230,7 +252,7 @@ class DbConnectorMain extends DbConnector {
             self::$temp_selected_col = "id, payment_at ";
 
             // 購入日付・昇順に設定
-            self::makeOrderClause(culmun: 'payment_at');
+            self::makeOrderClause(column: 'payment_at');
 
             // PDOメソッドの指定（一番上のレコードだけを取り出す）
             $pdo_method = function() {
