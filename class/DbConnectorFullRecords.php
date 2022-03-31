@@ -22,12 +22,8 @@ class DbConnectorFullRecords extends DbConnector {
 
             $results = self::fetch();
 
-            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
-            if (count($results) == 0) {
-                return false;
-            } else {
-                return $results;
-            }
+            // クエリ結果が0件の場合、空の配列を返す
+            return $results;
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -60,12 +56,8 @@ class DbConnectorFullRecords extends DbConnector {
 
             $results = self::fetch();
             
-            // クエリ結果が0件で空の配列が返ってきた場合はfalseを返す
-            if (count($results) == 0) {
-                return false;
-            } else {
-                return $results;
-            }
+            // クエリ結果が0件の場合、空の配列を返す
+            return $results;
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
