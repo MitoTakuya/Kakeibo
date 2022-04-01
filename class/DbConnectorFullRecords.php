@@ -9,14 +9,18 @@ class DbConnectorFullRecords extends DbConnector {
     public static function fetchLimitedRecords(
         int $group_id,
         int $limit,
+        ?int $category_id = null,
         int $offset = 0
     ){
         try {
             // 受け取った値に対応する一時変数に格納する
-            self::$temp_inputs['temp'] = get_defined_vars();
+            self::$temp_inputs['where'] = array('group_id' => $group_id, 'category_id' => $category_id);
+            self::$temp_inputs['where'] = self::validateInputs(self::$temp_inputs['where']);
+
+            self::$temp_inputs['temp'] = array('limit' => $limit, 'offset' => $offset);
 
             // where句をつくる
-            self::$temp_where_clause = "WHERE `group_id`=:group_id";
+            self::makeWhereClause();
 
             // limitoffset句付きのorderby句
             self::addLimit();

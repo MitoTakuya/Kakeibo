@@ -110,7 +110,7 @@ abstract class DbConnector
                                 {$groupby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-            // echo self::$temp_sql."<br>";
+            echo self::$temp_sql."<br>";
             // バインド後にSQL文を実行し、結果を取得する
             self::bind();
             self::$temp_stmt->execute();
@@ -320,9 +320,10 @@ abstract class DbConnector
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
         if (!is_null(self::$temp_inputs)) {
+            // print_r(self::$temp_inputs);
             foreach (self::$temp_inputs as $inputs) {
                 foreach($inputs as $column => $input) {
-                    // echo "{$key} := {$input}<br>";
+                    // echo "<br>{$column} := {$input}<br>";
                     if (is_int($input)) {
                         self::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
                     } else {
