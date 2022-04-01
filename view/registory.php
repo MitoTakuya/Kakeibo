@@ -27,8 +27,8 @@ require_once __DIR__.'/../registoryController.php';
 				<div class="panel-group mt-1">
 					<div class="panel tab-A is-show p-2">
 					<form action="" method="post">
-					<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
-					<input type="hidden" value="1" name="type_id">
+						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
+						<input type="hidden" value="1" name="type_id">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -75,8 +75,9 @@ require_once __DIR__.'/../registoryController.php';
 					</div>
 
 					<div class="panel tab-B p-2">
-					<form action="../registoryController.php?type_id=2" method="post">
-					<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
+					<form action="" method="post">
+						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
+						<input type="hidden" value="2" name="type_id">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -85,7 +86,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>タイトル</label>
+							<label>タイトル　</label>
+							<?php if(!empty($error_messages["title"])): ?>
+								<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
+							<?php endif; ?>
 							<input type="text" class="form-control"  name="title" required>
 						</div>
 						<div class="divider"></div>
@@ -108,8 +112,11 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>メモ</label>
-								<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
+							<label>メモ　</label>
+							<?php if(!empty($error_messages["memo"])): ?>
+								<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
+							<?php endif; ?>
+							<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
 						</div>
 						<div class="divider"></div>
 						<input type="submit" class="btn btn-primary mb-3" name="entry" value="登録する">

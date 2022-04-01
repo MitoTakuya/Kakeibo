@@ -28,7 +28,7 @@ try {
         }
 
         //特定グループのカテゴリ別レコード取得する
-        $records = DbConnectorFullRecords::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
+        // $records = DbConnectorFullRecords::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
 
         // 特定グループのカテゴリー一覧を取得する
         $category_records = DbConnectorMain::fetchCategories($group_id);
@@ -76,7 +76,7 @@ try {
         //「次へ」ページ数
         $next =  $now + 1;
         //★差し替え予定　メインTBLよりページ毎のカテゴリ別レコードを取得
-        $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, offset: $offset);
+        $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, category_id: $category_id, offset: $offset);
         
         if(!empty($_POST)) {
             Config::check_token();
