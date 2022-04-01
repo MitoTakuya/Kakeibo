@@ -12,7 +12,7 @@ class Config {
     //入力値の前後の空白を除去し、空の場合はfalseを返す
     public static function delete_space($str) {
         $replace = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str);
-        if (!$replace === '') {
+        if (!$replace == '') {
             return $replace;
         }else {
             return false;

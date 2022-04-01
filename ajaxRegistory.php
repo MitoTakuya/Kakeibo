@@ -34,18 +34,21 @@ try  {
 
     } 
 }catch (Exception $e) {
-    switch ($e) {
-        case 2002:
-            $error_message = DbConnector::CONNECT_ERROR;
-            break;
-        case 1:
-            $error_message = DbConnector::CONNECT_ERROR;
-            break;
-        default:
-        $error_message = "予期せぬエラーが発生しました。";
-            break;
-    }
-    require_once __DIR__.'/view/error.php';
-    die();
+
+    header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/error.php');
+    exit();     
+    // switch ($e) {
+    //     case 2002:
+    //         $error_message = DbConnector::CONNECT_ERROR;
+    //         break;
+    //     case 1:
+    //         $error_message = DbConnector::CONNECT_ERROR;
+    //         break;
+    //     default:
+    //     $error_message = "予期せぬエラーが発生しました。";
+    //         break;
+    // }
+    // require_once __DIR__.'/view/error.php';
+    // die();
 
 }
