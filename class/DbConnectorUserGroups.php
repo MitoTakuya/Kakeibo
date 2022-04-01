@@ -52,7 +52,7 @@ class DbConnectorUserGroups extends DbConnector
     public static function fetchGoal($id)
     {
         // バインド対象を一時変数に格納に格納する
-        self::$temp_inputs['temp']['id'] = $id;
+        self::$temp_to_bind['temp']['id'] = $id;
 
         // where句とselect対象を指定する
         self::$temp_where_clause = "WHERE id = :id";

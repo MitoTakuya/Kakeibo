@@ -14,7 +14,14 @@ abstract class DbConnector
  * 文字列結合して実行する。
  * 実行後、すべての$temp_変数は下記の値に初期化される。
 *******************************************************************************/
-    protected static $temp_inputs = null;           // 入力値を格納する
+    /*----- $temp_to_bind について ---------------------------------------------------------------------------/
+    | バインドしたい値を配列で代入するとself::bind()で一括でbindされる
+    | $temp_to_bind[temp] = array('カラム名' => 値)の形で代入していく
+    | $temp_to_bind[where] = array('カラム名' => 値) の形で代入しておくと where句を作れる makeWhereClause()参照
+    | $temp_to_bind[set] = array('カラム名' => 値) の形で代入しておくと set句を作れる makeSetClause()参照
+    /--------------------------------------------------------------------------------------------------------*/
+    protected static $temp_to_bind = null;
+
     protected static $temp_sql = null;              // 使用するSQL文を格納する
     protected static $temp_stmt = null;             // PDOStatementを格納する
     protected static $temp_selected_col = " * ";    // select対象のカラムを文字列で格納する
@@ -91,11 +98,14 @@ abstract class DbConnector
         }
     }
 
-    // 一時変数に格納したSQL文の句同士を文字列結合させ、これを実行する
+    /* 一時変数$temp_~ に格納したSQL文の句同士を文字列結合して実行し、
+     * self::$temp_result にクエリ結果を格納する
+     */
+    // 一時変数に格納したSQL文の句同士を文字列結合する
+    // bind()で$temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
     protected static function fetch($pdo_fetch_method = "pdoFetchAllAssoc")
     {
         try {
-            // SQL文をセットする
             $selected_col = self::$temp_selected_col;
             $target_table = static::$target_table;
             $where_clause = self::$temp_where_clause;
@@ -103,6 +113,7 @@ abstract class DbConnector
             $groupby_clause = self::$temp_groupby_clause;
             $join_clause = self::$temp_join_clause;
 
+            // 上記のSQL文を結合する
             self::$temp_sql ="SELECT {$selected_col}
                                 FROM `{$target_table}` {$join_clause}
                                 {$where_clause}
@@ -111,11 +122,13 @@ abstract class DbConnector
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
             // echo self::$temp_sql."<br>";
-            // バインド後にSQL文を実行し、結果を取得する
+            // $temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
             self::bind();
+
+            // SQL文を実行する
             self::$temp_stmt->execute();
 
-            // PDO::fetch系のメソッドを実行し、static変数に一時格納する
+            // PDO::fetch系のメソッドを可変関数で呼び出す
             static::$pdo_fetch_method();
 
             // 一時変数を初期化する
@@ -204,7 +217,13 @@ abstract class DbConnector
 /*******************************************************************************
  * SQL文を組み立てるメソッド
  *******************************************************************************/
-    // SQL文のWHERE句を組み立てる
+    /*----- SQL文のWHERE句を組み立てる---------------------------------------------------/
+    | self::$temp_to_bind[where] = array('カラム名' => 値, 'カラム名2' => 値2, ...) から
+    | "WHERE `カラム名`=:カラム名 AND `カラム名2`=:カラム名2 AND ... `カラム名n`=:カラム名n"
+    | の形でwhere句を作り、self::$temp_where_clauseに代入する
+    | self::fetch()でSQL文に文字列結合される
+    | **「=」以外を使う場合は self::$temp_where_clause に適宜追記する必要がある
+    /---------------------------------------------------------------------------------*/
     protected static function makeWhereClause()
     {
         // 条件式を格納するための一時変数を用意する
@@ -212,7 +231,7 @@ abstract class DbConnector
 
         // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id AND `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_inputs['where'] as $key => $input) {
+        foreach(self::$temp_to_bind['where'] as $key => $input) {
             // 句の頭以外を「AND」で区切る
             if ($i > 0) {
                 $temp_clause .= ' AND ';
@@ -232,7 +251,12 @@ abstract class DbConnector
         }
     }
     
-    // SQL文のSET句を組み立てる
+    /*----- SQL文のSET句を組み立てる ---------------------------------------------------/
+    | self::$temp_to_bind[set] = array('カラム名' => 値, 'カラム名2' => 値2, ...) から
+    | "set `カラム名`=:カラム名, `カラム名2`=:カラム名2, ... `カラム名n`=:カラム名n"
+    | の形でwhere句を作り、self::$temp_where_clauseに代入する
+    | self::fetch()でSQL文に文字列結合される
+    /---------------------------------------------------------------------------------*/
     protected static function makeSetClause()
     {
         // 条件式を初期化する
@@ -240,7 +264,7 @@ abstract class DbConnector
 
         // // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id, `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_inputs['set'] as $key => $input) {
+        foreach(self::$temp_to_bind['set'] as $key => $input) {
             // 句の頭以外を「,」で区切る
             if ($i > 0) {
                 $temp_clause .= ', ';
@@ -281,22 +305,24 @@ abstract class DbConnector
         }
     }
 
-    protected static function addPeriodFilter(?string $target_date = null)
+    // where句に月で絞るためのキーワードをself::$temp_where_clauseに付け足す
+    protected static function addPeriodFilter(?string $target_date = null, $column = "payment_at")
     {
         if (is_null($target_date) || strlen($target_date) !== 8) {
             $target_date = "NOW()";
         }
-        $period = " MONTH(payment_at) = MONTH({$target_date})
-                    AND YEAR(payment_at) = YEAR({$target_date})";
+        $period = " MONTH({$column}) = MONTH({$target_date})
+                    AND YEAR({$column}) = YEAR({$target_date})";
 
-        if (self::$temp_where_clause === '') {
+        if (is_null(self::$temp_where_clause) || self::$temp_where_clause === '') {
+            // WHEREが無ければ付け足す
             self::$temp_where_clause = " WHERE ".$period;
         } else {
             self::$temp_where_clause .= " AND ".$period;
         }
     }
 
-    //　受け取った配列から不要な要素と、値がnullの要素を取り除く
+    // 受け取った配列から不要な要素と、値がnullの要素を取り除く
     protected static function validateInputs($array)
     {
         // target_dateキー 使わないためunset
@@ -313,16 +339,17 @@ abstract class DbConnector
     }
 
 /*******************************************************************************
- * 一時変数に格納したSQL文に対して、
- * $temp_inputsの各要素を取り出してbindValue()を一括で行うメソッド
+ * 結合したSQL文に対して、
+ * $temp_to_bindの各要素を取り出してbindValue()を一括で行うメソッド
  *******************************************************************************/
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
-        if (!is_null(self::$temp_inputs)) {
-            foreach (self::$temp_inputs as $inputs) {
+        if (!is_null(self::$temp_to_bind)) {
+            // print_r(self::$temp_to_bind);
+            foreach (self::$temp_to_bind as $inputs) {
                 foreach($inputs as $column => $input) {
-                    // echo "{$key} := {$input}<br>";
+                    // echo "<br>{$column} := {$input}<br>";
                     if (is_int($input)) {
                         self::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
                     } else {
@@ -334,7 +361,9 @@ abstract class DbConnector
     }
 
 /*******************************************************************************
- * PDOのfetch系メソッド（DbConnecter::fetch($callback)の引数として使う）
+ * PDOのfetch系メソッドでクエリ結果を取り出す
+ * 取り出したクエリ結果はself::$temp_resultに代入される
+ * DbConnecter::fetch()内で、可変関数から呼び出される
  *******************************************************************************/
     protected static function pdoFetchAllAssoc()
     {
@@ -352,10 +381,11 @@ abstract class DbConnector
 
 /*******************************************************************************
  * SQL文実行に使った一時変数をすべて初期化する
+ * self::fetch()を実行した後、不要になったSQL文の削除に使う
  *******************************************************************************/
     protected static function resetTemps()
     {
-        self::$temp_inputs = null;
+        self::$temp_to_bind = null;
         self::$temp_sql = null;
         self::$temp_stmt = null;
         self::$temp_selected_col = " * ";
