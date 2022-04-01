@@ -30,7 +30,7 @@
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
 					value="再読込み" onclick="window.location.reload(true);" />
-					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/view/logout.php?error=1" 
+					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/logout.php?error=1" 
 						class="nav-item nav-link text-center">再ログイン</a>
 			</div>
 		</div>
