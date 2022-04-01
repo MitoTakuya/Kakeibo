@@ -172,7 +172,7 @@ require_once __DIR__.'/../registoryController.php';
 			<?php endif ;?>
 			<?php for($i = 1; $i <= $max_page; $i++) :?>
 				<?php if($i == $now) :?>
-					<li class="page-item disabled"><a class="page-link" id="carrent"><?= $now ?></a></li>
+					<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
 				<?php else :?>
 					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
 				<?php endif ;?>
