@@ -14,7 +14,7 @@ abstract class DbConnector
  * 文字列結合して実行する。
  * 実行後、すべての$temp_変数は下記の値に初期化される。
 *******************************************************************************/
-    protected static $temp_inputs = null;           // 入力値を格納する
+    protected static $temp_to_bind = null;           // バインドしたい値を配列で代入するとself::bind()で一括でbindされる
     protected static $temp_sql = null;              // 使用するSQL文を格納する
     protected static $temp_stmt = null;             // PDOStatementを格納する
     protected static $temp_selected_col = " * ";    // select対象のカラムを文字列で格納する
@@ -110,7 +110,7 @@ abstract class DbConnector
                                 {$groupby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
-            echo self::$temp_sql."<br>";
+            // echo self::$temp_sql."<br>";
             // バインド後にSQL文を実行し、結果を取得する
             self::bind();
             self::$temp_stmt->execute();
@@ -212,7 +212,7 @@ abstract class DbConnector
 
         // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id AND `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_inputs['where'] as $key => $input) {
+        foreach(self::$temp_to_bind['where'] as $key => $input) {
             // 句の頭以外を「AND」で区切る
             if ($i > 0) {
                 $temp_clause .= ' AND ';
@@ -240,7 +240,7 @@ abstract class DbConnector
 
         // // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id, `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_inputs['set'] as $key => $input) {
+        foreach(self::$temp_to_bind['set'] as $key => $input) {
             // 句の頭以外を「,」で区切る
             if ($i > 0) {
                 $temp_clause .= ', ';
@@ -296,7 +296,7 @@ abstract class DbConnector
         }
     }
 
-    //　受け取った配列から不要な要素と、値がnullの要素を取り除く
+    // 受け取った配列から不要な要素と、値がnullの要素を取り除く
     protected static function validateInputs($array)
     {
         // target_dateキー 使わないためunset
@@ -314,14 +314,14 @@ abstract class DbConnector
 
 /*******************************************************************************
  * 一時変数に格納したSQL文に対して、
- * $temp_inputsの各要素を取り出してbindValue()を一括で行うメソッド
+ * $temp_to_bindの各要素を取り出してbindValue()を一括で行うメソッド
  *******************************************************************************/
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
-        if (!is_null(self::$temp_inputs)) {
-            // print_r(self::$temp_inputs);
-            foreach (self::$temp_inputs as $inputs) {
+        if (!is_null(self::$temp_to_bind)) {
+            // print_r(self::$temp_to_bind);
+            foreach (self::$temp_to_bind as $inputs) {
                 foreach($inputs as $column => $input) {
                     // echo "<br>{$column} := {$input}<br>";
                     if (is_int($input)) {
@@ -356,7 +356,7 @@ abstract class DbConnector
  *******************************************************************************/
     protected static function resetTemps()
     {
-        self::$temp_inputs = null;
+        self::$temp_to_bind = null;
         self::$temp_sql = null;
         self::$temp_stmt = null;
         self::$temp_selected_col = " * ";
