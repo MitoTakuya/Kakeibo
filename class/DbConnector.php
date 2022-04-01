@@ -14,11 +14,12 @@ abstract class DbConnector
  * 文字列結合して実行する。
  * 実行後、すべての$temp_変数は下記の値に初期化される。
 *******************************************************************************/
-    /* $temp_to_bind について
-     * バインドしたい値を配列で代入するとself::bind()で一括でbindされる
-     * $temp_to_bind[temp] = array('カラム名' => 値)の形で代入していく
-     * $temp_to_bind[where] = array('カラム名' => 値) の形で代入しておくと where句を作れる makeWhereClause()参照
-     * $temp_to_bind[set] = array('カラム名' => 値) の形で代入しておくと set句を作れる makeSetClause()参照*/
+    /*----- $temp_to_bind について ---------------------------------------------------------------------------/
+    | バインドしたい値を配列で代入するとself::bind()で一括でbindされる
+    | $temp_to_bind[temp] = array('カラム名' => 値)の形で代入していく
+    | $temp_to_bind[where] = array('カラム名' => 値) の形で代入しておくと where句を作れる makeWhereClause()参照
+    | $temp_to_bind[set] = array('カラム名' => 値) の形で代入しておくと set句を作れる makeSetClause()参照
+    /--------------------------------------------------------------------------------------------------------*/
     protected static $temp_to_bind = null;
 
     protected static $temp_sql = null;              // 使用するSQL文を格納する
