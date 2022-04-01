@@ -9,16 +9,23 @@ abstract class DbConnector
     // 対象テーブル
     protected static $target_table = null;
 
-    // 一時格納用変数(関数間で共通してデータを扱えるようにするため)
+/***** 一時格納用の$temp_変数 ***************************************************
+ * 一度 $temp_変数 にSQLを分割して格納し、DbConnector::fetch()でそれらを
+ * 文字列結合して実行する。
+ * 実行後、すべての$temp_変数は下記の値に初期化される。
+*******************************************************************************/
     protected static $temp_inputs = null;           // 入力値を格納する
     protected static $temp_sql = null;              // 使用するSQL文を格納する
     protected static $temp_stmt = null;             // PDOStatementを格納する
-    protected static $temp_selected_col = null;     // select対象のカラムを文字列で格納する
+    protected static $temp_selected_col = " * ";    // select対象のカラムを文字列で格納する
     protected static $temp_set_clause = null;       // set句を格納する      e.g. SET `title` =:title, `memo` = :memo,...)
     protected static $temp_where_clause = null;     // where句を格納する    e.g. WHERE `title` =:title AND `memo` = :memo ... AND type_id IN(1,2)
     protected static $temp_orderby_clause = null;   // orderby句を格納する
-    protected static $temp_groupby_clause = null;
-    protected static $temp_join_clause = null;
+    protected static $temp_groupby_clause = null;   // groupby句を格納する
+    protected static $temp_join_clause = null;      // join句を格納する
+
+    // クエリ結果を格納する Controllerへはこれをreturnする
+    protected static $temp_result = null;
 
     // テーブル操作に使う変数
     protected static int $outgo_type_id = 1;
@@ -65,8 +72,7 @@ abstract class DbConnector
         try {
             // SQL文をセットする
             $target_table = static::$target_table;
-            self::$temp_sql ="SELECT *
-                                FROM `{$target_table}`
+            self::$temp_sql ="SELECT * FROM `{$target_table}`
                                 WHERE `id`=:id";
             
             // SQL文をバインド・実行し、結果を取得する
@@ -85,14 +91,10 @@ abstract class DbConnector
         }
     }
 
-    // where句の条件を満たすレコードをすべて取得する
-    // where句に指定できる条件は「WHERE xxx=:xxx AND yyy=:yyy ...」の形のみ
-    protected static function fetch($pdo_method = null)
+    // 一時変数に格納したSQL文の句同士を文字列結合させ、これを実行する
+    protected static function fetch($pdo_fetch_method = "pdoFetchAllAssoc")
     {
         try {
-            if (is_null(self::$temp_selected_col)) {
-                self::$temp_selected_col = " * ";
-            }
             // SQL文をセットする
             $selected_col = self::$temp_selected_col;
             $target_table = static::$target_table;
@@ -113,15 +115,12 @@ abstract class DbConnector
             self::bind();
             self::$temp_stmt->execute();
 
-            if (is_null($pdo_method)) {
-                $results = self::$temp_stmt->fetchALL(PDO::FETCH_ASSOC);
-            } else {
-                $results = $pdo_method();
-            }
+            // PDO::fetch系のメソッドを実行し、static変数に一時格納する
+            static::$pdo_fetch_method();
+
             // 一時変数を初期化する
             self::resetTemps();
 
-            return $results;
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -136,7 +135,7 @@ abstract class DbConnector
 
             // SQL文をセットする
             $target_table = static::$target_table;
-            self::$temp_sql ="DELETE FROM `{$target_table}`
+            self::$temp_sql = "DELETE FROM `{$target_table}`
                                 WHERE `id`=:id";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
             
@@ -161,6 +160,7 @@ abstract class DbConnector
             // SQL文をセットする
             $target_table = static::$target_table;
             $set_clause = self::$temp_set_clause;
+            
             self::$temp_sql = "INSERT INTO `{$target_table}` {$set_clause};";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
 
@@ -210,18 +210,16 @@ abstract class DbConnector
         // 条件式を格納するための一時変数を用意する
         $temp_clause = '';
 
-        // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
+        // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id AND `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
         foreach(self::$temp_inputs['where'] as $key => $input) {
-            if (!is_null($input)) {
-                // 句の頭以外を「,」で区切る
-                if ($i > 0) {
-                    $temp_clause .= ' AND ';
-                }
-                // echo "{$key} => {$input}";
-                $temp_clause .= "`{$key}`=:{$key}";
-                $i++;
+            // 句の頭以外を「AND」で区切る
+            if ($i > 0) {
+                $temp_clause .= ' AND ';
             }
+            // echo "{$key} => {$input}";
+            $temp_clause .= "`{$key}`=:{$key}";
+            $i++;
         }
         // where句をstatic変数に格納する
         if (strpos(self::$temp_where_clause, 'WHERE')) {
@@ -240,18 +238,16 @@ abstract class DbConnector
         // 条件式を初期化する
         $temp_clause = '';
 
-        // 入力された「[~id] => 1,...」の配列から、「[0] => `~id`=:~id,...」の形の配列$filtersをつくる
+        // // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id, `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
         foreach(self::$temp_inputs['set'] as $key => $input) {
-            if (!is_null($input)) {
-                // 句の頭以外を「,」で区切る
-                if ($i > 0) {
-                    $temp_clause .= ', ';
-                }
-                // echo "{$key} => {$input}";
-                $temp_clause .= "`{$key}`=:{$key} ";
-                $i++;
+            // 句の頭以外を「,」で区切る
+            if ($i > 0) {
+                $temp_clause .= ', ';
             }
+            // echo "{$key} => {$input}";
+            $temp_clause .= "`{$key}`=:{$key} ";
+            $i++;
         }
 
         // set句をstatic変数に格納する
@@ -300,37 +296,73 @@ abstract class DbConnector
         }
     }
 
-    // PDOStatement->bindValue()を一括で行うメソッド
+    //　受け取った配列から不要な要素と、値がnullの要素を取り除く
+    protected static function validateInputs($array)
+    {
+        // target_dateキー 使わないためunset
+        unset($array['target_date']);
+
+        // 値がnullの
+        $remove_null = function($vars)
+        {
+            return ($vars <> null);
+        };
+        $result = array_filter($array, $remove_null);
+        
+        return $result;
+    }
+
+/*******************************************************************************
+ * 一時変数に格納したSQL文に対して、
+ * $temp_inputsの各要素を取り出してbindValue()を一括で行うメソッド
+ *******************************************************************************/
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
-        if (!is_null(static::$temp_inputs)) {
-            foreach (static::$temp_inputs as $inputs) {
+        if (!is_null(self::$temp_inputs)) {
+            foreach (self::$temp_inputs as $inputs) {
                 foreach($inputs as $column => $input) {
-                    if (!is_null($input)) {
-                        // echo "{$key} := {$input}<br>";
-                        if (is_int($input)) {
-                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
-                        } else {
-                            static::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
-                        }
+                    // echo "{$key} := {$input}<br>";
+                    if (is_int($input)) {
+                        self::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
+                    } else {
+                        self::$temp_stmt->bindValue($column, $input, PDO::PARAM_STR);
                     }
                 }
             }
         }
     }
 
-    // SQL文実行に使った一時変数をすべて初期化する
+/*******************************************************************************
+ * PDOのfetch系メソッド（DbConnecter::fetch($callback)の引数として使う）
+ *******************************************************************************/
+    protected static function pdoFetchAllAssoc()
+    {
+        self::$temp_result = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    protected static function pdoFetchAssoc()
+    {
+        self::$temp_result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    protected static function pdoFetchColGr()
+    {
+        self::$temp_result = self::$temp_stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
+    }
+
+/*******************************************************************************
+ * SQL文実行に使った一時変数をすべて初期化する
+ *******************************************************************************/
     protected static function resetTemps()
     {
-        static::$temp_inputs = null;
-        static::$temp_sql = null;
-        static::$temp_stmt = null;
-        static::$temp_selected_col = null;
-        static::$temp_set_clause = null;
-        static::$temp_where_clause = null;
-        static::$temp_orderby_clause = null;
-        static::$temp_groupby_clause = null;
-        static::$temp_join_clause = null;
+        self::$temp_inputs = null;
+        self::$temp_sql = null;
+        self::$temp_stmt = null;
+        self::$temp_selected_col = " * ";
+        self::$temp_set_clause = null;
+        self::$temp_where_clause = null;
+        self::$temp_orderby_clause = null;
+        self::$temp_groupby_clause = null;
+        self::$temp_join_clause = null;
     }
 }

@@ -15,15 +15,18 @@ class DbConnectorFullRecords extends DbConnector {
             // 受け取った値に対応する一時変数に格納する
             self::$temp_inputs['temp'] = get_defined_vars();
 
-            self::$temp_selected_col = ' * ';
+            // where句をつくる
             self::$temp_where_clause = "WHERE `group_id`=:group_id";
+
             // limitoffset句付きのorderby句
             self::addLimit();
 
-            $results = self::fetch();
+            // SQL文を実行する
+            self::fetch();
 
             // クエリ結果が0件の場合、空の配列を返す
-            return $results;
+            return self::$temp_result;
+
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -45,19 +48,17 @@ class DbConnectorFullRecords extends DbConnector {
         ?string $category_id = null
     ) {
         try {
-            // 受け取った値に対応するwhere句を生成する
-            self::$temp_inputs['where'] = get_defined_vars();
-            unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+            // 受け取った値から不要な値を取り除き、where句を生成する
+            self::$temp_inputs['where'] = self::validateInputs(get_defined_vars());
             self::makeWhereClause();
             self::addPeriodFilter($target_date);
-            
-            // select対象を設定
-            self::$temp_selected_col = ' * ';
 
-            $results = self::fetch();
+            // SQL文を実行する
+            self::fetch();
             
             // クエリ結果が0件の場合、空の配列を返す
-            return $results;
+            return self::$temp_result;
+
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;

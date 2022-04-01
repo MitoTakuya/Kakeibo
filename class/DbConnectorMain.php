@@ -9,7 +9,7 @@ class DbConnectorMain extends DbConnector {
      **********************************************************************/
     // mainテーブルのレコードを1つ追加する
     public static function insertRecord(
-        $title,
+        string $title,
         int $payment, 
         string $payment_at,
         int $user_id,
@@ -54,8 +54,8 @@ class DbConnectorMain extends DbConnector {
             // トランザクション開始
             self::$pdo->beginTransaction();
 
-            // 受け取った値に対応するset句を生成する
-            self::$temp_inputs['set'] = get_defined_vars();
+            // 受け取った値から不要な値を取り除き、set句を生成する
+            self::$temp_inputs['set'] = self::validateInputs(get_defined_vars());
             self::makeSetClause();
 
             // SQL文を実行する *エラーが起来た際はrollback()も行う
@@ -116,13 +116,12 @@ class DbConnectorMain extends DbConnector {
             self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `outgo`";
 
             // PDOメソッドの指定
-            $pdo_method = function() {
-                $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-                return $result;
-            };
+            $pdo_method = 'pdoFetchAssoc';
+            
             // 親クラスのメソッドで結果を取り出す
-            $result = self::fetch($pdo_method);
-            return $result['outgo'];
+            self::fetch($pdo_method);
+            return self::$temp_result['outgo'];
+
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -142,13 +141,12 @@ class DbConnectorMain extends DbConnector {
             self::$temp_selected_col = "`type_id`, IFNULL(SUM(`payment`), 0) AS `income`";
 
             // PDOメソッドの指定
-            $pdo_method = function() {
-                $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-                return $result;
-            };
+            $pdo_method = 'pdoFetchAssoc';
+            
             // 親クラスのメソッドで結果を取り出す
-            $result = self::fetch($pdo_method);
-            return $result['income'];
+            self::fetch($pdo_method);
+            return self::$temp_result['income'];
+
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -168,22 +166,22 @@ class DbConnectorMain extends DbConnector {
         ?string $target_date = null
     ) {
         try {
-            // 受け取った値に対応するwhere句を生成する
+            // 受け取った値から不要な値を取り除き、where句を生成する
             $type_id = self::$outgo_type_id;
-            self::$temp_inputs['where'] = get_defined_vars();
-            unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+            self::$temp_inputs['where'] = self::validateInputs(get_defined_vars());
             self::makeWhereClause();
             static::addPeriodFilter($target_date); // where句に日時指定を追加
 
             // select対象を決定する
             self::$temp_selected_col = "IFNULL(SUM(`payment`), 0) AS `sum`";
 
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
+
             // SQL文を実行し、結果を格納する
-            $results = self::fetch();
+            self::fetch($pdo_method);
+            return self::$temp_result['sum']; //格納されていなければ false を返す
 
-            print_r($results);
-
-            return $results[0]['sum']; //格納されていなければ false を返す
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -197,8 +195,7 @@ class DbConnectorMain extends DbConnector {
     ){
         try {
             // 受け取った値に対応するwhere句を生成する
-            self::$temp_inputs['where'] = get_defined_vars();
-            unset(self::$temp_inputs['where']['target_date']);// target_date はwhere句に含めないためunset
+            self::$temp_inputs['where'] = self::validateInputs(get_defined_vars());
             self::makeWhereClause();
             self::addPeriodFilter($target_date);
 
@@ -209,16 +206,17 @@ class DbConnectorMain extends DbConnector {
             self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
             // SQL文を実行する
-            $results = self::fetch();
+            self::fetch();
+            return self::$temp_result;
 
-            return $results;
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
         }
     }
 
-    public static function fetchCategories(int $group_id){
+    public static function fetchCategories(int $group_id)
+    {
         try {
             // 受け取った値に対応するwhere句を生成する
             self::$temp_inputs['where'] = get_defined_vars();
@@ -231,9 +229,9 @@ class DbConnectorMain extends DbConnector {
             self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
             // SQL文を実行する
-            $results = self::fetch();
+            self::fetch();
+            return self::$temp_result;
 
-            return $results;
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -241,6 +239,7 @@ class DbConnectorMain extends DbConnector {
     }
 
     // 支払い日付が最も古いレコードidの記入日付を返す
+    // 昇順に並び替えて、一番初めのレコードだけ取得する
     public static function fetchOldestDate(int $group_id)
     {
         try {
@@ -254,15 +253,12 @@ class DbConnectorMain extends DbConnector {
             // 購入日付・昇順に設定
             self::makeOrderClause(column: 'payment_at');
 
-            // PDOメソッドの指定（一番上のレコードだけを取り出す）
-            $pdo_method = function() {
-                $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-                return $result;
-            };
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
 
             // SQL文を実行し、結果を得る
-            $result = self::fetch($pdo_method);
-            return $result['payment_at'];
+            self::fetch($pdo_method);
+            return self::$temp_result['payment_at'];
 
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
@@ -282,14 +278,12 @@ class DbConnectorMain extends DbConnector {
             self::$temp_selected_col = "COUNT(*) AS records";
 
             // PDOメソッドの指定（一番上のレコードだけを取り出す）
-            $pdo_method = function() {
-                $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-                return $result;
-            };
+            $pdo_method = 'pdoFetchAssoc';
 
             // SQL文を実行し、結果を得る
-            $result = self::fetch($pdo_method);
-            return $result['records'];
+            self::fetch($pdo_method);
+            return self::$temp_result['records'];
+
         }catch (PDOException $e){
             throw $e;
         }

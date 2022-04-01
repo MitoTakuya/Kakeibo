@@ -35,6 +35,30 @@ try {
             require __DIR__.'/view/error.php';
             die();
         }
+
+        // 特定グループのカテゴリー一覧を取得する
+        $category_records = DbConnectorMain::fetchCategories($group_id);
+        foreach ($category_records as $category ) {
+			// 選択中のカテゴリーを抽出
+			if ($category['category_id'] == $category_id) {
+				$current_cattegory = $category;
+			} else {
+				// それ以外のカテゴリー
+				$other_cattegory[] = $category;
+            }
+		}
+        // 支出と収入に分類
+        if (isset($other_cattegory)) {
+            foreach ($other_cattegory as $category_name) {
+                if ($category_name['category_id'] < 100) {
+                    // 支出
+                    $payment[] = $category_name;
+                } else {
+                    // 収入
+                    $income[] = $category_name;
+                }
+            }
+        }
         
         /***************************************
         *ページネーション処理 
@@ -81,5 +105,3 @@ try {
     die();
 
 }
-
-?>

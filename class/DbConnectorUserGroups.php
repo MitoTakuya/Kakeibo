@@ -59,13 +59,10 @@ class DbConnectorUserGroups extends DbConnector
         self::$temp_selected_col = "`goal` ";
 
         // PDOメソッドの指定
-        $pdo_method = function() {
-            $result = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-            return $result;
-        };
+        $pdo_method = 'pdoFetchAssoc';
 
         // SQL文を実行し、結果を得る
-        $result = self::fetch($pdo_method);
-        return $result['goal'];
+        self::fetch($pdo_method);
+        return self::$temp_result['goal'];
     }
 }
