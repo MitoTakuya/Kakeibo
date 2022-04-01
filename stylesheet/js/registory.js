@@ -98,6 +98,7 @@ $('.delete-btn').on('click', function() {
 
     .fail(function() {
       //★仮置き。ヘッダー直下にエラー内容を表示する予定
+      // window.location.href('http://localhost/kakeibo/view/error.php');  
       alert('エラーが発生しました。');
     });
   }
@@ -188,11 +189,6 @@ window.addEventListener('DOMContentLoaded',function() {
         console.log(data);
       });
   
-  
-      //スクロールを固定
-      // let scrollTop = $(window).scrollTop();
-      // $('body').css({ position: 'fixed', top: -scrollTop });
-  
       //モーダルウィンドウの表示
       $('.edit_form').fadeIn();
       $('.modal').fadeIn();
@@ -214,18 +210,3 @@ window.addEventListener('DOMContentLoaded',function() {
   
   
   }, false);
-
-////////////////////////////////////////////////////////////
-//画面上のデータをそのまま編集画面に当てはめるやり方
-////////////////////////////////////////////////////////////
-// type = element[0].cells[1].innerText;
-// title = element[0].cells[2].innerText;
-// categorie = element[0].cells[3].innerText;
-// amount = element[0].cells[4].innerText;
-// memo = element[0].cells[5].innerText;
-// console.log(title);
-// console.log(amount);
-// $("#edit_title").val(title);
-// $("#edit_amount").val(amount);
-// $("#edit_memo").val(memo);
-////////////////////////////////////////////////////////////
