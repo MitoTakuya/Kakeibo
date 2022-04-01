@@ -104,6 +104,7 @@ abstract class DbConnector
     // 一時変数に格納したSQL文の句同士を文字列結合する
     // bind()で$temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
     protected static function fetch($pdo_fetch_method = "pdoFetchAllAssoc")
+
     {
         try {
             $selected_col = self::$temp_selected_col;
@@ -123,6 +124,7 @@ abstract class DbConnector
 
             // echo self::$temp_sql."<br>";
             // $temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
+
             self::bind();
 
             // SQL文を実行する

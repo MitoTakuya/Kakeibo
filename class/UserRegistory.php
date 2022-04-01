@@ -51,7 +51,7 @@ class UserRegistory
             } else {
                 $group_password = $_POST['group_form'];
                 // パスワードからuser_groupのidを検索
-                $error = DbConnectorUsers::searchGroupId($group_password);
+                $error = DbConnectorUserGroups::searchGroupId($group_password);
                 if (!is_array($error)) {
                     self::$user_errors['group_form'] = 'グループパスワードが違います。';
                 } else {
@@ -105,7 +105,6 @@ class UserRegistory
 
         // バリデーションチェック
         self::checkUser();
-
 
         // エラーがなければユーザー情報更新
         if (count(self::$user_errors) == 0) {
@@ -170,7 +169,7 @@ class UserRegistory
     // ユーザー・新規グループ登録
     public function createUserWithGroup($group_name, $group_password, $user_name, $hash, $mail, $user_image)
     {
-        $group_id = DbConnectorUsers::insertUserGroup($group_name, $group_password);
+        $group_id = DbConnectorUserGroups::insertUserGroup($group_name, $group_password);
         DbConnectorUsers::insertUser($user_name, $hash, $mail, $user_image, $group_id);
     }
 }
