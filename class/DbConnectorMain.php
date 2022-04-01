@@ -23,7 +23,7 @@ class DbConnectorMain extends DbConnector {
             self::$pdo->beginTransaction();
 
             // 受け取った値に対応するset句を生成する
-            self::$temp_inputs['set'] = get_defined_vars();
+            self::$temp_to_bind['set'] = get_defined_vars();
             self::makeSetClause();
 
             // SQL文を実行する
@@ -55,7 +55,7 @@ class DbConnectorMain extends DbConnector {
             self::$pdo->beginTransaction();
 
             // 受け取った値から不要な値を取り除き、set句を生成する
-            self::$temp_inputs['set'] = self::validateInputs(get_defined_vars());
+            self::$temp_to_bind['set'] = self::validateInputs(get_defined_vars());
             self::makeSetClause();
 
             // SQL文を実行する *エラーが起来た際はrollback()も行う
@@ -109,7 +109,7 @@ class DbConnectorMain extends DbConnector {
         try {
             // where句をつくる
             $type_id = self::$outgo_type_id;
-            self::$temp_inputs['where'] = get_defined_vars();
+            self::$temp_to_bind['where'] = get_defined_vars();
             self::makeWhereClause();
 
             // SELECTする対象を一時変数に格納する
@@ -134,7 +134,7 @@ class DbConnectorMain extends DbConnector {
         try {
             // where句をつくる
             $type_id = self::$income_type_id;
-            self::$temp_inputs['where'] = get_defined_vars();
+            self::$temp_to_bind['where'] = get_defined_vars();
             self::makeWhereClause();
 
             // SELECTする対象を一時変数に格納する
@@ -168,7 +168,7 @@ class DbConnectorMain extends DbConnector {
         try {
             // 受け取った値から不要な値を取り除き、where句を生成する
             $type_id = self::$outgo_type_id;
-            self::$temp_inputs['where'] = self::validateInputs(get_defined_vars());
+            self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
             self::makeWhereClause();
             static::addPeriodFilter($target_date); // where句に日時指定を追加
 
@@ -195,7 +195,7 @@ class DbConnectorMain extends DbConnector {
     ){
         try {
             // 受け取った値に対応するwhere句を生成する
-            self::$temp_inputs['where'] = self::validateInputs(get_defined_vars());
+            self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
             self::makeWhereClause();
             self::addPeriodFilter($target_date);
 
@@ -219,7 +219,7 @@ class DbConnectorMain extends DbConnector {
     {
         try {
             // 受け取った値に対応するwhere句を生成する
-            self::$temp_inputs['where'] = get_defined_vars();
+            self::$temp_to_bind['where'] = get_defined_vars();
             self::makeWhereClause();
             self::makeOrderClause(desc: false, column: 'main`.`category_id');
             self::$temp_where_clause = str_replace('`group_id`', '`main`.`group_id`', self::$temp_where_clause);
@@ -244,7 +244,7 @@ class DbConnectorMain extends DbConnector {
     {
         try {
             // バインド対象を一時変数に格納に格納する
-            self::$temp_inputs['temp']['group_id'] = $group_id;
+            self::$temp_to_bind['temp']['group_id'] = $group_id;
 
             // where句とselect対象を指定する
             self::$temp_where_clause = "WHERE group_id = :group_id";
@@ -271,7 +271,7 @@ class DbConnectorMain extends DbConnector {
     {
         try {
             // バインド対象を一時変数に格納に格納する
-            self::$temp_inputs['temp']['group_id'] = $group_id;
+            self::$temp_to_bind['temp']['group_id'] = $group_id;
 
             // where句とselect対象を指定する
             self::$temp_where_clause = "WHERE group_id = :group_id";
