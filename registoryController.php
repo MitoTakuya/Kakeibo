@@ -29,17 +29,11 @@ try{
         $next =  $now + 1;
         //メインTBLよりページ毎のレコード取得
         $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, offset: $offset);
-        //データ取得失敗時、エラー画面を表示
-        if(!$records) {
-            $error_message = DbConnector::TRANSACTION_ERROR;
-            require __DIR__.'/view/error.php';
-            die();
-        }
 
         //カテゴリTBLよりカテゴリ名を取得する
         $categories = DbConnectorCategories::fetchCategories();
-        //取得失敗時、エラー画面を表示
-        if(!$categories) {
+        //戻り値が空の配列の場合はエラー画面を表示(カテゴリ名が取得できない事象はエラーとする)
+        if(empty($categories)) {
             $error_message = DbConnector::TRANSACTION_ERROR;
             require __DIR__.'/view/error.php';
             die();
@@ -71,12 +65,13 @@ try{
     }
 
 } catch (Exception $e) {
-    switch ($e) {
+
+    switch ($e->getCode()) {
         case 2002:
             $error_message = DbConnector::CONNECT_ERROR;
             break;
-        case 1:
-            $error_message = DbConnector::CONNECT_ERROR;
+        case 2006:
+            $error_message = DbConnector::TRANSACTION_ERROR;
             break;
         default:
         $error_message = "予期せぬエラーが発生しました。";

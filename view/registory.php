@@ -190,7 +190,7 @@ require_once __DIR__.'/../registoryController.php';
 		</nav>
 	</div>
 
-	<!-- 編集モーダル -->
+	<!-- モーダル -->
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
@@ -226,16 +226,6 @@ require_once __DIR__.'/../registoryController.php';
 		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
 		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
 		</form>
-	</div>
-	<!-- 削除モーダル -->
-	<div class="modal"></div>
-	<div class="delete_form">
-		<h2 class="post_title">削除</h2>
-		<div>
-			<p>削除してもよろしいですか？</p>
-		</div>
-		<button class="btn btn-primary" type="submit" name="delete" id="delete">削除</button>
-		<button class="btn btn-danger" id="cancel" type="button">キャンセル</button>
 	</div>
 	
 	<!-- Optional JavaScript -->
