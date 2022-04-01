@@ -60,14 +60,40 @@ $('.delete-btn').on('click', function() {
       
       type: 'POST',
       url: '../ajaxRegistory.php',
+      datatype: "json",
       data: {'id': record_id, 'method': 'delete'}
 
     })
     
-    .done(function() {
+    .done(function(data) {
+      let total_record = data;
+      console.log(total_record);
+
       // 通信が成功したらレコード削除
       console.log('通信成功');
       element.remove();
+      
+      // 画面のレコード数表示（●●件）を更新
+      $("#total_record").html(total_record);
+      //1ページに表示する最大レコード数
+      const limit = 10;
+      //MAXのページ数を取得
+      const max_page = Math.ceil((total_record+1) / limit);
+      //現在ページ数を取得
+      const carrent_page = $("#carrent_page").html();
+      //現在ページが最終ページになるのか計算
+      const exist_next = max_page - carrent_page;
+
+      //レコード削除に伴いページ数を減らすか否か確認
+      if(total_record % limit === 0) {
+        $(`#page-num${max_page}`).remove();
+        if(exist_next === 1 ) {
+          //現在ページが最終ページになったら「次へ」を非活性にする
+          $("#next-page").attr('class', 'page-item disabled');
+        }
+      }else {
+        console.log(total_record % limit === 0);
+      }
     })
 
     .fail(function() {
