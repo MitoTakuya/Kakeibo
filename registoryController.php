@@ -42,6 +42,9 @@ try{
     $category_outgoes = $categories[1];
     $category_incomes = $categories[2];
 
+    //収入タブをアクティブとするときの条件
+    $is_outgo = !isset($_POST['type_id']) || $_POST['type_id'] == 1;
+
     if(!empty($_POST)) {
         //registory.phpからデータがPOSTされた時の処理
         Config::check_token();

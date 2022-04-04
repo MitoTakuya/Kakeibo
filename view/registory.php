@@ -20,12 +20,21 @@ require_once __DIR__.'/../registoryController.php';
 	<div class="container mt-4">
 		<div class="mx-auto">
 			<ul class="tab-group">
-				<li class="tab tab-A is-active">支出</li>
-				<li class="tab tab-B">収入</li>
+				<?php if ($is_outgo): ?>
+					<li class="tab tab-A is-active">支出</li>
+					<li class="tab tab-B">収入</li>
+				<?php else: ?>
+					<li class="tab tab-A">支出</li>
+					<li class="tab tab-B is-active">収入</li>
+				<?php endif; ?>
 			</ul>
 			<div class="registory-box mb-5">
 				<div class="panel-group mt-1">
+				<?php if ($is_outgo) : ?>
 					<div class="panel tab-A is-show p-2">
+				<?php else: ?>	
+					<div class="panel tab-A p-2">
+				<?php endif; ?>		
 					<form action="" method="post">
 						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
 						<input type="hidden" value="1" name="type_id">
@@ -73,8 +82,11 @@ require_once __DIR__.'/../registoryController.php';
 						<input type="submit" class="btn btn-primary mb-3" name="entry" value="登録する">
 					</form>
 					</div>
-
-					<div class="panel tab-B p-2">
+					<?php if (!$is_outgo) : ?>
+						<div class="panel tab-B is-show p-2">
+					<?php else: ?>
+						<div class="panel tab-B p-2">
+					<?php endif; ?>		
 					<form action="" method="post">
 						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
 						<input type="hidden" value="2" name="type_id">

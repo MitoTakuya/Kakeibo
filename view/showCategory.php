@@ -92,7 +92,7 @@ require_once __DIR__.'/../categoryController.php';
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
-                支出：
+                収入：
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <?php foreach($income as $in): ?>
                         <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
