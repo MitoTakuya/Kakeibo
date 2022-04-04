@@ -276,14 +276,14 @@ class DbConnectorMain extends DbConnector {
     }
 
     // グループのレコード数を返す
-    public static function countRecords(int $group_id)
+    public static function countRecords(int $group_id, ?int $category_id = null)
     {
         try {
             // バインド対象を一時変数に格納に格納する
-            self::$temp_to_bind['temp']['group_id'] = $group_id;
+            self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
 
             // where句とselect対象を指定する
-            self::$temp_where_clause = "WHERE group_id = :group_id";
+            self::makeWhereClause();
             self::$temp_selected_col = "COUNT(*) AS records";
 
             // PDOメソッドの指定（一番上のレコードだけを取り出す）
