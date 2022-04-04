@@ -24,7 +24,7 @@ Config::create_token();
 			<div class="mx-auto">
 				<div class="box">
 					<span class="input-group-addon ">
-					<p><i class="fas fa-desktop"></i>ログイン</p>
+					<p><i class="fas fa-desktop"></i> ログイン</p>
 					</span>
 					<form method="POST" action="">
 						<div class="divider-form"></div>

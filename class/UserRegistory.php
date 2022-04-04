@@ -34,9 +34,9 @@ class UserRegistory
         // 新規グループ選択時
         if ($_POST['user_group'] == "new_group") {
             if (!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
-                self::$user_errors['group_form'] = '家計簿名を入力してください';
+                self::$user_errors['group_form'] = '家計簿名を入力してください。';
             } elseif (mb_strlen($_POST['group_form']) > 30) {
-                self::$user_errors['group_form'] = '30文字以内で入力してください';
+                self::$user_errors['group_form'] = '30文字以内で入力してください。';
             } else {
                 $group_name = $_POST['group_form'];
                 // ユニークキー作成方法は検討
@@ -45,9 +45,9 @@ class UserRegistory
             // 既存グループ選択時
         } elseif ($_POST['user_group'] == "existing_group") {
             if (!isset($_POST['group_form']) || str_replace(array(" ", "　"), "", $_POST['group_form']) === '') {
-                self::$user_errors['group_form'] = 'グループパスワードを入力してください';
+                self::$user_errors['group_form'] = 'グループパスワードを入力してください。';
             } elseif (mb_strlen($_POST['group_form']) > 30) {
-                self::$user_errors['group_form'] = '30文字以内で入力してください';
+                self::$user_errors['group_form'] = '30文字以内で入力してください。';
             } else {
                 $group_password = $_POST['group_form'];
                 // パスワードからuser_groupのidを検索
@@ -125,14 +125,16 @@ class UserRegistory
     // ユーザーグループバリデーション
     public static function checkUserGroup() {
         if (!isset($_POST['group_name']) || str_replace(array(" ", "　"), "", $_POST['group_name']) === '') {
-            self::$user_errors['group_name'] = 'グループ名を入力してください';
+            self::$user_errors['group_name'] = 'グループ名を入力してください。';
         } elseif (mb_strlen($_POST['group_name']) > 30) {
-            self::$user_errors['group_name'] = 'グループ名は30文字以内で入力してください';
+            self::$user_errors['group_name'] = 'グループ名は30文字以内で入力してください。';
         }
         if (!isset($_POST['goal']) || str_replace(array(" ", "　"), "", $_POST['goal']) === '') {
-            self::$user_errors['goal'] = '目標貯金額を入力してください';
+            self::$user_errors['goal'] = '目標貯金額を入力してください。';
         } elseif ($_POST['goal'] > 100000000) {
-            self::$user_errors['goal'] = '目標貯金額は100,000,000円以内で入力してください';
+            self::$user_errors['goal'] = '目標貯金額は100,000,000円以内で入力してください。';
+        } elseif ($_POST['goal'] < 1000) {
+            self::$user_errors['goal'] = '目標貯金額は1,000円以上で入力してください。';
         }
         return self::$user_errors;
     }
@@ -140,19 +142,21 @@ class UserRegistory
     // ユーザー情報バリデーション
     public static function checkUser() {
         if (!isset($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
-            self::$user_errors['user_name'] = '名前を入力してください';
+            self::$user_errors['user_name'] = '名前を入力してください。';
         } elseif (mb_strlen($_POST['user_name']) > 30) {
-            self::$user_errors['user_name'] = '名前は30文字以内で入力してください';
+            self::$user_errors['user_name'] = '名前は30文字以内で入力してください。';
         }
 
         if (trim($_POST['mail']) === "") {
-            self::$user_errors['mail'] = "メールアドレスを入力してください";
+            self::$user_errors['mail'] = "メールアドレスを入力してください。";
+        } elseif (strlen($_POST['mail']) > 256) {
+            self::$user_errors['mail'] = 'メールアドレスは255文字以内で入力してください。';
         }
 
         if (trim($_POST['password']) === "") {
-            self::$user_errors['password'] = "パスワードを入力してください";
+            self::$user_errors['password'] = "パスワードを入力してください。";
         } elseif (strlen($_POST['password']) < 4) {
-            self::$user_errors['password'] = 'パスワードを4文字以上で入力してください';
+            self::$user_errors['password'] = 'パスワードを4文字以上で入力してください。';
         }
 
         if (!empty($_FILES['user_image']['name'])) {
@@ -161,7 +165,7 @@ class UserRegistory
                 self::$user_errors['user_image'] = '画像の形式は[jpg],[gif],[png]のみです。';
             }
         } elseif (empty($_FILES['user_image']['name'])) {
-            self::$user_errors['user_image'] = '画像を選択してください';
+            self::$user_errors['user_image'] = '画像を選択してください。';
         }
         return self::$user_errors;
     }

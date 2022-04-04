@@ -24,7 +24,7 @@ require_once __DIR__ . "/../userEditController.php";
             <div class="mx-auto">
                 <div class="box" style="border-radius: 10px;">
                 <span class="input-group-addon ">
-                    <p><i class="fas fa-desktop"></i></i>ユーザー情報更新</p>
+                    <p><i class="fas fa-desktop"></i> ユーザー情報更新</p>
                 </span>
                 <form method="POST" action="" enctype="multipart/form-data">
                     <input type="hidden" name="id" value="<?php echo Config::h($current_user['user_id']); ?>">
