@@ -36,13 +36,13 @@ try {
     }
 
 } catch (Exception $e) {
-    // print('Error:'.$e->getMessage());
-    switch ($e) {
+
+    switch ($e->getCode()) {
         case 2002:
             $error_message = DbConnector::CONNECT_ERROR;
             break;
-        case 1:
-            $error_message = DbConnector::CONNECT_ERROR;
+        case 2006:
+            $error_message = DbConnector::TRANSACTION_ERROR;
             break;
         default:
         $error_message = "予期せぬエラーが発生しました。";

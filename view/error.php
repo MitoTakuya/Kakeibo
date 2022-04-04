@@ -11,10 +11,9 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-dark bg-dark">
-		<a href="login.php" class="navbar-brand">ログイン</a>
-		<a href="users_new.php" class="navbar-brand text-right">新規登録</a>
-	</nav>
+	<!-- ヘッダー -->
+	<?php include __DIR__ . "/_header.php" ?>
+	
 	<div class="container">
 		<div class="mt-4"></div>
 		<div class="mx-auto">
@@ -30,7 +29,7 @@
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
 					value="再読込み" onclick="window.location.reload(true);" />
-					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/view/logout.php?error=1" 
+					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/logout.php?error=1" 
 						class="nav-item nav-link text-center">再ログイン</a>
 			</div>
 		</div>

@@ -26,8 +26,9 @@ require_once __DIR__.'/../registoryController.php';
 			<div class="registory-box mb-5">
 				<div class="panel-group mt-1">
 					<div class="panel tab-A is-show p-2">
-					<form action="../registoryController.php?type_id=1" method="post">
-					<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
+					<form action="" method="post">
+						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
+						<input type="hidden" value="1" name="type_id">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -36,7 +37,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>タイトル</label>
+							<label>タイトル　</label>
+							<?php if(!empty($error_messages["title"])): ?>
+								<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
+							<?php endif; ?>
 							<input type="text" class="form-control"  name="title" required>
 						</div>
 						<div class="divider"></div>
@@ -59,7 +63,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>メモ</label>
+							<label>メモ　</label>
+							<?php if(!empty($error_messages["memo"])): ?>
+								<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
+							<?php endif; ?>
 								<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
 						</div>
 						<div class="divider"></div>
@@ -68,8 +75,9 @@ require_once __DIR__.'/../registoryController.php';
 					</div>
 
 					<div class="panel tab-B p-2">
-					<form action="../registoryController.php?type_id=2" method="post">
-					<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
+					<form action="" method="post">
+						<input type="hidden" value="<?= $_SESSION['token']; ?>" name="token">
+						<input type="hidden" value="2" name="type_id">
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
 							<label>日付</label>
@@ -78,7 +86,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>タイトル</label>
+							<label>タイトル　</label>
+							<?php if(!empty($error_messages["title"])): ?>
+								<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
+							<?php endif; ?>
 							<input type="text" class="form-control"  name="title" required>
 						</div>
 						<div class="divider"></div>
@@ -101,8 +112,11 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>メモ</label>
-								<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
+							<label>メモ　</label>
+							<?php if(!empty($error_messages["memo"])): ?>
+								<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
+							<?php endif; ?>
+							<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
 						</div>
 						<div class="divider"></div>
 						<input type="submit" class="btn btn-primary mb-3" name="entry" value="登録する">
@@ -190,7 +204,7 @@ require_once __DIR__.'/../registoryController.php';
 		</nav>
 	</div>
 
-	<!-- 編集モーダル -->
+	<!-- モーダル -->
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
@@ -226,16 +240,6 @@ require_once __DIR__.'/../registoryController.php';
 		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
 		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
 		</form>
-	</div>
-	<!-- 削除モーダル -->
-	<div class="modal"></div>
-	<div class="delete_form">
-		<h2 class="post_title">削除</h2>
-		<div>
-			<p>削除してもよろしいですか？</p>
-		</div>
-		<button class="btn btn-primary" type="submit" name="delete" id="delete">削除</button>
-		<button class="btn btn-danger" id="cancel" type="button">キャンセル</button>
 	</div>
 	
 	<!-- Optional JavaScript -->

@@ -4,15 +4,15 @@ require_once __DIR__.'/init.php';
 try {
     DbConnector::connectDB();
     if(!empty($_GET)) {
-        Config::check_token();
+        
         $user_id = $_SESSION['id'];
         $group_id = $_SESSION['group_id'];
         $category_id = (int)$_GET["id"];
 
         //カテゴリTBLよりカテゴリ名を取得する
         $categories = DbConnectorCategories::fetchCategories();
-        //取得失敗時、エラー画面を表示
-        if(!$categories) {
+        //カテゴリ取得に関しては戻り値が空の配列の場合はエラーとする
+        if(empty($categories)) {
             $error_message = DbConnector::TRANSACTION_ERROR;
             require __DIR__.'/view/error.php';
             die();
@@ -28,13 +28,7 @@ try {
         }
 
         //特定グループのカテゴリ別レコード取得する
-        $records = DbConnectorFullRecords::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
-        //データ取得失敗時、エラー画面を表示
-        if(!$records) {
-            $error_message = DbConnector::TRANSACTION_ERROR;
-            require __DIR__.'/view/error.php';
-            die();
-        }
+        // $records = DbConnectorFullRecords::fetchFilteredRecords(group_id: $group_id, category_id: $category_id);
 
         // 特定グループのカテゴリー一覧を取得する
         $category_records = DbConnectorMain::fetchCategories($group_id);
@@ -60,29 +54,36 @@ try {
             }
         }
         
-        /***************************************
-        *ページネーション処理 
-        ***************************************/
-        // 1ページに表示するレコード数
-        define('MAX','5'); 
+        // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
+        DbConnector::makeOrderClause(desc: true);
         // トータルレコード件数
-        $total_records = count($records); 
-        // トータルページ数
-        $max_page = ceil($total_records / MAX); 
-        //URLに渡された現在のページを取得
+        $total_record = DbConnectorMain::countRecords($group_id);
+        // 1ページに表示するレコード数
+        $limit = 10;
+        //URLに渡された現在のページ数
         if(!isset($_GET['page_id'])){ 
             $now = 1;
         }else{
             $now = $_GET['page_id'];
         }
+
         // 取得したデータの何番目から表示するか
-        $start_no = ($now - 1) * MAX; 
-        // 1ページに表示するレコードを切り取る
-        $records = array_slice($records, $start_no, MAX, true);
+        $offset = ($now - 1) * $limit;
+        //全ページ数を決める 
+        $max_page = ceil($total_record / $limit);
         //「前へ」のページ数
         $previous =  $now -1;
         //「次へ」ページ数
         $next =  $now + 1;
+        //★差し替え予定　メインTBLよりページ毎のカテゴリ別レコードを取得
+        $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, category_id: $category_id, offset: $offset);
+        
+        if(!empty($_POST)) {
+            Config::check_token();
+            header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+            exit;
+        }
+
     }else {
         $error_message = "不正な通信です。";
         require_once __DIR__.'/view/error.php';
@@ -90,12 +91,13 @@ try {
     }
 
 } catch (Exception $e) {
-    switch ($e) {
+
+    switch ($e->getCode()) {
         case 2002:
             $error_message = DbConnector::CONNECT_ERROR;
             break;
-        case 1:
-            $error_message = DbConnector::CONNECT_ERROR;
+        case 2006:
+            $error_message = DbConnector::TRANSACTION_ERROR;
             break;
         default:
         $error_message = "予期せぬエラーが発生しました。";
