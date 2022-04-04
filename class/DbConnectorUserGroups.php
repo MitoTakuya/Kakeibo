@@ -8,45 +8,152 @@ class DbConnectorUserGroups extends DbConnector
     protected static $target_table = 'user_groups';
 
     // ユーザーグループ取得
-    public static function fetchUserGroup(int $group_id)
+    public static function fetchUserGroup(int $id)
     {
-        if (isset(self::$pdo) || self::connectDB()) {
-            $stmt = self::$pdo->prepare('SELECT *
-            FROM `user_groups`
-            WHERE `id`=:id;');
-            $stmt->bindParam(':id', $group_id, PDO::PARAM_INT);
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `id`=:id';
 
-            $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
 
-            // クエリ結果が0件の場合、空の配列を返す
-            return $row;
+            // 親クラスのメソッドで結果を取り出す
+            self::fetch($pdo_method);
+            return self::$temp_result;
 
-        } else {
-            return self::CONNECT_ERROR;
+        } catch (PDOException $e) {
+            throw $e;
         }
     }
+
+    // ユーザーグループ検索
+    public static function searchGroupId($group_password)
+    {
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `group_password`=:group_password';
+
+            // SELECTする対象を一時変数に格納する
+            self::$temp_selected_col = "`id`";
+
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
+            
+            // 親クラスのメソッドで結果を取り出す
+            self::fetch($pdo_method);
+            return self::$temp_result;
+
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    // ユーザーテーブルのレコードを1つ更新する
+    public static function editUser(
+        string $user_name,
+        string $password,
+        string $mail,
+        string $user_image,
+        int $id
+    ) {
+        try {
+            // トランザクション開始
+            self::$pdo->beginTransaction();
+
+            // 受け取った値から不要な値を取り除き、set句を生成する
+            self::$temp_to_bind['set'] = self::validateInputs(get_defined_vars());
+            self::makeSetClause();
+
+            // SQL文を実行する *エラーが起来た際はrollback()も行う
+            self::updateOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
+    }
+
 
     // ユーザーグループ編集
-    public static function editUserGroup(string $group_name, int $goal, int $id)
-    {
-        if (isset(self::$pdo) || self::connectDB()) {
-            try {
-                self::$pdo->beginTransaction();
-                $stmt = self::$pdo->prepare('UPDATE user_groups SET group_name=:group_name, goal=:goal WHERE id=:id');
-                $stmt->bindParam('group_name', $group_name, PDO::PARAM_STR);
-                $stmt->bindParam('goal', $goal, PDO::PARAM_INT);
-                $stmt->bindParam('id', $id, PDO::PARAM_INT);
-                $stmt->execute();
-                self::$pdo->commit();
-            } catch (PDOException $e) {
-                self::$pdo->rollBack();
-                return self::TRANSACTION_ERROR;
-            }
-        } else {
-            return self::CONNECT_ERROR;
+    public static function editUserGroup(
+        string $group_name, 
+        int $goal,
+        int $id
+    ) {
+        try {
+            // トランザクション開始
+            self::$pdo->beginTransaction();
+
+            // 受け取った値から不要な値を取り除き、set句を生成する
+            self::$temp_to_bind['set'] = self::validateInputs(get_defined_vars());
+            self::makeSetClause();
+
+            // SQL文を実行する *エラーが起来た際はrollback()も行う
+            self::updateOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
         }
     }
+
+    // userテーブルのレコードを1つ追加する
+    public static function insertUser(
+        string $user_name,
+        string $password,
+        string $mail,
+        string $user_image, 
+        int $group_id
+    ) {
+        try {
+            // トランザクション開始
+            self::$pdo->beginTransaction();
+
+            // 受け取った値に対応するset句を生成する
+            self::$temp_to_bind['set'] = get_defined_vars();
+            self::makeSetClause();
+
+            // SQL文を実行する
+            self::insertOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
+    }
+
+
+    // ユーザーグループ登録
+    public static function insertUserGroup(
+        string $group_name,
+        string $group_password
+    ) {
+        try {  
+            // 受け取った値に対応するset句を生成する
+            self::$temp_to_bind['set'] = get_defined_vars();
+            self::makeSetClause();
+
+            // SQL文を実行する
+            self::insertOne();
+
+            // ユーザーグループIDを返す
+            return self::$pdo->lastInsertId();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
+    }
+
 
     // ユーザーグループの目標貯金額を返す
     public static function fetchGoal($id)

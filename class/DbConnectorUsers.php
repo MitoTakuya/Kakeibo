@@ -8,131 +8,176 @@ class DbConnectorUsers extends DbConnector
     protected static $target_table = 'users';
     
     // ログイン時メールアドレス検索
-    public static function loginUser($mail)
+    public static function loginUser(string $mail)
     {
-        $stmt = self::$pdo->prepare('SELECT `id`, `password` FROM users WHERE mail=:mail && `is_deleted`!=1');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
-        $stmt->execute();
-        $user_password = $stmt->fetch();
-        // 未登録アドレスならfalse
-        return $user_password;;
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `mail`=:mail AND `is_deleted` = 0';
+
+            // SELECTする対象を一時変数に格納する
+            self::$temp_selected_col = "`id`, `password`";
+
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
+            
+            // 親クラスのメソッドで結果を取り出す
+            self::fetch($pdo_method);
+            return self::$temp_result;
+
+        } catch (PDOException $e) {
+            throw $e;
+        }
     }
 
     // メールアドレス重複確認
-    public static function checkDuplicate($mail)
+    public static function checkDuplicate(string $mail)
     {
-        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail && `is_deleted`!=1');
-        $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
-        //sqlを 実行
-        $stmt->execute();
-        // メールアドレスをカウント
-        $record = $stmt->fetch();
-        if ($record['cnt'] > 0) {
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `mail`=:mail AND `is_deleted` = 0';
+            // where句とselect対象を指定する
+            self::$temp_selected_col = "COUNT(mail) AS cnt";
+
+            // PDOメソッドの指定（一番上のレコードだけを取り出す）
+            $pdo_method = 'pdoFetchAssoc';
+
+            // SQL文を実行し、結果を得る
+            self::fetch($pdo_method);
+            self::$temp_result;
+                if (self::$temp_result['cnt'] > 0) {
             return "登録済みのメールアドレスです。";
+                }
+        } catch (PDOException $e) {
+        throw $e;
         }
     }
 
     // 自分以外のユーザーがアドレスを登録済みかカウント
-    public static function checkEditMail($mail, $id)
+    public static function checkEditMail(string $mail, int $id)
     {
-        $stmt = self::$pdo->prepare('SELECT COUNT(mail) as cnt FROM users WHERE mail=:mail && id != (:id) && `is_deleted`!=1');
-        
-        $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
-        $stmt->bindParam( ':id', $id, PDO::PARAM_INT);
-        //sqlを 実行
-        $stmt->execute();
-        // メールアドレスをカウント
-        $record = $stmt->fetch();
-        var_dump($record );
-        if ($record['cnt'] > 0) {
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `mail`=:mail AND `is_deleted` = 0 AND `id` != (:id)';
+            // where句とselect対象を指定する
+            self::$temp_selected_col = "COUNT(mail) AS cnt";
+    
+            // PDOメソッドの指定（一番上のレコードだけを取り出す）
+            $pdo_method = 'pdoFetchAssoc';
+    
+            // SQL文を実行し、結果を得る
+            self::fetch($pdo_method);
+            self::$temp_result;
+                if (self::$temp_result['cnt'] > 0) {
             return "登録済みのメールアドレスです。";
+            }
+    
+        } catch (PDOException $e) {
+            throw $e;
         }
     }
 
-    // ユーザーグループ登録
-    public static function insertUserGroup($group_name, $group_password)
-    {
-        $stmt = self::$pdo->prepare(
-            'INSERT INTO `user_groups`(`group_name`, `group_password`) VALUES(:group_name, :group_password);');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':group_name', $group_name, PDO::PARAM_STR);
-        $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
-        //sqlを 実行
-        $stmt->execute();
-        return self::$pdo->lastInsertId();
+    // userテーブルのレコードを1つ追加する
+    public static function insertUser(
+        string $user_name,
+        string $password,
+        string $mail,
+        string $user_image, 
+        int $group_id
+    ) {
+        try {
+            // トランザクション開始
+            self::$pdo->beginTransaction();
+
+            // 受け取った値に対応するset句を生成する
+            self::$temp_to_bind['set'] = get_defined_vars();
+            self::makeSetClause();
+
+            // SQL文を実行する
+            self::insertOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
     }
 
-    // ユーザーグループ検索
-    public static function searchGroupId($group_password)
-    {
-        $stmt = self::$pdo->prepare('SELECT `id`FROM user_groups WHERE group_password=:group_password');
-        $stmt->bindParam( ':group_password', $group_password, PDO::PARAM_STR);
-        //sqlを 実行
-        $stmt->execute();
-        $id = $stmt->fetch();
-        return $id; //パスワードが違っていればfalseが返る
-    }
-
-    /**************************************************************************
-     * userテーブル操作用のメソッド
-     **********************************************************************/
-    // 
-    public static function insertUser($user_name, $password, $mail, $user_image, $group_id)
-    {
-        $stmt = self::$pdo->prepare('INSERT INTO users(user_name, password, mail, user_image, group_id) 
-            VALUES(:user_name, :password, :mail, :user_image, :group_id);');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':user_name', $user_name, PDO::PARAM_STR);
-        $stmt->bindParam( ':password', $password, PDO::PARAM_STR);
-        $stmt->bindParam( ':mail', $mail, PDO::PARAM_STR);
-        $stmt->bindParam( ':user_image', $user_image, PDO::PARAM_STR); 
-        $stmt->bindParam( ':group_id', $group_id, PDO::PARAM_INT); 
-        //sqlを 実行
-        $stmt->execute();
-    }
 
     // ユーザー詳細ページ
-    public static function fetchUsersFullRecords($group_id)
+    public static function fetchUsersFullRecords(int $group_id)
     {
-        $stmt = self::$pdo->prepare(
-            'SELECT users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*
-            FROM users INNER JOIN user_groups ON users.group_id = user_groups.id 
-            where users.group_id = :group_id &&  `is_deleted`!=1');
-        $stmt->bindParam(':group_id', $group_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return $results;
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `group_id`=:group_id';
+
+            // SQL文の句を作る
+            self::$temp_selected_col = "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
+            self::$temp_join_clause = 'INNER JOIN user_groups ON users.group_id = user_groups.id';
+
+            // SQL文を実行する
+            self::fetch();
+            
+            // クエリ結果が0件の場合、空の配列を返す
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
+        }
     }
 
     // ユーザー情報取得
     public static function fetchUser(int $id)
     {
-        $stmt = self::$pdo->prepare('SELECT *
-        FROM `users`
-        WHERE `id`=:id;');
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `id`=:id';
 
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            // SELECTする対象を一時変数に格納する
+            self::$temp_selected_col = "*";
 
-        // クエリ結果が0件の場合、空の配列を返す
-        return $row;
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
+
+            // 親クラスのメソッドで結果を取り出す
+            self::fetch($pdo_method);
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            throw $e;
+        }
     }
 
-    // ユーザー更新
-    public static function editUser(string $user_name, string $password, string $mail, string $user_image, int $id)
-    {
+    // ユーザーテーブルのレコードを1つ更新する
+    public static function editUser(
+        string $user_name,
+        string $password,
+        string $mail,
+        string $user_image,
+        int $id
+    ) {
         try {
+            // トランザクション開始
             self::$pdo->beginTransaction();
-            $stmt = self::$pdo->prepare(
-                'UPDATE users SET user_name=:user_name, password=:password, mail=:mail, user_image = :user_image WHERE id=:id');
-            $stmt->bindParam('user_name', $user_name, PDO::PARAM_STR);
-            $stmt->bindParam('password', $password, PDO::PARAM_STR);
-            $stmt->bindParam('mail', $mail, PDO::PARAM_STR);
-            $stmt->bindParam('user_image', $user_image, PDO::PARAM_STR);
-            $stmt->bindParam('id', $id, PDO::PARAM_INT);
-            $stmt->execute();
+
+            // 受け取った値から不要な値を取り除き、set句を生成する
+            self::$temp_to_bind['set'] = self::validateInputs(get_defined_vars());
+            self::makeSetClause();
+
+            // SQL文を実行する *エラーが起来た際はrollback()も行う
+            self::updateOne();
+
+            // トランザクション終了
             self::$pdo->commit();
         } catch (PDOException $e) {
             self::$pdo->rollBack();
@@ -141,31 +186,27 @@ class DbConnectorUsers extends DbConnector
     }
 
     // 論理的削除を行うメソッド
-    public static function disableUser(int $target_id)
+    public static function disableUser(int $id)
     {
-        $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=true WHERE id=:id');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-        //sqlを 実行
-        $stmt->execute();
-    }
+        try {
+            // トランザクション開始
+            self::$pdo->beginTransaction();
 
-    // 論理的削除を取り消すメソッド
-    public static function deleteUser($target_id)
-    {
-        $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-        //sqlを 実行
-        $stmt->execute();
-    }
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `id`=:id';
+            // set句をつくる
+            self::$temp_set_clause = 'SET `is_deleted`=true';
 
-    public static function fetchImage($target_id)
-    {
-        $stmt = self::$pdo->prepare('UPDATE `users` SET `is_deleted`=false WHERE id=:id');
-        //SQL文中の プレース部を 定義しておいた変数に置き換える
-        $stmt->bindParam( ':id', $target_id, PDO::PARAM_INT);
-        //sqlを 実行
-        $stmt->execute();
+            // SQL文を実行する *エラーが起来た際はrollback()も行う
+            self::updateOne();
+
+            // トランザクション終了
+            self::$pdo->commit();
+        } catch (PDOException $e) {
+            self::$pdo->rollBack();
+            return self::TRANSACTION_ERROR;
+        }
     }
 }
