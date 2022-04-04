@@ -110,6 +110,7 @@ include(__DIR__.'\..\dashboardController.php');
                                                 <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
                                                     <input type="submit" name="category_name" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    <input type="hidden" name="target_date" value=<?= $target_date->format('Ymd') ?>>
                                                 </form>
                                             </td>
 
@@ -132,6 +133,7 @@ include(__DIR__.'\..\dashboardController.php');
                                                 <form action="./showCategory.php?id=<?= $income['category_id'] ?>" method="post">
                                                     <input type="submit" name="category_name" value="<?= $income['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    <input type="hidden" name="target_date" value=<?= $target_date->format('Ymd') ?>>
                                                 </form>
                                             </td>
 

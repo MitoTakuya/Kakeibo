@@ -107,6 +107,7 @@ try {
     // echo $e->getMessage();
 
     $error_code = $e->getCode();
+
     switch ($error_code) {
         // DBがオープンでない場合
         case 2002:
