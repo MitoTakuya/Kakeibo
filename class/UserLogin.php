@@ -9,14 +9,14 @@ class UserLogin
     {        
         // メールアドレスが入力されているか確認
         if (trim($_POST['mail']) === "") {
-            self::$user_errors['login_mail'] = "メールアドレスを入力してください";
+            self::$user_errors['login_mail'] = "メールアドレスを入力してください。";
         } else {
             $mail = $_POST['mail'];
         }
 
         // パスワードが入力されているか確認
         if (trim($_POST['password']) === "") {
-            self::$user_errors['login_password'] = "パスワードを入力してください";
+            self::$user_errors['login_password'] = "パスワードを入力してください。";
         } else {
             $password = $_POST['password'];
         }
@@ -24,9 +24,8 @@ class UserLogin
         // パスワード、メールアドレスが入力されていたらチェック
         if (!empty($mail) && !empty($password)) {
             $user_password = DbConnectorUsers::loginUser($mail);
-            var_dump($user_password);
             if (!is_array($user_password)) {
-                self::$user_errors['login_mail'] = 'メールアドレスが見つかりません';
+                self::$user_errors['login_mail'] = 'メールアドレスが見つかりません。';
             } else {
                 // 指定したハッシュがパスワードにマッチしているか
                 if (!password_verify($password, $user_password['password'])) {

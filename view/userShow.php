@@ -23,11 +23,11 @@ require_once __DIR__ . "/../userEditController.php";
 			<div class="mt-4"></div>
 			<div class="box" style="border-radius: 10px;">
 				<div class="card-header bg-white">
-					<div class="check"><h5><i class="fas fa-desktop"></i>ユーザー情報</h5></div>
+					<div class="check"><h5><i class="fas fa-desktop"></i> ユーザー情報</h5></div>
 				</div>
 				<div class="card-body">
 					<div class="card-text">
-						<div class="check"><h5><i class="fas fa-pen"></i>ログイン中ユーザー</h5></div>
+						<div class="check"><h5><i class="fas fa-pen"></i> ログイン中ユーザー</h5></div>
 						<div class="ml-4">
 							<h5><span>
 								<img src="../images/<?php echo Config::h($current_user['user_image']); ?>" border-radius="50%" alt="アイコン画像"
@@ -42,7 +42,7 @@ require_once __DIR__ . "/../userEditController.php";
 						if (isset($other_users)):
 						foreach($other_users as $row) {
 						?>
-						<div class="check"><h5><i class="fa fa-user"></i>グループメンバー</h5></div>
+						<div class="check"><h5><i class="fa fa-user"></i> グループメンバー</h5></div>
 						<div class="ml-4">
 							<h5><span>
 								<img src="../images/<?php echo Config::h($row['user_image']); ?>" border-radius="50%" alt="アイコン画像"
@@ -59,7 +59,7 @@ require_once __DIR__ . "/../userEditController.php";
 			</div>
 			<div class="box" style="border-radius: 10px;">
 				<div class="card-header bg-white">
-					<div class="check"><h5><i class="fas fa-calculator"></i>グループ情報</h5></div>
+					<div class="check"><h5><i class="fas fa-calculator"></i> グループ情報</h5></div>
 				</div>
 				<div class="card-body">
 					<div class="card-text" id="groupCard">
@@ -68,7 +68,7 @@ require_once __DIR__ . "/../userEditController.php";
 						foreach ($user_show as $group) {
 						?>
 						<div class="check">
-							<h5><i class="fas fa-user-group"></i>グループ名
+							<h5><i class="fas fa-user-group"></i> グループ名
 								<span class="float-right"><button type="button" class="btn btn-primary"
 								onclick="location.href='groupUpdate.php'">更新する</button></span>
 							</h5>
@@ -76,11 +76,11 @@ require_once __DIR__ . "/../userEditController.php";
 						<div class="ml-4">
 							<span><?php echo Config::h($group['group_name']); ?></span>
 						</div>
-						<div class="check"><h5><i class="fas fa-piggy-bank"></i>目標貯金額</h5></div>
+						<div class="check"><h5><i class="fas fa-piggy-bank"></i> 目標貯金額</h5></div>
 						<div class="ml-4">
 							<span><?php echo Config::h(number_format($group['goal'])); ?>円</span>							
 						</div>
-						<h5 class="check"><i class="fas fa-lock"></i>家計簿パスワード
+						<h5 class="check"><i class="fas fa-lock"></i> 家計簿パスワード
 							<span><button class="btn btn-secondary btn-sm" @click="active">表示する</button></span>
 						</h5>
 						<div class="ml-4">
