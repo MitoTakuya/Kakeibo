@@ -18,7 +18,7 @@ include(__DIR__.'\..\dashboardController.php');
     </head>
 
     <body>
-        <div id="dashboard">
+        <div id="app">
 
         <!-- ヘッダー -->
         <?php include __DIR__ . "/_header.php" ?>
@@ -175,7 +175,7 @@ include(__DIR__.'\..\dashboardController.php');
 
             /********** グラフ描画、更新処理 **********/
             let app = new Vue({
-            el :'#dashboard',
+            el :'#app',
             data : {
                 selected_date : '', // phpから直に最新月の直接を代入する
                 selectable_dates : <?= $jsonized_past_dates ?>,
