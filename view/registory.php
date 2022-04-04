@@ -76,7 +76,7 @@ require_once __DIR__.'/../registoryController.php';
 							<?php if(!empty($error_messages["memo"])): ?>
 								<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
 							<?php endif; ?>
-								<textarea name="content" class="form-control" cols="40" rows="5"></textarea><br>
+								<textarea name="content" class="form-control" cols="40" rows="5" placeholder=""></textarea><br>
 						</div>
 						<div class="divider"></div>
 						<input type="submit" class="btn btn-primary mb-3" name="entry" value="登録する">
@@ -172,7 +172,7 @@ require_once __DIR__.'/../registoryController.php';
 							<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
 							<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
 							<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-							<td scope="row" id="updated_at"><?= $record["updated_at"] ?></td>
+							<td scope="row" id="updated_at"><?= date('Y年m月d日', strtotime(Config::h($record["updated_at"]))) ?></td>
 							<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
 							<td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
 						</tr>
@@ -184,43 +184,45 @@ require_once __DIR__.'/../registoryController.php';
 	</div>
 
 	<!-- ページネーション -->
-	<div class="container mb-5">
-		<nav aria-label="Page navigation example">
-		<ul class="pagination justify-content-end">
-			<?php if($now > 1) :?>
-				<li class="page-item">
-					<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">前へ</a>
-				</li>
-			<?php endif ;?>
-			<?php for($i = 1; $i <= $max_page; $i++) :?>
-				<?php if($i == $now) :?>
-					<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
+	<?php if($max_page > 1) :?>
+		<div class="container mb-5" id="page-nation">
+			<nav aria-label="Page navigation example">
+			<ul class="pagination justify-content-end">
+				<?php if($now > 1) :?>
+					<li class="page-item">
+						<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
+					</li>
 				<?php else :?>
-					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
+					<li class="page-item disabled">
+						<a class="page-link">前へ</a>
+					</li>
 				<?php endif ;?>
-			<?php endfor ;?>
-			<?php if($now < $max_page) :?>
-				<li class="page-item" id="next-page">
-					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">次へ</a>
-				</li>
-			<?php endif ;?>
-		</ul>
-		</nav>
-	</div>
+				<?php for($i = 1; $i <= $max_page; $i++) :?>
+					<?php if($i == $now) :?>
+						<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
+					<?php else :?>
+						<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
+					<?php endif ;?>
+				<?php endfor ;?>
+				<?php if($now < $max_page) :?>
+					<li class="page-item" id="next-page">
+						<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
+					</li>
+				<?php else :?>
+					<li class="page-item disabled">
+						<a class="page-link">次へ</a>
+					</li>
+				<?php endif ;?>
+			</ul>
+			</nav>
+		</div>
+	<?php endif ;?>
 
 	<!-- モーダル -->
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
-		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
+		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data" id="modal_form">
 		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 		<input type="hidden" id="record_id" name="record_id">
 		<input type="hidden" id="type_id" name="type_id">
