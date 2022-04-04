@@ -16,9 +16,6 @@ class DbConnectorUserGroups extends DbConnector
             // where句をつくる
             self::$temp_where_clause = 'WHERE `id`=:id';
 
-            // SELECTする対象を一時変数に格納する
-            self::$temp_selected_col = "*";
-
             // PDOメソッドの指定
             $pdo_method = 'pdoFetchAssoc';
 
