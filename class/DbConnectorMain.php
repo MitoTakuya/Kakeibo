@@ -33,7 +33,7 @@ class DbConnectorMain extends DbConnector {
             self::$pdo->commit();
 
         } catch (PDOException $e) {
-            self::$pdo->rollBack();
+            // *rollback()はinsertOne()内で行う
             return self::TRANSACTION_ERROR;
         }
     }
@@ -58,13 +58,14 @@ class DbConnectorMain extends DbConnector {
             self::$temp_to_bind['set'] = self::validateInputs(get_defined_vars());
             self::makeSetClause();
 
-            // SQL文を実行する *エラーが起来た際はrollback()も行う
+            // SQL文を実行する
             self::updateOne();
 
             // トランザクション終了
             self::$pdo->commit();
 
         } catch (PDOException $e) {
+            // *rollback()はupdateOne()内で行う
             // self::$pdo->rollBack();
             throw $e;
         }
@@ -98,7 +99,6 @@ class DbConnectorMain extends DbConnector {
             return $result;
             
         } catch (PDOException $e) {
-            self::$pdo->rollBack();
             throw $e;
         }
     }
