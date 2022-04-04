@@ -27,10 +27,29 @@ try {
     // echo $target_date->format('Ym');
 
     // カテゴリごとの支出を取り出す
-    $categorized_outgo_list = DbConnectorMain::fetchCategorizedList(
+    $categorized_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
+
+    // レコードが存在するか
+    $record_exists = count($categorized_list) > 0;
+    $categorized_outgo_list = array();
+    $categorized_income_list = array();
+
+    // レコードがある場合、収入と支出に分ける
+    if ($record_exists) {
+        foreach ($categorized_list as $outgo) {
+            if ($outgo['type_id'] == 1) {
+                $categorized_outgo_list[] = $outgo;
+            }
+        }
+        foreach ($categorized_list as $income) {
+            if ($income['type_id'] == 2) {
+                $categorized_income_list[] = $income;
+            }
+        }
+    }
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');

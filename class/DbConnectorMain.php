@@ -201,7 +201,7 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文の句を作る
             self::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', self::$temp_where_clause);
-            self::$temp_selected_col = "main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`";
+            self::$temp_selected_col = "main.`category_id`, categories.category_name, categories.type_id, IFNULL(SUM(`payment`), 0) AS `payment`";
             self::$temp_groupby_clause = "GROUP BY `category_id`";
             self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
