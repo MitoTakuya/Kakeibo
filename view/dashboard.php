@@ -80,6 +80,7 @@ include(__DIR__.'\..\dashboardController.php');
                         <div class="outgo_chart_area w-100 float-right col-6">
                             <?php if (count($categorized_outgo_list) === 0):?>
                                 <!-- もしレコードが存在しなければ「記録がありません」 -->
+                                <br>
                                 <p>記録がありません</p>
                             <?php else:?> 
                                 <!-- 支出割合グラフ -->
