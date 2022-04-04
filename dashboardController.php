@@ -24,6 +24,7 @@ try {
     } else {
         $target_date = new DateTime();
     }
+    // echo $target_date->format('Ym');
 
     // カテゴリごとの支出を取り出す
     $categorized_outgo_list = DbConnectorMain::fetchCategorizedList(
@@ -45,14 +46,16 @@ try {
     $carrent_date = new DateTime();
 
     // 登録日から最新月までの月のリストを作成する
-    while ($registration_date <= $carrent_date) {
+    while ($registration_date <= $carrent_date->modify('last day of')) {
         $past_dates[] = array(
             'year' => $registration_date->format('Y'),
             'month' => $registration_date->format('n'),
             'year_month' => $registration_date->format('Ym')
         );
+        // echo $registration_date->format('Ymd')."<br>";
         $registration_date->modify('+1 months');
     }
+    // print_r($past_dates);
     // 降順に変更する
     $past_dates = array_reverse($past_dates);
 

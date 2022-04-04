@@ -207,6 +207,8 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文を実行する
             self::fetch();
+
+            // レコードが無ければ0を返す
             return self::$temp_result;
 
         } catch (PDOException $e) {
@@ -258,7 +260,7 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
-            
+
             if (self::$temp_result) {
                 // レコードが存在する場合
                 return self::$temp_result['payment_at'];

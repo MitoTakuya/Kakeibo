@@ -50,18 +50,27 @@ include(__DIR__.'\..\dashboardController.php');
 
                     <div class="row">
                         <!-- 目標貯金額表示 -->
-                        <div class="goal_and_diff float-left w-25 col-4">
-                            <h4 class="h4">目標貯金額</h4><br>
-                            <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
 
-                            <h4 class="h4">目標まで</h4><br>
-                            <?php if ($difference > $goal) :?>
-                                <h4 class="display-5"><?= number_format($goal) ?> 円</h4>
-                            <?php elseif ($difference > 0) : ?>
-                                <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
-                            <?php else : ?>
-                                <h3 class="h3">目標金額達成！</h3>
-                            <?php endif; ?>
+                        <!-- 目標貯金額が設定されていないか、0の場合 -->
+                        <?php if ($goal == 0) : ?>
+                                <h4 class="h4">目標貯金額を設定しましょう</h4>
+                                <i class="fa-solid fa-up-right-from-square">
+                                <a href="./userShow.php">設定する</a></i>
+                        <?php else : ?>
+                            <!-- 目標貯金額が設定されている場合 -->
+                            <div class="goal_and_diff float-left w-25 col-4">
+                                <h4 class="h4">目標貯金額</h4><br>
+                                <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
+
+                                <h4 class="h4">目標まで</h4><br>
+                                <?php if ($difference > $goal) :?>
+                                    <h4 class="display-5"><?= number_format($goal) ?> 円</h4>
+                                <?php elseif ($difference > 0) : ?>
+                                    <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
+                                <?php else : ?>
+                                    <h3 class="h3">目標金額達成！</h3>
+                                <?php endif; ?>
+                        <?php endif; ?>
                         </div>
 
                         <!-- グラフ部分 -->
