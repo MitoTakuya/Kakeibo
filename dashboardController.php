@@ -4,7 +4,6 @@ require(__DIR__.'\class\DbConnectorMain.php');
 
 try {
     DbConnector::connectDB();
-
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
     $user_id = $_SESSION['id']; 
@@ -24,28 +23,26 @@ try {
     }
     // echo $target_date->format('Ym');
 
-    // カテゴリごとの支出を取り出す
+    // カテゴリごとの合計額を取り出す
     $categorized_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
 
-    // レコードが存在するか
-    $record_exists = count($categorized_list) > 0;
+    // 合計額を支出と収入に分ける
     $categorized_outgo_list = $categorized_list[0];
     $categorized_income_list = $categorized_list[1];
 
-    // レコードが存在するか
+    // 支出と収入それぞれでレコードが存在するか
     $outgo_record_exists = count($categorized_outgo_list) > 0;
     $income_record_exists = count($categorized_income_list) > 0;
 
-    // グラフの上に出力する
-    $displayed_year = $target_date->format('Y');
-    $displayed_month = $target_date->format('n');
+    // グラフの上に出力する日付
+    $displayed_year_month = $target_date->format('Y年n月');
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 最も購入日付が古いレコードの日付を取得する
+    // 最も購入日付が古いレコードの日付を取得する（無ければ当日が取得される）
     $registration_date = DbConnectorMain::fetchOldestDate($group_id);
     $registration_date = new DateTime($registration_date);
 
@@ -63,6 +60,7 @@ try {
         $registration_date->modify('+1 months');
     }
     // print_r($past_dates);
+
     // 降順に変更する
     $past_dates = array_reverse($past_dates);
 
@@ -98,17 +96,28 @@ try {
         "#ffe6b3",  //オレンジ
     ];
     
+    // javascript内に埋め込める形に直す
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
+
     DbConnector::disconnectDB();
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
 
     $error_code = $e->getCode();
+    echo $error_code;
+    echo $e->getMessage();
+
     switch ($error_code) {
+        // DBがオープンでない場合
         case 2002:
             $error_message = DbConnector::CONNECT_ERROR;
             break;
-        
+        // DBとの接続が途中からできなくなった場合
+        case 'HY000':
+        case 2006:
+            $error_message = DbConnector::TRANSACTION_ERROR;
+            break;
+        // その他
         default:
             $error_message = '予期せぬエラーが発生しました';
             break;
