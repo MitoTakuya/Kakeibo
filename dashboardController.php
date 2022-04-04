@@ -24,28 +24,27 @@ try {
     }
     // echo $target_date->format('Ym');
 
-    // カテゴリごとの支出を取り出す
+    // カテゴリごとの合計額を取り出す
     $categorized_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
 
-    // レコードが存在するか
+    // 合計額を支出と収入に分ける
     $record_exists = count($categorized_list) > 0;
     $categorized_outgo_list = $categorized_list[0];
     $categorized_income_list = $categorized_list[1];
 
-    // レコードが存在するか
+    //  支出と収入それぞれでレコードが存在するか
     $outgo_record_exists = count($categorized_outgo_list) > 0;
     $income_record_exists = count($categorized_income_list) > 0;
 
-    // グラフの上に出力する
-    $displayed_year = $target_date->format('Y');
-    $displayed_month = $target_date->format('n');
+    // グラフの上に出力する日付
+    $displayed_year_month = $target_date->format('Y年n月');
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 最も購入日付が古いレコードの日付を取得する
+    // 最も購入日付が古いレコードの日付を取得する（無ければ当日が取得される）
     $registration_date = DbConnectorMain::fetchOldestDate($group_id);
     $registration_date = new DateTime($registration_date);
 
@@ -71,6 +70,8 @@ try {
     *   "[{ year : '2021', month : 12, year_month : 20211201},
     *     { year : '2022', month : 1,  year_month : 20220101},... ]"
     */
+
+    // javascript内に埋め込める形に直す
     $jsonized_past_dates = json_encode($past_dates);
 
 
@@ -102,13 +103,21 @@ try {
     DbConnector::disconnectDB();
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
+    // echo $error_code;
+    // echo $e->getMessage();
 
     $error_code = $e->getCode();
     switch ($error_code) {
+        // DBがオープンでない場合
         case 2002:
             $error_message = DbConnector::CONNECT_ERROR;
             break;
-        
+        // DBとの接続が途中からできなくなった場合
+        case 'HY000':
+        case 2006:
+            $error_message = DbConnector::TRANSACTION_ERROR;
+            break;
+        // その他
         default:
             $error_message = '予期せぬエラーが発生しました';
             break;

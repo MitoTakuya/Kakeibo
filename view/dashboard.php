@@ -34,7 +34,7 @@ include(__DIR__.'\..\dashboardController.php');
                     <div class="row">
                         <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                             <rect width="100%" height="100%" fill="#87CEEB"/>
-                            <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year ?>年 <?= $displayed_month ?>月 の支出</text>
+                            <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year_month ?> の支出</text>
                         </svg>
                     </div>
 
