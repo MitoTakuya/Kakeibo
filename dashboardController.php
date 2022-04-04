@@ -10,11 +10,9 @@ try {
     $user_id = $_SESSION['id']; 
     $group_id = $_SESSION['group_id'];
 
-    // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
     $goal = DbConnectorUserGroups::fetchGoal($group_id);
     $total_balance = DbConnectorMain::fetchBalance($group_id);
     $difference = $goal - $total_balance;
-
 
     /********** 表示する期間を決める処理 **********/
     // "yyyymm"の形でpostされた日付を、"yyyymmdd" (dd = '01')に直して変数に格納する
