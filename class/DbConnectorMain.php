@@ -208,8 +208,23 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行する
             self::fetch();
 
-            // レコードが無ければ0を返す
-            return self::$temp_result;
+            // レコードがある場合、収入と支出に分ける
+            $categorized_outgo_list = array();
+            $categorized_income_list = array();
+            foreach (self::$temp_result as $outgo) {
+                if ($outgo['type_id'] == 1) {
+                    $categorized_outgo_list[] = $outgo;
+                }
+            }
+            foreach (self::$temp_result as $income) {
+                if ($income['type_id'] == 2) {
+                    $categorized_income_list[] = $income;
+                }
+            }
+            $result[] = $categorized_outgo_list;
+            $result[] = $categorized_income_list;
+            
+            return $result;
 
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());

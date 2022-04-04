@@ -89,19 +89,17 @@ include(__DIR__.'\..\dashboardController.php');
                     </div>
 
                     <div class="outgo_chart card-body">
-                        <table class="table w-100">
-                            <?php if (count($categorized_outgo_list) === 0):?>
-                                <!--
-                                    グラフ部分で「記録がありません」と表示するので
-                                    レコードが存在しなければこちらには何も表示しない
-                                -->
-                            <?php else:?> 
-                                <!-- 後で colの属性を指定する -->
-                                <thead>
-                                    <th scope="col">カテゴリー</th>
-                                    <th scope="col">支出額</th>
-                                </thead>
-                                    <?php foreach($categorized_outgo_list as $outgo): ?>
+                            <!-- レコードがある場合 -->
+                            <?php if ($outgo_record_exists || $income_record_exists):?>
+                                <table class="table w-100">
+                                    <!-- 支出レコードがある場合 -->
+                                    <?php if ($outgo_record_exists) : ?>
+                                        <thead>
+                                            <th scope="col">カテゴリー</th>
+                                            <th scope="col">支出額</th>
+                                        </thead>
+
+                                        <?php foreach($categorized_outgo_list as $outgo): ?>
                                         <tr>
                                             <!-- カテゴリー名、詳細リンク -->
                                             <td scope="row">
@@ -114,9 +112,38 @@ include(__DIR__.'\..\dashboardController.php');
                                             <!-- 支出金額 -->
                                             <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php endforeach; endif; ?>
+
+                                    <!-- 収入レコードがある場合 -->
+                                    <?php if ($income_record_exists) :?>
+                                        <thead>
+                                            <th scope="col">カテゴリー</th>
+                                            <th scope="col">収入額</th>
+                                        </thead>
+                                        
+                                        <?php foreach($categorized_income_list as $income): ?>
+                                        <tr>
+                                            <!-- カテゴリー名、詳細リンク -->
+                                            <td scope="row">
+                                                <form action="./showCategory.php?id=<?= $income['category_id'] ?>" method="post">
+                                                    <input type="submit" name="category_name" value="<?= $income['category_name'] ?>" class="btn btn-link">
+                                                    <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                </form>
+                                            </td>
+
+                                            <!-- 収入金額 -->
+                                            <td scope="row"><?= number_format($income['payment']) ?> 円</td>
+                                        </tr>
+                                    <?php endforeach; endif; ?>
+                                </table>
+
+                            <!-- レコードがない場合 -->
+                            <?php else:?> 
+                                <!--
+                                    グラフ部分で「記録がありません」と表示するので
+                                    レコードが存在しなければこちらには何も表示しない
+                                -->
                             <?php endif;?>
-                        </table>
                     </div>
                 </div>
             </div>

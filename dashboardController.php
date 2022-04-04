@@ -34,22 +34,12 @@ try {
 
     // レコードが存在するか
     $record_exists = count($categorized_list) > 0;
-    $categorized_outgo_list = array();
-    $categorized_income_list = array();
+    $categorized_outgo_list = $categorized_list[0];
+    $categorized_income_list = $categorized_list[1];
 
-    // レコードがある場合、収入と支出に分ける
-    if ($record_exists) {
-        foreach ($categorized_list as $outgo) {
-            if ($outgo['type_id'] == 1) {
-                $categorized_outgo_list[] = $outgo;
-            }
-        }
-        foreach ($categorized_list as $income) {
-            if ($income['type_id'] == 2) {
-                $categorized_income_list[] = $income;
-            }
-        }
-    }
+    // レコードが存在するか
+    $outgo_record_exists = count($categorized_outgo_list) > 0;
+    $income_record_exists = count($categorized_income_list) > 0;
 
     // グラフの上に出力する
     $displayed_year = $target_date->format('Y');
