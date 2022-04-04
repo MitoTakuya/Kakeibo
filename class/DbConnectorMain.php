@@ -289,6 +289,8 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
+
+            // レコードが無ければ0を返す
             return self::$temp_result['records'];
 
         }catch (PDOException $e){
