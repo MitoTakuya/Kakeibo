@@ -118,7 +118,7 @@ class DbConnectorUsers extends DbConnector
             // バインドするカラム名をstatic変数に代入する
             self::$temp_to_bind['temp'] = get_defined_vars();
             // where句をつくる
-            self::$temp_where_clause = 'WHERE `group_id`=:group_id';
+            self::$temp_where_clause = 'WHERE `group_id`=:group_id && `is_deleted`!=1';
 
             // SQL文の句を作る
             self::$temp_selected_col = "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
