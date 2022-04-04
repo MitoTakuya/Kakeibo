@@ -25,13 +25,38 @@ try {
         $target_date = new DateTime();
     }
 
-    // カテゴリごとの支出を取り出す
-    $categorized_outgo_list = DbConnectorMain::fetchCategorizedList(
+    // カテゴリごとの支払い合計額を取り出す
+    $categorized_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
 
-    // グラフの上に出力する
+    // レコードが存在するか
+    $record_exists = count($categorized_list) > 0;
+
+    // レコードがある場合、収入と支出に分ける
+    $categorized_outgo_list = array();
+    $categorized_income_list = array();
+    if ($record_exists) {
+        foreach ($categorized_list as $outgo) {
+            if ($outgo['type_id'] == 1) {
+                $categorized_outgo_list[] = $outgo;
+            }
+        }
+        foreach ($categorized_list as $income) {
+            if ($income['type_id'] == 2) {
+                $categorized_income_list[] = $income;
+            }
+        }
+    }
+    // 支出レコード・収入レコードが存在するか
+    $outgo_record_exists = count($categorized_outgo_list) > 0;
+    $income_record_exists = count($categorized_income_list) > 0;
+
+    // print_r($categorized_outgo_list);
+    // print_r($categorized_income_list);
+
+    // グラフの上に出力する日付
     $displayed_year = $target_date->format('Y');
     $displayed_month = $target_date->format('n');
 

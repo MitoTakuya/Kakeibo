@@ -18,7 +18,7 @@ include(__DIR__.'\..\dashboardController.php');
     </head>
 
     <body>
-        <div id="dashboard">
+        <div id="app">
 
         <!-- ヘッダー -->
         <?php include __DIR__ . "/_header.php" ?>
@@ -75,7 +75,7 @@ include(__DIR__.'\..\dashboardController.php');
 
                         <!-- グラフ部分 -->
                         <div class="outgo_chart_area w-100 float-right col-6">
-                            <?php if (count($categorized_outgo_list) === 0):?>
+                            <?php if (count($categorized_list) === 0):?>
                                 <!-- もしレコードが存在しなければ「記録がありません」 -->
                                 <p>記録がありません</p>
                             <?php else:?> 
@@ -89,34 +89,61 @@ include(__DIR__.'\..\dashboardController.php');
                     </div>
 
                     <div class="outgo_chart card-body">
-                        <table class="table w-100">
-                            <?php if (count($categorized_outgo_list) === 0):?>
+                            <!-- レコードがない場合 -->
+                            <?php if ($record_exists):?>
                                 <!--
                                     グラフ部分で「記録がありません」と表示するので
                                     レコードが存在しなければこちらには何も表示しない
                                 -->
-                            <?php else:?> 
-                                <!-- 後で colの属性を指定する -->
-                                <thead>
-                                    <th scope="col">カテゴリー</th>
-                                    <th scope="col">支出額</th>
-                                </thead>
-                                    <?php foreach($categorized_outgo_list as $outgo): ?>
-                                        <tr>
-                                            <!-- カテゴリー名、詳細リンク -->
-                                            <td scope="row">
-                                                <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
-                                                    <input type="submit" name="category_name" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
-                                                    <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
-                                                </form>
-                                            </td>
 
-                                            <!-- 支出金額 -->
-                                            <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
-                                        </tr>
-                                    <?php endforeach; ?>
+                            <!-- レコードがある場合 -->
+                            <?php else:?> 
+                                <table class="table w-100">
+                                    <colgroup class="text-center">
+
+                                    <!-- 支出一覧 -->
+                                    <?php if ($outgo_record_exists): ?>
+                                        <thead>
+                                            <th scope="col">支出カテゴリー</th>
+                                            <th scope="col">金額</th>
+                                        </thead>
+                                        <?php foreach($categorized_outgo_list as $payment): ?>
+                                            <tr>
+                                                <!-- カテゴリー名、詳細リンク -->
+                                                <td scope="row">
+                                                    <form action="./showCategory.php?id=<?= $payment['category_id'] ?>" method="post">
+                                                        <input type="submit" name="category_name" value="<?= $payment['category_name'] ?>" class="btn btn-link">
+                                                        <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    </form>
+                                                </td>
+                                                <!-- 金額 -->
+                                                <td scope="row"><?= number_format($payment['payment']) ?> 円</td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+
+                                    <!-- 収入一覧 -->
+                                    <?php if ($income_record_exists): ?>
+                                        <thead>
+                                            <th scope="col">収入カテゴリー</th>
+                                            <th scope="col">金額</th>
+                                        </thead>
+                                        <?php foreach($categorized_income_list as $payment): ?>
+                                            <tr>
+                                                <!-- カテゴリー名、詳細リンク -->
+                                                <td scope="row">
+                                                    <form action="./showCategory.php?id=<?= $payment['category_id'] ?>" method="post">
+                                                        <input type="submit" name="category_name" value="<?= $payment['category_name'] ?>" class="btn btn-link">
+                                                        <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    </form>
+                                                </td>
+                                                <!-- 金額 -->
+                                                <td scope="row"><?= number_format($payment['payment']) ?> 円</td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif;?>
+                                </table>
                             <?php endif;?>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -145,7 +172,7 @@ include(__DIR__.'\..\dashboardController.php');
 
             /********** グラフ描画、更新処理 **********/
             let app = new Vue({
-            el :'#dashboard',
+            el :'#app',
             data : {
                 selected_date : '', // phpから直に最新月の直接を代入する
                 selectable_dates : <?= $jsonized_past_dates ?>,
