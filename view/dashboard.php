@@ -18,7 +18,7 @@ include(__DIR__.'\..\dashboardController.php');
     </head>
 
     <body>
-        <div id="dashboard">
+        <div id="app">
 
         <!-- ヘッダー -->
         <?php include __DIR__ . "/_header.php" ?>
@@ -34,7 +34,7 @@ include(__DIR__.'\..\dashboardController.php');
                     <div class="row">
                         <svg class="card-img-top" width="320" height="75" xmlns="http://www.w3.org/2000/svg" focusable="false" role="img" >
                             <rect width="100%" height="100%" fill="#87CEEB"/>
-                            <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year ?>年 <?= $displayed_month ?>月 の支出</text>
+                            <text class="mx-auto h3" x="50%" y="50%" fill="#ffffff" dy=".5em" text-anchor="middle"><?= $displayed_year_month ?> の支出</text>
                         </svg>
                     </div>
 
@@ -50,24 +50,37 @@ include(__DIR__.'\..\dashboardController.php');
 
                     <div class="row">
                         <!-- 目標貯金額表示 -->
-                        <div class="goal_and_diff float-left w-25 col-4">
-                            <h4 class="h4">目標貯金額</h4><br>
-                            <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
 
-                            <h4 class="h4">目標まで</h4><br>
-                            <?php if ($difference > $goal) :?>
-                                <h4 class="display-5"><?= number_format($goal) ?> 円</h4>
-                            <?php elseif ($difference > 0) : ?>
-                                <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
-                            <?php else : ?>
-                                <h3 class="h3">目標金額達成！</h3>
-                            <?php endif; ?>
+                        <!-- 目標貯金額が設定されていないか、0の場合 -->
+                        <div class="goal_and_diff float-left w-25 col-4">
+                        <?php if ($goal == 0) : ?>
+                                <h4 class="h4">目標貯金額を設定しましょう</h4>
+                                <br>
+                                <i class="fa-solid fa-up-right-from-square"></i>
+                                <a href="./userShow.php">設定する</a>
+                                
+                        <?php else : ?>
+                            <!-- 目標貯金額が設定されている場合 -->
+                                <h4 class="h4">目標貯金額</h4><br>
+                                <h4 class="display-5"><?= number_format($goal) ?> 円</h4><br>
+
+                                <?php if ($difference > $goal) :?>
+                                    <h4 class="h4">目標まで</h4><br>
+                                    <h4 class="display-5"><?= number_format($goal) ?> 円</h4>
+                                <?php elseif ($difference > 0) : ?>
+                                    <h4 class="h4">目標まで</h4><br>
+                                    <h4 class="display-5"><?= number_format($difference) ?> 円</h4>
+                                <?php else : ?>
+                                    <h3 class="h3">目標金額達成！</h3>
+                                <?php endif; ?>
+                        <?php endif; ?>
                         </div>
 
                         <!-- グラフ部分 -->
                         <div class="outgo_chart_area w-100 float-right col-6">
                             <?php if (count($categorized_outgo_list) === 0):?>
                                 <!-- もしレコードが存在しなければ「記録がありません」 -->
+                                <br>
                                 <p>記録がありません</p>
                             <?php else:?> 
                                 <!-- 支出割合グラフ -->
@@ -80,34 +93,63 @@ include(__DIR__.'\..\dashboardController.php');
                     </div>
 
                     <div class="outgo_chart card-body">
-                        <table class="table w-100">
-                            <?php if (count($categorized_outgo_list) === 0):?>
-                                <!--
-                                    グラフ部分で「記録がありません」と表示するので
-                                    レコードが存在しなければこちらには何も表示しない
-                                -->
-                            <?php else:?> 
-                                <!-- 後で colの属性を指定する -->
-                                <thead>
-                                    <th scope="col">カテゴリー</th>
-                                    <th scope="col">支出額</th>
-                                </thead>
-                                    <?php foreach($categorized_outgo_list as $outgo): ?>
+                            <!-- レコードがある場合 -->
+                            <?php if ($outgo_record_exists || $income_record_exists):?>
+                                <table class="table w-100">
+                                    <!-- 支出レコードがある場合 -->
+                                    <?php if ($outgo_record_exists) : ?>
+                                        <thead>
+                                            <th scope="col">カテゴリー</th>
+                                            <th scope="col">支出額</th>
+                                        </thead>
+
+                                        <?php foreach($categorized_outgo_list as $outgo): ?>
                                         <tr>
                                             <!-- カテゴリー名、詳細リンク -->
                                             <td scope="row">
                                                 <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
                                                     <input type="submit" name="category_name" value="<?= $outgo['category_name'] ?>" class="btn btn-link">
                                                     <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    <input type="hidden" name="target_date" value=<?= $target_date->format('Ymd') ?>>
                                                 </form>
                                             </td>
 
                                             <!-- 支出金額 -->
                                             <td scope="row"><?= number_format($outgo['payment']) ?> 円</td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php endforeach; endif; ?>
+
+                                    <!-- 収入レコードがある場合 -->
+                                    <?php if ($income_record_exists) :?>
+                                        <thead>
+                                            <th scope="col">カテゴリー</th>
+                                            <th scope="col">収入額</th>
+                                        </thead>
+                                        
+                                        <?php foreach($categorized_income_list as $income): ?>
+                                        <tr>
+                                            <!-- カテゴリー名、詳細リンク -->
+                                            <td scope="row">
+                                                <form action="./showCategory.php?id=<?= $income['category_id'] ?>" method="post">
+                                                    <input type="submit" name="category_name" value="<?= $income['category_name'] ?>" class="btn btn-link">
+                                                    <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                                                    <input type="hidden" name="target_date" value=<?= $target_date->format('Ymd') ?>>
+                                                </form>
+                                            </td>
+
+                                            <!-- 収入金額 -->
+                                            <td scope="row"><?= number_format($income['payment']) ?> 円</td>
+                                        </tr>
+                                    <?php endforeach; endif; ?>
+                                </table>
+
+                            <!-- レコードがない場合 -->
+                            <?php else:?> 
+                                <!--
+                                    グラフ部分で「記録がありません」と表示するので
+                                    レコードが存在しなければこちらには何も表示しない
+                                -->
                             <?php endif;?>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -136,7 +178,7 @@ include(__DIR__.'\..\dashboardController.php');
 
             /********** グラフ描画、更新処理 **********/
             let app = new Vue({
-            el :'#dashboard',
+            el :'#app',
             data : {
                 selected_date : '', // phpから直に最新月の直接を代入する
                 selectable_dates : <?= $jsonized_past_dates ?>,

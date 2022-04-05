@@ -35,4 +35,27 @@ class Config {
         }
     }
 
+    // エラーコードを受けて、対応するエラーメッセージ
+    // 引数はintとstringの両方があり得るため、タイプヒンティングを行わない
+    public static function getErrorMessage($error_code)
+    {
+        switch ($error_code) {
+            // DBがオープンでない場合
+            case 2002:
+                $error_message = DbConnector::CONNECT_ERROR;
+                return $error_message;
+                break;
+            // DBとの接続が途中からできなくなった場合
+            case 'HY000':
+            case 2006:
+                $error_message = DbConnector::TRANSACTION_ERROR;
+                return $error_message;
+                break;
+            // その他
+            default:
+                $error_message = '予期せぬエラーが発生しました';
+                return $error_message;
+                break;
+        }
+    }
 } 

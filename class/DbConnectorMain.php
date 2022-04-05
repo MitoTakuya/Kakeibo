@@ -201,13 +201,30 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文の句を作る
             self::$temp_where_clause = str_replace('`type_id`', '`main`.`type_id`', self::$temp_where_clause);
-            self::$temp_selected_col = "main.`category_id`, categories.category_name,  IFNULL(SUM(`payment`), 0) AS `payment`";
+            self::$temp_selected_col = "main.`category_id`, categories.category_name, categories.type_id, IFNULL(SUM(`payment`), 0) AS `payment`";
             self::$temp_groupby_clause = "GROUP BY `category_id`";
             self::$temp_join_clause = "JOIN `categories` on `categories`.`id` = `main`.`category_id`";
 
             // SQL文を実行する
             self::fetch();
-            return self::$temp_result;
+
+            // レコードがある場合、収入と支出に分ける
+            $categorized_outgo_list = array();
+            $categorized_income_list = array();
+            foreach (self::$temp_result as $outgo) {
+                if ($outgo['type_id'] == 1) {
+                    $categorized_outgo_list[] = $outgo;
+                }
+            }
+            foreach (self::$temp_result as $income) {
+                if ($income['type_id'] == 2) {
+                    $categorized_income_list[] = $income;
+                }
+            }
+            $result[] = $categorized_outgo_list;
+            $result[] = $categorized_income_list;
+            
+            return $result;
 
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
@@ -258,7 +275,14 @@ class DbConnectorMain extends DbConnector {
 
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
-            return self::$temp_result['payment_at'];
+
+            if (self::$temp_result) {
+                // レコードが存在する場合
+                return self::$temp_result['payment_at'];
+            } else {
+                // レコードが存在しない場合
+                return date("Ymd");
+            }
 
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
@@ -267,14 +291,14 @@ class DbConnectorMain extends DbConnector {
     }
 
     // グループのレコード数を返す
-    public static function countRecords(int $group_id)
+    public static function countRecords(int $group_id, ?int $category_id = null)
     {
         try {
             // バインド対象を一時変数に格納に格納する
-            self::$temp_to_bind['temp']['group_id'] = $group_id;
+            self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
 
             // where句とselect対象を指定する
-            self::$temp_where_clause = "WHERE group_id = :group_id";
+            self::makeWhereClause();
             self::$temp_selected_col = "COUNT(*) AS records";
 
             // PDOメソッドの指定（一番上のレコードだけを取り出す）

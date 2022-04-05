@@ -10,11 +10,9 @@ try {
     $user_id = $_SESSION['id']; 
     $group_id = $_SESSION['group_id'];
 
-    // *下記情報は更新の可能性があるので、 クエリを減らすために$_SESSIONに一時格納してもいいかも
     $goal = DbConnectorUserGroups::fetchGoal($group_id);
     $total_balance = DbConnectorMain::fetchBalance($group_id);
     $difference = $goal - $total_balance;
-
 
     /********** 表示する期間を決める処理 **********/
     // "yyyymm"の形でpostされた日付を、"yyyymmdd" (dd = '01')に直して変数に格納する
@@ -24,20 +22,29 @@ try {
     } else {
         $target_date = new DateTime();
     }
+    // echo $target_date->format('Ym');
 
-    // カテゴリごとの支出を取り出す
-    $categorized_outgo_list = DbConnectorMain::fetchCategorizedList(
+    // カテゴリごとの合計額を取り出す
+    $categorized_list = DbConnectorMain::fetchCategorizedList(
         group_id: $group_id,
         target_date: $target_date->format('Ymd'),
     );
 
-    // グラフの上に出力する
-    $displayed_year = $target_date->format('Y');
-    $displayed_month = $target_date->format('n');
+    // 合計額を支出と収入に分ける
+    $record_exists = count($categorized_list) > 0;
+    $categorized_outgo_list = $categorized_list[0];
+    $categorized_income_list = $categorized_list[1];
+
+    //  支出と収入それぞれでレコードが存在するか
+    $outgo_record_exists = count($categorized_outgo_list) > 0;
+    $income_record_exists = count($categorized_income_list) > 0;
+
+    // グラフの上に出力する日付
+    $displayed_year_month = $target_date->format('Y年n月');
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 最も購入日付が古いレコードの日付を取得する
+    // 最も購入日付が古いレコードの日付を取得する（無ければ当日が取得される）
     $registration_date = DbConnectorMain::fetchOldestDate($group_id);
     $registration_date = new DateTime($registration_date);
 
@@ -45,14 +52,16 @@ try {
     $carrent_date = new DateTime();
 
     // 登録日から最新月までの月のリストを作成する
-    while ($registration_date <= $carrent_date) {
+    while ($registration_date <= $carrent_date->modify('last day of')) {
         $past_dates[] = array(
             'year' => $registration_date->format('Y'),
             'month' => $registration_date->format('n'),
             'year_month' => $registration_date->format('Ym')
         );
+        // echo $registration_date->format('Ymd')."<br>";
         $registration_date->modify('+1 months');
     }
+    // print_r($past_dates);
     // 降順に変更する
     $past_dates = array_reverse($past_dates);
 
@@ -61,6 +70,8 @@ try {
     *   "[{ year : '2021', month : 12, year_month : 20211201},
     *     { year : '2022', month : 1,  year_month : 20220101},... ]"
     */
+
+    // javascript内に埋め込める形に直す
     $jsonized_past_dates = json_encode($past_dates);
 
 
@@ -90,19 +101,15 @@ try {
     
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
     DbConnector::disconnectDB();
+
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
-
     $error_code = $e->getCode();
-    switch ($error_code) {
-        case 2002:
-            $error_message = DbConnector::CONNECT_ERROR;
-            break;
-        
-        default:
-            $error_message = '予期せぬエラーが発生しました';
-            break;
-    }
+    $error_message = Config::getErrorMessage($error_code);
+
+    // echo $error_code;
+    // echo $e->getMessage();
+
     include(__DIR__.'/view/error.php');
     die();
 }
