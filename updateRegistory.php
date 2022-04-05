@@ -18,9 +18,11 @@ try {
         $category_id = $_POST["category_id"];
         $memo = Config::delete_space($_POST["content"]);
 
-        //200文字以上の場合はmemoの更新はしない
+        //201文字以上の場合memoの更新はしない
         if(mb_strlen($memo) > 200) {
             $memo = null;
+        }elseif($memo == '') {
+            $memo = ' ';
         }
 
         //更新前に対象レコードがDBに存在するか確認
