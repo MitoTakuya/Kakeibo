@@ -72,39 +72,11 @@ abstract class DbConnector
 /*******************************************************************************
  * DB操作メソッド
  *******************************************************************************/
-
-    // idを指定してレコードを1つ取り出すメソッド
-    public static function fetchOne(int $target_id)
-    {
-        try {
-            // SQL文をセットする
-            $target_table = static::$target_table;
-            self::$temp_sql ="SELECT * FROM `{$target_table}`
-                                WHERE `id`=:id";
-            
-            // SQL文をバインド・実行し、結果を取得する
-            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-            self::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
-            self::$temp_stmt->execute();
-            $results = self::$temp_stmt->fetch(PDO::FETCH_ASSOC);
-
-            // 一時変数を初期化する
-            self::resetTemps();
-            
-            return $results;
-        } catch (PDOException $e) {
-            // print('Error:'.$e->getMessage());
-            throw $e;
-        }
-    }
-
-    /* 一時変数$temp_~ に格納したSQL文の句同士を文字列結合して実行し、
-     * self::$temp_result にクエリ結果を格納する
-     */
+    // 一時変数$temp_~ に格納したSQL文の句同士を文字列結合して実行し、
+    // self::$temp_result にクエリ結果を格納する
     // 一時変数に格納したSQL文の句同士を文字列結合する
     // bind()で$temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
     protected static function fetch($pdo_fetch_method = "pdoFetchAllAssoc")
-
     {
         try {
             $selected_col = self::$temp_selected_col;
@@ -114,17 +86,16 @@ abstract class DbConnector
             $groupby_clause = self::$temp_groupby_clause;
             $join_clause = self::$temp_join_clause;
 
-            // 上記のSQL文を結合する
+            // 上記のSQL文の句同士を結合する
             self::$temp_sql ="SELECT {$selected_col}
                                 FROM `{$target_table}` {$join_clause}
                                 {$where_clause}
                                 {$orderby_clause}
                                 {$groupby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-
             // echo self::$temp_sql."<br>";
-            // $temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
 
+            // $temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
             self::bind();
 
             // SQL文を実行する
@@ -137,6 +108,7 @@ abstract class DbConnector
             self::resetTemps();
 
         } catch (PDOException $e) {
+            self::resetTemps();
             // print('Error:'.$e->getMessage());
             throw $e;
         }
@@ -164,6 +136,7 @@ abstract class DbConnector
             self::resetTemps();
 
         } catch (PDOException $e) {
+            self::resetTemps();
             self::$pdo->rollBack();
             throw $e;
         }
@@ -188,6 +161,7 @@ abstract class DbConnector
             self::resetTemps();
 
         } catch (PDOException $e) {
+            self::resetTemps();
             // print('Error:'.$e->getMessage());
             self::$pdo->rollBack();
             throw $e;
@@ -210,6 +184,7 @@ abstract class DbConnector
             // 一時変数を初期化する
             self::resetTemps();
         } catch (PDOException $e) {
+            self::resetTemps();
             // print('Error:'.$e->getMessage());
             self::$pdo->rollBack();
             throw $e;
