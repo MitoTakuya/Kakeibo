@@ -12,7 +12,11 @@
 
 <body>
 	<!-- ヘッダー -->
-	<?php include __DIR__ . "/_header.php" ?>
+	<?php if (isset($_SESSION['id'])): ?>
+		<?php include __DIR__ . "/_header.php" ?>
+	<?php else: ?>
+		<?php include __DIR__ . "/_beforeHeader.php" ?>
+	<?php endif; ?>
 	
 	<div class="container">
 		<div class="mt-4"></div>
