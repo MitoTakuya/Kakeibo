@@ -9,6 +9,7 @@ class DbConnectorFullRecords extends DbConnector {
     public static function fetchLimitedRecords(
         int $group_id,
         int $limit,
+        ?string $target_date = null,
         ?int $category_id = null,
         int $offset = 0
     ){
@@ -21,6 +22,7 @@ class DbConnectorFullRecords extends DbConnector {
 
             // where句をつくる
             self::makeWhereClause();
+            self::addPeriodFilter($target_date);
 
             // limitoffset句付きのorderby句
             self::addLimit();
