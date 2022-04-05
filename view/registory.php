@@ -161,7 +161,7 @@ require_once __DIR__.'/../registoryController.php';
 					<?php if($records) :?>
 						<?php foreach($records as $record) :?>
 							<tr id="<?php echo $record['id']; ?>">
-							<td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
+							<td scope="row" id="payment_at"><?= date('Y-m-d', strtotime($record["payment_at"])) ?></td>
 							<?php if($record["type_id"] === 1) :?>
 								<td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
 							<?php else :?>
@@ -172,7 +172,7 @@ require_once __DIR__.'/../registoryController.php';
 							<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
 							<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
 							<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-							<td scope="row" id="updated_at"><?= date('Y年m月d日', strtotime(Config::h($record["updated_at"]))) ?></td>
+							<td scope="row" id="updated_at"><?= date('Y-m-d', strtotime($record["updated_at"])) ?></td>
 							<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
 							<td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
 						</tr>
