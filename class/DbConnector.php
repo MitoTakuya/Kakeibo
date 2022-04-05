@@ -72,6 +72,32 @@ abstract class DbConnector
 /*******************************************************************************
  * DB操作メソッド
  *******************************************************************************/
+    // idを指定してレコードを1つ取り出すメソッド
+    public static function fetchOne(int $target_id)
+    {
+        try {
+            // SQL文をセットする
+            $target_table = static::$target_table;
+            self::$temp_sql ="SELECT * FROM `{$target_table}`
+                                WHERE `id`=:id";
+            
+            // SQL文をバインド・実行し、結果を取得する
+            self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
+            self::$temp_stmt->bindParam(':id', $target_id, PDO::PARAM_INT);
+            self::$temp_stmt->execute();
+
+            self::pdoFetchAssoc();
+
+            // 一時変数を初期化する
+            self::resetTemps();
+            
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
+        }
+    }
+
     // 一時変数$temp_~ に格納したSQL文の句同士を文字列結合して実行し、
     // self::$temp_result にクエリ結果を格納する
     // 一時変数に格納したSQL文の句同士を文字列結合する
