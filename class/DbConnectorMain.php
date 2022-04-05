@@ -232,14 +232,21 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-    public static function fetchCategories(int $group_id)
+    // あるグループの、過去のレコードに登録のあるカテゴリーのidと名前を返す
+    // $target_date を渡されていれば年月で絞る
+    public static function fetchCategories(int $group_id, ?string $target_date = null)
     {
         try {
             // 受け取った値に対応するwhere句を生成する
-            self::$temp_to_bind['where'] = get_defined_vars();
+            self::$temp_to_bind['where']['group_id'] = $group_id;
             self::makeWhereClause();
             self::makeOrderClause(desc: false, column: 'main`.`category_id');
             self::$temp_where_clause = str_replace('`group_id`', '`main`.`group_id`', self::$temp_where_clause);
+
+            // $target_date を渡されていれば年月のフィルターをwhere句に加える。
+            if (!is_null($target_date)) {
+                self::addPeriodFilter($target_date);
+            }
 
             // SQL文の句を作る
             self::$temp_selected_col = "DISTINCT main.`category_id`, categories.category_name ";
@@ -291,8 +298,12 @@ class DbConnectorMain extends DbConnector {
     }
 
     // グループのレコード数を返す
-    public static function countRecords(int $group_id, ?int $category_id = null)
-    {
+    // $target_date を渡されていれば年月で絞る
+    public static function countRecords(
+        int $group_id,
+        ?string $target_date = null,
+        ?int $category_id = null
+    ){
         try {
             // バインド対象を一時変数に格納に格納する
             self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
@@ -300,6 +311,11 @@ class DbConnectorMain extends DbConnector {
             // where句とselect対象を指定する
             self::makeWhereClause();
             self::$temp_selected_col = "COUNT(*) AS records";
+
+            // $target_date を渡されていれば年月のフィルターをwhere句に加える。
+            if (!is_null($target_date)) {
+                self::addPeriodFilter($target_date);
+            }
 
             // PDOメソッドの指定（一番上のレコードだけを取り出す）
             $pdo_method = 'pdoFetchAssoc';
