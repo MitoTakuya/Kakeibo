@@ -22,7 +22,11 @@ class DbConnectorFullRecords extends DbConnector {
 
             // where句をつくる
             self::makeWhereClause();
-            self::addPeriodFilter($target_date);
+
+            // $target_date を渡されていれば年月のフィルターをwhere句に加える。
+            if (!is_null($target_date)) {
+                self::addPeriodFilter($target_date);
+            }
 
             // limitoffset句付きのorderby句
             self::addLimit();
