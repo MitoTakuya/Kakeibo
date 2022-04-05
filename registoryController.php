@@ -68,6 +68,10 @@ try{
             $error_messages["title"] = '※30文字以内で入力してください';
         }
 
+        if($payment < 1) {
+            $error_messages["payment"] = '※１円以上で入力してください  ';
+        }
+
         if(mb_strlen($memo) > 200) {
             $error_messages["memo"] = '※200文字以内で入力してください';
         }

@@ -65,7 +65,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>金額</label>
+							<label>金額　</label>
+							<?php if(!empty($error_messages["payment"])): ?>
+								<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
+							<?php endif; ?>
 							<input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" 
 								class="form-control" name="payment" maxlength="13" min="1" required>
 						</div>
@@ -117,7 +120,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>金額</label>
+							<label>金額　</label>
+							<?php if(!empty($error_messages["payment"])): ?>
+								<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
+							<?php endif; ?>
 							<input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" 
 								class="form-control" name="payment" maxlength="13" min="1" required>
 						</div>
