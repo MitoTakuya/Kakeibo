@@ -7,11 +7,10 @@ try {
         Config::check_token();
         $target_date = $_POST["target_date"];
         $_SESSION['target_date'] = $target_date;
-        var_dump('日付をセッションに登録した：'.$_SESSION['target_date']);
     }else {
         $target_date = $_SESSION['target_date'];
-        var_dump('既存のセッションを使用：'.$_SESSION['target_date']);
     }
+
     $user_id = $_SESSION['id'];
     $group_id = $_SESSION['group_id'];
     $category_id = (int)$_GET["id"];
@@ -46,12 +45,12 @@ try {
         }
     }
     
-    // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
+    //orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
     DbConnector::makeOrderClause(desc: true);
-    // トータルレコード件数
+    //トータルレコード件数
     $total_record = DbConnectorMain::countRecords($group_id, $target_date, $category_id);
-    // print_r("カテゴリ：".$category_id);
-    // print_r("date：".$target_date);
+    //print_r("カテゴリ：".$category_id);
+    //print_r("date：".$target_date);
     print_r("件数：".$total_record);
     // 1ページに表示するレコード数
     $limit = 10;
@@ -62,7 +61,7 @@ try {
         $now = $_GET['page_id'];
     }
 
-    // 取得したデータの何番目から表示するか
+    //取得したデータの何番目から表示するか
     $offset = ($now - 1) * $limit;
     //全ページ数を決める 
     $max_page = ceil($total_record / $limit);
