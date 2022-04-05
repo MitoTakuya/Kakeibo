@@ -35,31 +35,31 @@ require_once __DIR__.'/../categoryController.php';
                 <tbody>
                     <!-- 一覧の項目名 -->
                     <tr>
-                        <td scope="col" class="payment_at">日付</td> 
-                        <td scope="col" class="type_name">収支</td> 
-                        <td scope="col" class="title">タイトル</td> 
-                        <td scope="col" class="payment">金額</td> 
-                        <td scope="col" class="memo">メモ</td> 
-                        <td scope="col" class="user_name">ユーザ名</td> 
-                        <td scope="col" class="updated_at">更新日</td> 
-                        <td scope="col" class="edit-column">編集</td>          
-                        <td scope="col" class="delet-column">削除</td>          
+                        <td scope="col" class="payment_at text-center">日付</td> 
+                        <td scope="col" class="type_name text-center">収支</td> 
+                        <td scope="col" class="title text-center">タイトル</td> 
+                        <td scope="col" class="payment text-right">金額</td> 
+                        <td scope="col" class="memo text-center">メモ</td> 
+                        <td scope="col" class="user_name text-center">ユーザ名</td> 
+                        <td scope="col" class="updated_at text-center">更新日</td> 
+                        <td scope="col" class="edit-column text-center">編集</td>          
+                        <td scope="col" class="delet-column text-center">削除</td>          
                     </tr>
                     <?php foreach($records as $record) :?>
                     <tr id="<?= $record['id']; ?>">
-                        <td scope="row" id="payment_at"><?= date('Y-m-d', strtotime(Config::h($record["payment_at"]))) ?></td>
+                        <td scope="row" id="payment_at" style="width:110px;"><?= date('Y-m-d', strtotime(Config::h($record["payment_at"]))) ?></td>
                         <?php if($record["type_id"] === 1) :?>
-                            <td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
+                            <td class="text-center"><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
                         <?php else :?>
-                            <td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
+                            <td class="text-center"><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
                         <?php endif ;?>
                         <td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
-                        <td scope="row" id="payment"><?= number_format($record["payment"]) ?>円</td>
+                        <td scope="row" id="payment" class="text-right" style="width:110px;"><?= number_format($record["payment"]) ?>円</td>
                         <td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
-                        <td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-                        <td scope="row" id="updated_at"><?= date('Y-m-d', strtotime(Config::h($record["updated_at"]))) ?></td>
-                        <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
-                        <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
+                        <td scope="row" id="user_name" class="text-center"><?= Config::h($record["user_name"]) ?></td>
+                        <td scope="row" id="updated_at" style="width:110px;"><?= date('Y-m-d', strtotime(Config::h($record["updated_at"]))) ?></td>
+                        <td class="text-center"><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
+                        <td class="text-center"><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                     </tr>
                     <?php endforeach ;?>
                 </tbody>
