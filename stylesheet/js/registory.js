@@ -106,8 +106,8 @@ $('.delete-btn').on('click', function() {
 
     .fail(function() {
       //★仮置き。ヘッダー直下にエラー内容を表示する予定
-      // window.location.href('http://localhost/kakeibo/view/error.php');  
       alert('エラーが発生しました。');
+      // window.location.href('http://localhost/kakeibo/view/error.php');  
     });
   }
 });
@@ -200,13 +200,13 @@ window.addEventListener('DOMContentLoaded',function() {
       // 通信が失敗した時
       .fail( function(data) {
         console.log('通信失敗');
-        console.log(data);
+        $("#modal_form").remove();
+        $(".post_title").html("※データ取得に失敗しました。画面を更新するか再ログインを実施してください。");
       });
   
       //モーダルウィンドウの表示
       $('.edit_form').fadeIn();
-      $('.modal').fadeIn();
-      
+      $('.modal').fadeIn();      
       });
   
       // モーダルを閉じる

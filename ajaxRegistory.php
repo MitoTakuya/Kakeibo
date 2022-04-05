@@ -10,7 +10,7 @@ try  {
         $method = $_POST['method'];
         $group_id = $_SESSION['group_id'];
         
-        if ($_POST['method'] === 'delete') {  
+        if ($_POST['method'] === 'delete') {
 
             //mainテーブルの対象レコードを削除
             $result = DbConnectorMain::deleteOne($record_id);

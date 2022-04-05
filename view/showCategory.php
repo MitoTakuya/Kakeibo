@@ -80,7 +80,8 @@ require_once __DIR__.'/../categoryController.php';
                     <?php foreach($payment as $pay): ?>
                         <form action="./showCategory.php?id=<?= $pay['category_id'] ?>" method="post">
                             <input type="submit" name="category_name" value="<?php echo $pay['category_name'] ?>" class="btn btn-outline-dark">
-                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                            <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
                     <?php endforeach; ?>
                 </div>
@@ -97,7 +98,8 @@ require_once __DIR__.'/../categoryController.php';
                     <?php foreach($income as $in): ?>
                         <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
                             <input type="submit" name="category_name" value="<?php echo $in['category_name'] ?>" class="btn btn-outline-dark">
-                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                            <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
                     <?php endforeach; ?>
                 </div>
