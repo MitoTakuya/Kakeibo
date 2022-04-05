@@ -119,7 +119,7 @@ abstract class DbConnector
                                 {$orderby_clause}
                                 {$groupby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
-            echo self::$temp_sql."<br>";
+            // echo self::$temp_sql."<br>";
 
             // $temp_to_bindに含まれている要素すべてにPDO::bindValue()をかける
             self::bind();
