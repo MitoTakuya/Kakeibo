@@ -22,7 +22,13 @@ try {
         }
     }
 } catch (Exception $e) {
-    $error_message = DbConnector::CONNECT_ERROR;
-    require_once __DIR__.'/view/error.php';
-    exit();
+    // 接続失敗時にエラー画面を読み込む
+    $error_code = $e->getCode();
+    $error_message = Config::getErrorMessage($error_code);
+
+    // echo $error_code;
+    // echo $e->getMessage();
+
+    include(__DIR__.'/view/error.php');
+    die();
 }
