@@ -92,7 +92,7 @@ require_once __DIR__.'/../categoryController.php';
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
-                支出：
+                収入：
                 <div class="btn-group" role="group" aria-label="Basic example">
                     <?php foreach($income as $in): ?>
                         <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
@@ -106,37 +106,39 @@ require_once __DIR__.'/../categoryController.php';
     <?php endif; ?> 
     
     <!-- ページネーション -->
-	<div class="container mb-5">
-		<nav aria-label="Page navigation example">
-		<ul class="pagination justify-content-end">
-			<?php if($now > 1) :?>
-				<li class="page-item">
-                    <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $previous ?>">前へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">前へ</a>
-				</li>
-			<?php endif ;?>
-			<?php for($i = 1; $i <= $max_page; $i++) :?>
-				<?php if($i == $now) :?>
-					<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
-				<?php else :?>
-					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
+    <?php if($max_page > 1) :?>
+        <div class="container mb-5">
+            <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+                <?php if($now > 1) :?>
+                    <li class="page-item">
+                        <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $previous ?>">前へ</a>
+                    </li>
+                <?php else :?>
+                    <li class="page-item disabled">
+                        <a class="page-link">前へ</a>
+                    </li>
                 <?php endif ;?>
-			<?php endfor ;?>
-			<?php if($now < $max_page) :?>
-				<li class="page-item" id="next-page">
-					<a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $next ?>">次へ</a>
-				</li>
-			<?php else :?>
-				<li class="page-item disabled">
-					<a class="page-link">次へ</a>
-				</li>
-			<?php endif ;?>
-		</ul>
-		</nav>
-	</div>
+                <?php for($i = 1; $i <= $max_page; $i++) :?>
+                    <?php if($i == $now) :?>
+                        <li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
+                    <?php else :?>
+                        <li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
+                    <?php endif ;?>
+                <?php endfor ;?>
+                <?php if($now < $max_page) :?>
+                    <li class="page-item" id="next-page">
+                        <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $next ?>">次へ</a>
+                    </li>
+                <?php else :?>
+                    <li class="page-item disabled">
+                        <a class="page-link">次へ</a>
+                    </li>
+                <?php endif ;?>
+            </ul>
+            </nav>
+        </div>
+    <?php endif ;?>
 
     <!-- モーダルウィンドウ -->
 	<div class="modal"></div>

@@ -83,17 +83,30 @@ $('.delete-btn').on('click', function() {
       const carrent_page = $("#carrent_page").html();
       //現在ページが最終ページになるのか計算
       const exist_next = max_page - carrent_page;
+      console.log(max_page);
+      console.log(carrent_page);
+
+      //レコード削除に伴いページ数1ページになる場合はページネーションを非表示に変更する
+      if(max_page == 2 && carrent_page == 1) {
+        if(total_record % limit === 0) {
+          $("#page-nation").remove();
+          console.log('ページネーションを非表示');
+        }
+      }
 
       //レコード削除に伴いページ数を減らすか否か確認
       if(total_record % limit === 0) {
         $(`#page-num${max_page}`).remove();
+        console.log('maxpageを削除');
         if(exist_next === 1 ) {
           //現在ページが最終ページになったら「次へ」を非活性にする
           $("#next-page").attr('class', 'page-item disabled');
+          console.log('非かっせい');
         }
       }else {
         console.log(total_record % limit === 0);
       }
+
     })
 
     .fail(function() {
@@ -138,9 +151,16 @@ window.addEventListener('DOMContentLoaded',function() {
       // 通信が成功した時
       .done( function(data) {
         
+        
+        if(!data) {
+          console.log('データが存在しません');
+          $("#modal_form").remove();
+          $(".post_title").html("※対象のデータは他のグループユーザによって削除されました。");
+
+        }
+
         console.log('通信成功');
         console.log(data);
-        console.log(data.payment);
         
         //DBより取得した値編集フォームにを入れる
         $("#record_id").val(data.id);
