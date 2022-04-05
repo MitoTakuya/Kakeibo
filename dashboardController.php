@@ -101,28 +101,15 @@ try {
     
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
     DbConnector::disconnectDB();
+
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
+    $error_code = $e->getCode();
+    $error_message = Config::getErrorMessage($error_code);
+
     // echo $error_code;
     // echo $e->getMessage();
 
-    $error_code = $e->getCode();
-
-    switch ($error_code) {
-        // DBがオープンでない場合
-        case 2002:
-            $error_message = DbConnector::CONNECT_ERROR;
-            break;
-        // DBとの接続が途中からできなくなった場合
-        case 'HY000':
-        case 2006:
-            $error_message = DbConnector::TRANSACTION_ERROR;
-            break;
-        // その他
-        default:
-            $error_message = '予期せぬエラーが発生しました';
-            break;
-    }
     include(__DIR__.'/view/error.php');
     die();
 }
