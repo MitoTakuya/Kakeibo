@@ -107,7 +107,6 @@ class DbConnectorUsers extends DbConnector
         }
     }
 
-
     // ユーザー詳細ページ
     public static function fetchUsersFullRecords(int $group_id)
     {
@@ -118,7 +117,8 @@ class DbConnectorUsers extends DbConnector
             self::$temp_where_clause = 'WHERE `group_id`=:group_id && `is_deleted`!=1';
 
             // SQL文の句を作る
-            self::$temp_selected_col = "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
+            self::$temp_selected_col =
+                "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
             self::$temp_join_clause = 'INNER JOIN user_groups ON users.group_id = user_groups.id';
 
             // SQL文を実行する
