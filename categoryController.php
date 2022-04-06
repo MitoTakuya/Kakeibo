@@ -72,6 +72,8 @@ try {
 
     //モーダルウィンドウからのPOST処理
     if(!empty($_POST["record_id"])) {
+        Config::check_token();
+        
         $error_messages = array();
         $id = (int)$_POST["record_id"];
         $title = Config::delete_space($_POST["title"]);
