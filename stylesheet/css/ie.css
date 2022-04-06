@@ -1,0 +1,23 @@
+#header-bar {
+    position:fixed;
+    top:0px;
+    left:0px;
+    height:240px;
+    width:100%;
+    z-index:9999;
+    overflow:hidden;
+    background: rgba(153, 153, 153, 0.85);
+}
+
+#header-inner{
+    width: 1080px;
+    display:block;
+    margin:0px auto;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 400;
+    height:200px;
+    margin-top: 30px;
+    color: #fff;
+    z-index:9999;
+}

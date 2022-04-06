@@ -58,4 +58,29 @@ class Config {
                 break;
         }
     }
+
+    // Internet Exploerでアクセスした場合エラーページへ
+    public static function is_ie()
+    {
+        // ユーザーエージェントを取得
+        $browser = $_SERVER['HTTP_USER_AGENT'];
+        if (strstr($browser, 'Trident') || strstr($browser, 'MSIE')) {
+            header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/ieError.php');
+            exit();
+        }
+        return false;
+    }
+
+    // Internet Exploer以外でieErrorページを開かない処理
+    public static function not_ie()
+    {
+        // ユーザーエージェントを取得
+        $browser = $_SERVER['HTTP_USER_AGENT'];
+        if (strstr($browser, 'Trident') || strstr($browser, 'MSIE')) {
+            return true;
+        } else {
+            header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
+            exit();
+        }
+    }
 } 
