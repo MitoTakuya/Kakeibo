@@ -3,14 +3,15 @@ require_once __DIR__.'/init.php';
 
 try {
     DbConnector::connectDB();
-    if(!empty($_POST)) {
+
+    if(!empty($_POST["target_date"])) {
         Config::check_token();
         $target_date = $_POST["target_date"];
         $_SESSION['target_date'] = $target_date;
     }else {
         $target_date = $_SESSION['target_date'];
     }
-
+    
     $user_id = $_SESSION['id'];
     $group_id = $_SESSION['group_id'];
     $category_id = (int)$_GET["id"];
@@ -37,10 +38,10 @@ try {
         foreach ($other_cattegory as $category_name) {
             if ($category_name['category_id'] <= 100) {
                 // 支出
-                $payment[] = $category_name;
+                $outgoes[] = $category_name;
             } else {
                 // 収入
-                $income[] = $category_name;
+                $incomes[] = $category_name;
             }
         }
     }
@@ -49,9 +50,6 @@ try {
     DbConnector::makeOrderClause(desc: true);
     //トータルレコード件数
     $total_record = DbConnectorMain::countRecords($group_id, $target_date, $category_id);
-    //print_r("カテゴリ：".$category_id);
-    //print_r("date：".$target_date);
-    print_r("件数：".$total_record);
     // 1ページに表示するレコード数
     $limit = 10;
     //URLに渡された現在のページ数
@@ -72,6 +70,39 @@ try {
     //メインTBLよりページ毎のカテゴリ別レコードを取得
     $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, category_id: $category_id, target_date: $target_date, offset: $offset);
 
+    //モーダルウィンドウからのPOST処理
+    if(!empty($_POST["record_id"])) {
+        $error_messages = array();
+        $id = (int)$_POST["record_id"];
+        $title = Config::delete_space($_POST["title"]);
+        $payment = str_replace(",","", $_POST['payment']);
+        $payment_at = $_POST["payment_at"];
+        $type_id = $_POST['type_id'];
+        $memo = Config::delete_space($_POST["content"]);
+
+        //更新する入力値チェック
+        if(empty($title) || mb_strlen($title ) > 30 || $payment < 1 || mb_strlen($memo) > 200) {
+            $error_messages["update"] = '※更新に失敗しました。編集した内容に誤りがあります。';
+        }elseif($memo == '') {
+            $memo = ' ';
+        }
+
+        //更新前に対象レコードの有無チェック
+        $confirm = DbConnectorMain::fetchOne($id);
+
+        if ($confirm) {
+            if (empty($error_messages)) {
+                //レコードを更新する
+                DbConnectorMain::updateRecord($id, $title, $payment, $payment_at, $user_id, $type_id, $category_id, $group_id, $memo);
+                //POST元(編集していた)ページにリダイレクトする。
+                $uri = filter_input(INPUT_SERVER,"HTTP_REFERER");
+                header("Location: ".$uri);
+                exit;
+            }
+        }else {
+            $error_messages["update"] = '※更新したデータはすでに他のユーザによって削除されております。';
+        }
+    }
 } catch (Exception $e) {
 
     switch ($e->getCode()) {

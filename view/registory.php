@@ -145,8 +145,11 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<p class="show-table text-center mb-5">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
-
+	
+	<p class="show-table text-center mb-4">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
+	<?php if(!empty($error_messages["update"])): ?>
+		<p class="text-danger text-center"><?php echo $error_messages["update"]; ?></p>
+	<?php endif; ?>
     <div class="container mb-5">
 		<div class="registory-box table-responsive">
 			<table class="table table-striped border border-5">
@@ -228,7 +231,7 @@ require_once __DIR__.'/../registoryController.php';
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
-		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data" id="modal_form">
+		<form method="post" action="" enctype="multipart/form-data" id="modal_form">
 		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 		<input type="hidden" id="record_id" name="record_id">
 		<input type="hidden" id="type_id" name="type_id">

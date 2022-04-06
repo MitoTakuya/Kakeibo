@@ -8,7 +8,6 @@ require_once __DIR__.'/../categoryController.php';
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -29,6 +28,9 @@ require_once __DIR__.'/../categoryController.php';
                 カテゴリ：データが存在しません。
             <?php endif ;?>
             </p>
+            <?php if(!empty($error_messages["update"])): ?>
+                <p class="text-danger text-center"><?php echo $error_messages["update"]; ?></p>
+            <?php endif; ?>
         </div>
         <div class="registory-box table-responsive">
             <table class="table table-striped border border-5 border">
@@ -71,15 +73,15 @@ require_once __DIR__.'/../categoryController.php';
     </div>
     <div class="mt-3"></div>
     <!-- 支出詳細のリンク -->
-    <?php if (isset($payment)): ?>
+    <?php if (isset($outgoes)): ?>
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
                 支出：
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <?php foreach($payment as $pay): ?>
-                        <form action="./showCategory.php?id=<?= $pay['category_id'] ?>" method="post">
-                            <input type="submit" name="category_name" value="<?php echo $pay['category_name'] ?>" class="btn btn-outline-dark">
+                    <?php foreach($outgoes as $outgo): ?>
+                        <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $outgo['category_name'] ?>" class="btn btn-outline-dark">
                             <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                             <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
@@ -89,15 +91,15 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     <?php endif; ?> 
     <!-- 収入詳細のリンク -->
-    <?php if (isset($income)): ?>
+    <?php if (isset($incomes)): ?>
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
                 収入：
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <?php foreach($income as $in): ?>
-                        <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
-                            <input type="submit" name="category_name" value="<?php echo $in['category_name'] ?>" class="btn btn-outline-dark">
+                    <?php foreach($incomes as $income): ?>
+                        <form action="./showCategory.php?id=<?= $income['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $income['category_name'] ?>" class="btn btn-outline-dark">
                             <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
                             <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
@@ -106,7 +108,39 @@ require_once __DIR__.'/../categoryController.php';
             </div>
         </div>
     <?php endif; ?> 
-    
+
+    <!-- モーダルウィンドウ -->
+	<div class="modal"></div>
+	<div class="edit_form">
+		<h2 class="post_title">編集</h2>
+		<form method="post" action="" enctype="multipart/form-data">
+		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
+		<input type="hidden" id="record_id" name="record_id">
+		<input type="hidden" id="type_id" name="type_id">
+		<div>
+			<label>日付</label>
+		</div>
+			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" required>
+		<div>
+			<label>タイトル</label>
+		</div>
+			<input type="text" class="mb-2" id="edit_title"  name="title" required>
+		<div class="amount">
+			<label>金額</label>
+		</div>
+		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
+			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
+		<div class="pb-2">
+			<div>
+				<label>メモ</label>
+			</div>
+			<textarea name="content" id="edit_memo" cols="35" rows="5"></textarea><br>
+		</div>
+		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
+		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
+		</form>
+	</div>
+
     <!-- ページネーション -->
     <?php if($max_page > 1) :?>
         <div class="container mb-5">
@@ -142,37 +176,6 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     <?php endif ;?>
 
-    <!-- モーダルウィンドウ -->
-	<div class="modal"></div>
-	<div class="edit_form">
-		<h2 class="post_title">編集</h2>
-		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
-		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
-		<input type="hidden" id="record_id" name="record_id">
-		<input type="hidden" id="type_id" name="type_id">
-		<div>
-			<label>日付</label>
-		</div>
-			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" required>
-		<div>
-			<label>タイトル</label>
-		</div>
-			<input type="text" class="mb-2" id="edit_title"  name="title" required>
-		<div class="amount">
-			<label>金額</label>
-		</div>
-		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
-			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
-		<div class="pb-2">
-			<div>
-				<label>メモ</label>
-			</div>
-			<textarea name="content" id="edit_memo" cols="35" rows="5"></textarea><br>
-		</div>
-		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
-		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
-		</form>
-	</div>
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
