@@ -296,6 +296,15 @@ abstract class DbConnector
         }
     }
 
+    public static function adOrderClause(bool $desc = false, string $column)
+    {
+        if ($desc) {
+            self::$temp_orderby_clause .= ", `{$column}` DESC";
+        } else {
+            self::$temp_orderby_clause .= ",  `{$column}` ASC";
+        }
+    }
+
     // orderby句にlimit offset句を付与するメソッド
     protected static function addLimit()
     {
