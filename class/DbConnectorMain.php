@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/DbConnector.php';
-class DbConnectorMain extends DbConnector {
-
+class DbConnectorMain extends DbConnector
+{
     protected static $target_table = 'main';
 
     /**************************************************************************
@@ -10,7 +10,7 @@ class DbConnectorMain extends DbConnector {
     // mainテーブルのレコードを1つ追加する
     public static function insertRecord(
         string $title,
-        int $payment, 
+        int $payment,
         string $payment_at,
         int $user_id,
         int $type_id,
@@ -31,7 +31,6 @@ class DbConnectorMain extends DbConnector {
 
             // トランザクション終了
             self::$pdo->commit();
-
         } catch (PDOException $e) {
             // *rollback()はinsertOne()内で行う
             return self::TRANSACTION_ERROR;
@@ -63,7 +62,6 @@ class DbConnectorMain extends DbConnector {
 
             // トランザクション終了
             self::$pdo->commit();
-
         } catch (PDOException $e) {
             // *rollback()はupdateOne()内で行う
             // self::$pdo->rollBack();
@@ -71,9 +69,9 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-/**********************************************************
- * ダッシュボードで集計を表示するための関数
- **********************************************************/
+    /**********************************************************
+     * ダッシュボードで集計を表示するための関数
+     **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
     public static function fetchBalance(int $group_id)
     {
@@ -97,7 +95,6 @@ class DbConnectorMain extends DbConnector {
 
             $result = $income - $outgo;
             return $result;
-            
         } catch (PDOException $e) {
             throw $e;
         }
@@ -121,7 +118,6 @@ class DbConnectorMain extends DbConnector {
             // 親クラスのメソッドで結果を取り出す
             self::fetch($pdo_method);
             return self::$temp_result['outgo'];
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -146,7 +142,6 @@ class DbConnectorMain extends DbConnector {
             // 親クラスのメソッドで結果を取り出す
             self::fetch($pdo_method);
             return self::$temp_result['income'];
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -181,7 +176,6 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行し、結果を格納する
             self::fetch($pdo_method);
             return self::$temp_result['sum']; //格納されていなければ false を返す
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -192,7 +186,7 @@ class DbConnectorMain extends DbConnector {
         int $group_id,
         int $type_id = null,
         ?string $target_date = null
-    ){
+    ) {
         try {
             // 受け取った値に対応するwhere句を生成する
             self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
@@ -225,7 +219,6 @@ class DbConnectorMain extends DbConnector {
             $result[] = $categorized_income_list;
             
             return $result;
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -255,7 +248,6 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行する
             self::fetch();
             return self::$temp_result;
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -290,7 +282,6 @@ class DbConnectorMain extends DbConnector {
                 // レコードが存在しない場合
                 return date("Ymd");
             }
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -303,7 +294,7 @@ class DbConnectorMain extends DbConnector {
         int $group_id,
         ?string $target_date = null,
         ?int $category_id = null
-    ){
+    ) {
         try {
             // バインド対象を一時変数に格納に格納する
             self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
@@ -323,8 +314,7 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
             return self::$temp_result['records'];
-
-        }catch (PDOException $e){
+        } catch (PDOException $e) {
             throw $e;
         }
     }
