@@ -148,7 +148,7 @@ require_once __DIR__.'/../categoryController.php';
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
-		<form method="post" action="" enctype="multipart/form-data">
+		<form method="post" action="" enctype="multipart/form-data" id="modal_form">
 		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 		<input type="hidden" id="record_id" name="record_id">
 		<input type="hidden" id="type_id" name="type_id">

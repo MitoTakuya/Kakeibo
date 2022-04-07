@@ -33,10 +33,15 @@ require_once __DIR__.'/../init.php';
 				</div>
 				<div class="input-group-addon text-center mb-5">
 					<span>エラー内容：</span>
+					<?php if (isset($error_message)): ?>
 					<span class="text-danger"><?= $error_message ?></span>
 				</div>
 				<input type="button" class="btn btn-block btn-lg btn-primary" 
 					value="再読込み" onclick="window.location.reload(true);" />
+					<?php else :?>
+						<span class="text-danger">予期せぬエラーが発生しました。</span>
+					</div>
+					<?php endif ;?>
 					<a href="http://<?= $_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']) ?>/logout.php?error=1" 
 						class="nav-item nav-link text-center">再ログイン</a>
 			</div>

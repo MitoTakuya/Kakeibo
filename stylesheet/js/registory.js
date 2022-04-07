@@ -48,12 +48,10 @@ $('.delete-btn').on('click', function() {
   if(delete_confirm === true) {
     //ボタンの親の親要素（tr）のid値を取得
     let record_id = $(this).parent().parent().attr("id");
-    // record_id = 'id='+ record_id;
     
     //削除対象のレコード行を取得
     let element = $(this).parent().parent();
     element = element[0];
-    console.log(element);
 
     // 非同期処理
     $.ajax({
@@ -67,7 +65,6 @@ $('.delete-btn').on('click', function() {
     
     .done(function(data) {
       let total_record = data;
-      console.log(total_record);
 
       // 通信が成功したらレコード削除
       console.log('通信成功');
@@ -84,10 +81,17 @@ $('.delete-btn').on('click', function() {
       //現在ページが最終ページになるのか計算
       const exist_next = max_page - carrent_page;
 
-      //レコード削除に伴いページ数1ページになる場合はページネーションを非表示に変更する
+      //現在のページが１で、MAX2ページの場合はページネーションを非表示にする
       if(max_page == 2 && carrent_page == 1) {
         if(total_record % limit === 0) {
           $("#page-nation").remove();
+        }
+      }
+
+      //現在のページが２で、MAX2ページの場合は1ページ目に遷移する
+      if(max_page == 2 && carrent_page == 2) {
+        if(total_record % limit === 0) {
+          window.location.assign('registory.php');
         }
       }
 
@@ -98,16 +102,14 @@ $('.delete-btn').on('click', function() {
           //現在ページが最終ページになったら「次へ」を非活性にする
           $("#next-page").attr('class', 'page-item disabled');
         }
-      }else {
-        console.log(total_record % limit === 0);
       }
 
     })
 
     .fail(function() {
-      //★仮置き。ヘッダー直下にエラー内容を表示する予定
-      alert('エラーが発生しました。');
-      // window.location.href('http://localhost/kakeibo/view/error.php');  
+        //エラーが発生したらエラー画面に遷移する。
+        alert('エラーが発生しました。');
+        window.location.assign('error.php');
     });
   }
 });
@@ -124,11 +126,9 @@ window.addEventListener('DOMContentLoaded',function() {
       //ボタンの親の親要素（tr）のid値を取得
       let id = $(this).parent().parent().attr("id");
       let record_id = id;
-      console.log(record_id);
+
       //編集対象のレコード要素（tr…/tr）を取得
       let element = $(this).parent().parent();
-      // element = element[0].innerText;
-      console.log(element);
   
       // 非同期処理
       $.ajax({
@@ -147,14 +147,12 @@ window.addEventListener('DOMContentLoaded',function() {
       .done( function(data) {
         
         if(!data) {
-          console.log('データが存在しません');
           $("#modal_form").remove();
           $(".post_title").html("※他のグループユーザによって削除されたデータがあります。");
           $(".post_title").append("<p>画面を更新してください。</p>");
         }
 
         console.log('通信成功');
-        console.log(data);
 
         //DBより取得した値編集フォームにを入れる
         $("#record_id").val(data.id);
@@ -200,8 +198,7 @@ window.addEventListener('DOMContentLoaded',function() {
       // 通信が失敗した時
       .fail( function(data) {
         console.log('通信失敗');
-        $("#modal_form").remove();
-        $(".post_title").html("※データ取得に失敗しました。画面を更新するか再ログインを実施してください。");
+      window.location.assign('error.php');
       });
   
       //モーダルウィンドウの表示

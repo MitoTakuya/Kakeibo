@@ -194,37 +194,37 @@ require_once __DIR__.'/../registoryController.php';
 
 	<!-- ページネーション -->
 	<?php if($max_page > 1) :?>
-		<div class="container mb-5" id="page-nation">
-			<nav aria-label="Page navigation example">
-			<ul class="pagination justify-content-end">
-				<?php if($now > 1) :?>
-					<li class="page-item">
-						<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
-					</li>
+	<div class="container mb-5" id="page-nation">
+		<nav aria-label="Page navigation example">
+		<ul class="pagination justify-content-end">
+			<?php if($now > 1) :?>
+				<li class="page-item">
+					<a class="page-link" href="registory.php?page_id=<?= $previous ?>">前へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">前へ</a>
+				</li>
+			<?php endif ;?>
+			<?php for($i = 1; $i <= $max_page; $i++) :?>
+				<?php if($i == $now) :?>
+					<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
 				<?php else :?>
-					<li class="page-item disabled">
-						<a class="page-link">前へ</a>
-					</li>
+					<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
 				<?php endif ;?>
-				<?php for($i = 1; $i <= $max_page; $i++) :?>
-					<?php if($i == $now) :?>
-						<li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
-					<?php else :?>
-						<li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='registory.php?page_id=<?= $i ?>'><?= $i ?></a></li>
-					<?php endif ;?>
-				<?php endfor ;?>
-				<?php if($now < $max_page) :?>
-					<li class="page-item" id="next-page">
-						<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
-					</li>
-				<?php else :?>
-					<li class="page-item disabled">
-						<a class="page-link">次へ</a>
-					</li>
-				<?php endif ;?>
-			</ul>
-			</nav>
-		</div>
+			<?php endfor ;?>
+			<?php if($now < $max_page) :?>
+				<li class="page-item" id="next-page">
+					<a class="page-link" href="registory.php?page_id=<?= $next ?>">次へ</a>
+				</li>
+			<?php else :?>
+				<li class="page-item disabled">
+					<a class="page-link">次へ</a>
+				</li>
+			<?php endif ;?>
+		</ul>
+		</nav>
+	</div>
 	<?php endif ;?>
 
 	<!-- モーダル -->
