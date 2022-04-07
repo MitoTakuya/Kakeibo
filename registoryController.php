@@ -5,8 +5,6 @@ try{
     DbConnector::connectDB();
     //記帳画面のオープン処理
     $group_id = $_SESSION['group_id'];
-    // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
-    DbConnector::makeOrderClause(desc: true);
     // トータルレコード件数
     $total_record = DbConnectorMain::countRecords($group_id);
     // 1ページに表示するレコード数
@@ -26,6 +24,9 @@ try{
     $previous =  $now -1;
     //「次へ」ページ数
     $next =  $now + 1;
+    // orderby句の基準にするカラムと、並び順（ascかdescか）を指定するメソッド
+    DbConnector::makeOrderClause(desc: true, column:'payment_at');
+    DbConnector::adOrderClause(desc: true, column:'updated_at');
     //メインTBLよりページ毎のレコード取得
     $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, offset: $offset);
 
