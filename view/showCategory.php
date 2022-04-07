@@ -8,7 +8,6 @@ require_once __DIR__.'/../categoryController.php';
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -29,37 +28,40 @@ require_once __DIR__.'/../categoryController.php';
                 カテゴリ：データが存在しません。
             <?php endif ;?>
             </p>
+            <?php if(!empty($error_messages["update"])): ?>
+                <p class="text-danger text-center"><?php echo $error_messages["update"]; ?></p>
+            <?php endif; ?>
         </div>
         <div class="registory-box table-responsive">
             <table class="table table-striped border border-5 border">
                 <tbody>
                     <!-- 一覧の項目名 -->
                     <tr>
-                        <td scope="col" class="payment_at">日付</td> 
-                        <td scope="col" class="type_name">収支</td> 
-                        <td scope="col" class="title">タイトル</td> 
-                        <td scope="col" class="payment">金額</td> 
-                        <td scope="col" class="memo">メモ</td> 
-                        <td scope="col" class="user_name">ユーザ名</td> 
-                        <td scope="col" class="updated_at">更新日</td> 
-                        <td scope="col" class="edit-column">編集</td>          
-                        <td scope="col" class="delet-column">削除</td>          
+                        <td scope="col" class="payment_at text-center">日付</td> 
+                        <td scope="col" class="type_name text-center">収支</td> 
+                        <td scope="col" class="title text-center">タイトル</td> 
+                        <td scope="col" class="payment text-right">金額</td> 
+                        <td scope="col" class="memo text-center">メモ</td> 
+                        <td scope="col" class="user_name text-center">ユーザ名</td> 
+                        <td scope="col" class="updated_at text-center">更新日</td> 
+                        <td scope="col" class="edit-column text-center">編集</td>          
+                        <td scope="col" class="delet-column text-center">削除</td>          
                     </tr>
                     <?php foreach($records as $record) :?>
                     <tr id="<?= $record['id']; ?>">
-                        <td scope="row" id="payment_at"><?= date('Y年m月d日', strtotime(Config::h($record["payment_at"]))) ?></td>
+                        <td scope="row" id="payment_at" style="width:110px;"><?= date('Y-m-d', strtotime(Config::h($record["payment_at"]))) ?></td>
                         <?php if($record["type_id"] === 1) :?>
-                            <td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
+                            <td class="text-center"><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
                         <?php else :?>
-                            <td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
+                            <td class="text-center"><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
                         <?php endif ;?>
                         <td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
-                        <td scope="row" id="payment"><?= number_format($record["payment"]) ?>円</td>
+                        <td scope="row" id="payment" class="text-right" style="width:110px;"><?= number_format($record["payment"]) ?>円</td>
                         <td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
-                        <td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-                        <td scope="row" id="updated_at"><?= date('Y年m月d日', strtotime(Config::h($record["updated_at"]))) ?></td>
-                        <td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
-                        <td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
+                        <td scope="row" id="user_name" class="text-center"><?= Config::h($record["user_name"]) ?></td>
+                        <td scope="row" id="updated_at" style="width:110px;"><?= date('Y-m-d', strtotime(Config::h($record["updated_at"]))) ?></td>
+                        <td class="text-center"><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
+                        <td class="text-center"><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
                     </tr>
                     <?php endforeach ;?>
                 </tbody>
@@ -71,16 +73,17 @@ require_once __DIR__.'/../categoryController.php';
     </div>
     <div class="mt-3"></div>
     <!-- 支出詳細のリンク -->
-    <?php if (isset($payment)): ?>
+    <?php if (isset($outgoes)): ?>
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
                 支出：
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <?php foreach($payment as $pay): ?>
-                        <form action="./showCategory.php?id=<?= $pay['category_id'] ?>" method="post">
-                            <input type="submit" name="category_name" value="<?php echo $pay['category_name'] ?>" class="btn btn-outline-dark">
-                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                    <?php foreach($outgoes as $outgo): ?>
+                        <form action="./showCategory.php?id=<?= $outgo['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $outgo['category_name'] ?>" class="btn btn-outline-dark">
+                            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                            <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
                     <?php endforeach; ?>
                 </div>
@@ -88,23 +91,56 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     <?php endif; ?> 
     <!-- 収入詳細のリンク -->
-    <?php if (isset($income)): ?>
+    <?php if (isset($incomes)): ?>
         <div class="container-fluid">
             <div class="row justifyr">
                 <div class="col-md-4"></div>
                 収入：
                 <div class="btn-group" role="group" aria-label="Basic example">
-                    <?php foreach($income as $in): ?>
-                        <form action="./showCategory.php?id=<?= $in['category_id'] ?>" method="post">
-                            <input type="submit" name="category_name" value="<?php echo $in['category_name'] ?>" class="btn btn-outline-dark">
-                            <input type="hidden" name="token" value=<?= $_SESSION['token'] ?>>
+                    <?php foreach($incomes as $income): ?>
+                        <form action="./showCategory.php?id=<?= $income['category_id'] ?>" method="post">
+                            <input type="submit" name="category_name" value="<?php echo $income['category_name'] ?>" class="btn btn-outline-dark">
+                            <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
+                            <input type="hidden" name="target_date" value="<?= $target_date ?>">
                         </form>
                     <?php endforeach; ?>
                 </div>
             </div>
         </div>
     <?php endif; ?> 
-    
+
+    <!-- モーダルウィンドウ -->
+	<div class="modal"></div>
+	<div class="edit_form">
+		<h2 class="post_title">編集</h2>
+		<form method="post" action="" enctype="multipart/form-data">
+		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
+		<input type="hidden" id="record_id" name="record_id">
+		<input type="hidden" id="type_id" name="type_id">
+		<div>
+			<label>日付</label>
+		</div>
+			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" required>
+		<div>
+			<label>タイトル</label>
+		</div>
+			<input type="text" class="mb-2" id="edit_title"  name="title" required>
+		<div class="amount">
+			<label>金額</label>
+		</div>
+		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
+			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
+		<div class="pb-2">
+			<div>
+				<label>メモ</label>
+			</div>
+			<textarea name="content" id="edit_memo" cols="35" rows="5"></textarea><br>
+		</div>
+		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
+		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
+		</form>
+	</div>
+
     <!-- ページネーション -->
     <?php if($max_page > 1) :?>
         <div class="container mb-5">
@@ -140,37 +176,6 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     <?php endif ;?>
 
-    <!-- モーダルウィンドウ -->
-	<div class="modal"></div>
-	<div class="edit_form">
-		<h2 class="post_title">編集</h2>
-		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data">
-		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
-		<input type="hidden" id="record_id" name="record_id">
-		<input type="hidden" id="type_id" name="type_id">
-		<div>
-			<label>日付</label>
-		</div>
-			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" required>
-		<div>
-			<label>タイトル</label>
-		</div>
-			<input type="text" class="mb-2" id="edit_title"  name="title" required>
-		<div class="amount">
-			<label>金額</label>
-		</div>
-		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
-			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
-		<div class="pb-2">
-			<div>
-				<label>メモ</label>
-			</div>
-			<textarea name="content" id="edit_memo" cols="35" rows="5"></textarea><br>
-		</div>
-		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
-		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
-		</form>
-	</div>
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

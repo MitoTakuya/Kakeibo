@@ -43,7 +43,7 @@ function addComma(inputNum){
 window.addEventListener('DOMContentLoaded',function() {
 
 $('.delete-btn').on('click', function() {
-  let delete_confirm = confirm('マジで消しちゃっていいですか？');
+  let delete_confirm = confirm('削除してもよろしいですか？');
 
   if(delete_confirm === true) {
     //ボタンの親の親要素（tr）のid値を取得
@@ -83,25 +83,20 @@ $('.delete-btn').on('click', function() {
       const carrent_page = $("#carrent_page").html();
       //現在ページが最終ページになるのか計算
       const exist_next = max_page - carrent_page;
-      console.log(max_page);
-      console.log(carrent_page);
 
       //レコード削除に伴いページ数1ページになる場合はページネーションを非表示に変更する
       if(max_page == 2 && carrent_page == 1) {
         if(total_record % limit === 0) {
           $("#page-nation").remove();
-          console.log('ページネーションを非表示');
         }
       }
 
       //レコード削除に伴いページ数を減らすか否か確認
       if(total_record % limit === 0) {
         $(`#page-num${max_page}`).remove();
-        console.log('maxpageを削除');
         if(exist_next === 1 ) {
           //現在ページが最終ページになったら「次へ」を非活性にする
           $("#next-page").attr('class', 'page-item disabled');
-          console.log('非かっせい');
         }
       }else {
         console.log(total_record % limit === 0);
@@ -111,8 +106,8 @@ $('.delete-btn').on('click', function() {
 
     .fail(function() {
       //★仮置き。ヘッダー直下にエラー内容を表示する予定
-      // window.location.href('http://localhost/kakeibo/view/error.php');  
       alert('エラーが発生しました。');
+      // window.location.href('http://localhost/kakeibo/view/error.php');  
     });
   }
 });
@@ -151,17 +146,16 @@ window.addEventListener('DOMContentLoaded',function() {
       // 通信が成功した時
       .done( function(data) {
         
-        
         if(!data) {
           console.log('データが存在しません');
           $("#modal_form").remove();
-          $(".post_title").html("※対象のデータは他のグループユーザによって削除されました。");
-
+          $(".post_title").html("※他のグループユーザによって削除されたデータがあります。");
+          $(".post_title").append("<p>画面を更新してください。</p>");
         }
 
         console.log('通信成功');
         console.log(data);
-        
+
         //DBより取得した値編集フォームにを入れる
         $("#record_id").val(data.id);
         $("#type_id").val(data.type_id);
@@ -176,7 +170,7 @@ window.addEventListener('DOMContentLoaded',function() {
         //編集ボタン押下したときのページurlを取得
         let uri = location.href;
   
-        //記帳画面（registory.php）の編集ボタンを押下したときの処理
+        //記帳一覧の編集ボタンを押下したときの処理
         if (uri.match(/registory.php/)){
   
           if (type_id == 1) {
@@ -206,13 +200,13 @@ window.addEventListener('DOMContentLoaded',function() {
       // 通信が失敗した時
       .fail( function(data) {
         console.log('通信失敗');
-        console.log(data);
+        $("#modal_form").remove();
+        $(".post_title").html("※データ取得に失敗しました。画面を更新するか再ログインを実施してください。");
       });
   
       //モーダルウィンドウの表示
       $('.edit_form').fadeIn();
-      $('.modal').fadeIn();
-      
+      $('.modal').fadeIn();      
       });
   
       // モーダルを閉じる

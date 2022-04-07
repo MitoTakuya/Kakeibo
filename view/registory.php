@@ -65,7 +65,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>金額</label>
+							<label>金額　</label>
+							<?php if(!empty($error_messages["payment"])): ?>
+								<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
+							<?php endif; ?>
 							<input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" 
 								class="form-control" name="payment" maxlength="13" min="1" required>
 						</div>
@@ -117,7 +120,10 @@ require_once __DIR__.'/../registoryController.php';
 						<div class="divider"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-							<label>金額</label>
+							<label>金額　</label>
+							<?php if(!empty($error_messages["payment"])): ?>
+								<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
+							<?php endif; ?>
 							<input type="text" onblur="addComma(this);" pattern="^((([1-9]\d*)(,\d{3})*)|0)$" 
 								class="form-control" name="payment" maxlength="13" min="1" required>
 						</div>
@@ -139,8 +145,11 @@ require_once __DIR__.'/../registoryController.php';
 		</div>
 	</div>
 
-	<p class="show-table text-center mb-5">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
-
+	
+	<p class="show-table text-center mb-4">記帳一覧（<span id="total_record"><?= $total_record ?></span>件）</p>
+	<?php if(!empty($error_messages["update"])): ?>
+		<p class="text-danger text-center"><?php echo $error_messages["update"]; ?></p>
+	<?php endif; ?>
     <div class="container mb-5">
 		<div class="registory-box table-responsive">
 			<table class="table table-striped border border-5">
@@ -148,12 +157,12 @@ require_once __DIR__.'/../registoryController.php';
 					<!-- 一覧の項目名 -->
 					<tr>
 						<td scope="col" class="payment_at text-center">日付</td> 
-						<td scope="col" class="type_name text-center">収支</td> 
+						<td scope="col" class="type_name text-center" style="width:60px;">収支</td> 
 						<td scope="col" class="title text-center">タイトル</td> 
-						<td scope="col" class="category_name text-center">カテゴリー</td> 
-						<td scope="col" class="payment text-center">金額</td> 
+						<td scope="col" class="category_name text-center" style="width:110px;">カテゴリー</td> 
+						<td scope="col" class="payment text-right">金額</td> 
 						<td scope="col" class="memo text-center">メモ</td> 
-						<td scope="col" class="user_name text-center">ユーザ名</td> 
+						<td scope="col" class="user_name text-center" style="width:110px;">ユーザ名</td> 
 						<td scope="col" class="updated_at text-center">更新日</td> 
 						<td scope="col" class="edit-column text-center">編集</td>          
 						<td scope="col" class="delete-column text-center">削除</td>          
@@ -161,20 +170,20 @@ require_once __DIR__.'/../registoryController.php';
 					<?php if($records) :?>
 						<?php foreach($records as $record) :?>
 							<tr id="<?php echo $record['id']; ?>">
-							<td scope="row" id="payment_at"><?= $record["payment_at"] ?></td>
+							<td scope="row" id="payment_at" style="width:110px;"><?= date('Y-m-d', strtotime($record["payment_at"])) ?></td>
 							<?php if($record["type_id"] === 1) :?>
-								<td><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
+								<td class="text-center"><i class="fa-solid fa-minus" style="color: red; font-size:24px;"></i></td>
 							<?php else :?>
-								<td><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
+								<td class="text-center"><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i></td>
 							<?php endif ;?>
 							<td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25,'…')) ?></td>
-							<td scope="row" id="category_name"><?= $record["category_name"] ?></td>
-							<td scope="row" id="payment" class="text-right"><?= number_format($record["payment"]) ?>円</td>
+							<td scope="row" id="category_name" class="text-center"><?= $record["category_name"] ?></td>
+							<td scope="row" id="payment" class="text-right" style="width:110px;"><?= number_format($record["payment"]) ?>円</td>
 							<td scope="row" id="memo"><?= Config::h(mb_strimwidth($record["memo"], 0, 25,'…')) ?></td>
-							<td scope="row" id="user_name"><?= Config::h($record["user_name"]) ?></td>
-							<td scope="row" id="updated_at"><?= date('Y年m月d日', strtotime(Config::h($record["updated_at"]))) ?></td>
-							<td><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
-							<td><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
+							<td scope="row" id="user_name" class="text-center"><?= Config::h($record["user_name"]) ?></td>
+							<td scope="row" id="updated_at" style="width:110px;"><?= date('Y-m-d', strtotime($record["updated_at"])) ?></td>
+							<td class="text-center"><button type="button" class="btn btn-info edit-btn" name="edit-record">編集</button></td>
+							<td class="text-center"><button type="button" class="btn btn-danger delete-btn" name="delete-id">削除</button></td>
 						</tr>
 						<?php endforeach; ?>
 					<?php endif; ?>
@@ -222,7 +231,7 @@ require_once __DIR__.'/../registoryController.php';
 	<div class="modal"></div>
 	<div class="edit_form">
 		<h2 class="post_title">編集</h2>
-		<form method="post" action="../updateRegistory.php" enctype="multipart/form-data" id="modal_form">
+		<form method="post" action="" enctype="multipart/form-data" id="modal_form">
 		<input type="hidden" value="<?php echo $_SESSION['token']; ?>" name="token">
 		<input type="hidden" id="record_id" name="record_id">
 		<input type="hidden" id="type_id" name="type_id">
