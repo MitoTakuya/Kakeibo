@@ -23,17 +23,17 @@ require_once __DIR__.'/../categoryController.php';
         <div>
             <p class="show-table text-center mb-4">
             <?php if (isset($current_cattegory['category_name'])): ?>
-                カテゴリ：<?php echo $current_cattegory['category_name'] ?>
+                カテゴリ：<?php echo $current_cattegory['category_name'] ?>（<span id="total_record"><?= $total_record ?></span>件）</p>
             <?php else :?>
-                カテゴリ：データが存在しません。
+                カテゴリ：データが存在しません。</p>
             <?php endif ;?>
-            </p>
+            
             <?php if(!empty($error_messages["update"])): ?>
                 <p class="text-danger text-center"><?php echo $error_messages["update"]; ?></p>
             <?php endif; ?>
         </div>
         <div class="registory-box table-responsive">
-            <table class="table table-striped border border-5 border">
+            <table class="table table-striped border border-5 border" data-category="<?= $category_id ?>">
                 <tbody>
                     <!-- 一覧の項目名 -->
                     <tr>
@@ -109,6 +109,41 @@ require_once __DIR__.'/../categoryController.php';
         </div>
     <?php endif; ?> 
 
+    <!-- ページネーション -->
+    <?php if($max_page > 1) :?>
+    <div class="container mb-5" id="page-nation">
+        <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            <?php if($now > 1) :?>
+                <li class="page-item">
+                    <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $previous ?>">前へ</a>
+                </li>
+            <?php else :?>
+                <li class="page-item disabled">
+                    <a class="page-link">前へ</a>
+                </li>
+            <?php endif ;?>
+            <?php for($i = 1; $i <= $max_page; $i++) :?>
+                <?php if($i == $now) :?>
+                    <li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
+                <?php else :?>
+                    <li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
+                <?php endif ;?>
+            <?php endfor ;?>
+            <?php if($now < $max_page) :?>
+                <li class="page-item" id="next-page">
+                    <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $next ?>">次へ</a>
+                </li>
+            <?php else :?>
+                <li class="page-item disabled">
+                    <a class="page-link">次へ</a>
+                </li>
+            <?php endif ;?>
+        </ul>
+        </nav>
+    </div>
+    <?php endif ;?>
+
     <!-- モーダルウィンドウ -->
 	<div class="modal"></div>
 	<div class="edit_form">
@@ -141,52 +176,18 @@ require_once __DIR__.'/../categoryController.php';
 		</form>
 	</div>
 
-    <!-- ページネーション -->
-    <?php if($max_page > 1) :?>
-        <div class="container mb-5">
-            <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-end">
-                <?php if($now > 1) :?>
-                    <li class="page-item">
-                        <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $previous ?>">前へ</a>
-                    </li>
-                <?php else :?>
-                    <li class="page-item disabled">
-                        <a class="page-link">前へ</a>
-                    </li>
-                <?php endif ;?>
-                <?php for($i = 1; $i <= $max_page; $i++) :?>
-                    <?php if($i == $now) :?>
-                        <li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
-                    <?php else :?>
-                        <li class="page-item"><a class="page-link" id="page-num<?= $i ?>" href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
-                    <?php endif ;?>
-                <?php endfor ;?>
-                <?php if($now < $max_page) :?>
-                    <li class="page-item" id="next-page">
-                        <a class="page-link" href="showCategory.php?id=<?= $category_id ?>&page_id=<?= $next ?>">次へ</a>
-                    </li>
-                <?php else :?>
-                    <li class="page-item disabled">
-                        <a class="page-link">次へ</a>
-                    </li>
-                <?php endif ;?>
-            </ul>
-            </nav>
-        </div>
-    <?php endif ;?>
 
-		<!-- Optional JavaScript -->
-		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-			integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-			integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-			integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
-        <script src="../stylesheet/js/registory.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="../stylesheet/js/showCategory.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
  
 </body>
 </html>

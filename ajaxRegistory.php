@@ -10,7 +10,7 @@ try  {
         $method = $_POST['method'];
         $group_id = $_SESSION['group_id'];
         
-        if ($_POST['method'] === 'delete') {
+        if ($method === 'del_registory') {
 
             //mainテーブルの対象レコードを削除
             $result = DbConnectorMain::deleteOne($record_id);
@@ -21,7 +21,7 @@ try  {
             //resultをjsonに変換する
             echo json_encode($total_record);    
 
-        }elseif ($_POST['method'] === 'select') {
+        }elseif ($method === 'select') {
             
             //mainテーブルの対象レコード取得
             $result =  DbConnectorMain::fetchOne($record_id);
@@ -29,6 +29,20 @@ try  {
             header('Content-type: application/json');
             //resultをjsonに変換する
             echo json_encode($result);
+
+        }elseif ($method === 'del_category') {
+            
+            $target_date = $_SESSION['target_date'];
+            $category_id = (int)$_POST['category_id'];
+            
+            //mainテーブルの対象レコードを削除
+            $result = DbConnectorMain::deleteOne($record_id);
+            //削除後のカテゴリ別レコード件数を取得
+            $total_record = DbConnectorMain::countRecords($group_id, $target_date, $category_id);
+            //jsonの動作を安定させる
+            header('Content-type: application/json');
+            //resultをjsonに変換する
+            echo json_encode($total_record);
 
         }
 

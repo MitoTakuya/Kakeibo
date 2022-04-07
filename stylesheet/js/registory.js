@@ -61,7 +61,7 @@ $('.delete-btn').on('click', function() {
       type: 'POST',
       url: '../ajaxRegistory.php',
       datatype: "json",
-      data: {'id': record_id, 'method': 'delete'}
+      data: {'id': record_id, 'method': 'del_registory'}
 
     })
     
