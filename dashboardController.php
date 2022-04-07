@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . '/init.php';
-require(__DIR__.'\class\DbConnectorMain.php');
-
 try {
     DbConnector::connectDB();
 
     /********** ユーザー・グループ情報の処理 **********/
     // 画面上部に表示したりpostしたりする用
-    $user_id = $_SESSION['id']; 
+    $user_id = $_SESSION['id'];
     $group_id = $_SESSION['group_id'];
 
     $goal = DbConnectorUserGroups::fetchGoal($group_id);
@@ -81,7 +79,7 @@ try {
         $to_json["labels"][] = $row['category_name'];
         $to_json["datasets"]["data"][] = $row['payment'];
     }
-    
+
     // パステルカラーで統一
     $to_json["datasets"]["backgroundColor"] = [
         "#ffb3cc",  //薄い赤
@@ -98,10 +96,9 @@ try {
         "#ffeecc",  //薄オレンジ
         "#ffe6b3",  //オレンジ
     ];
-    
+
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
     DbConnector::disconnectDB();
-
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
     $error_code = $e->getCode();
@@ -110,8 +107,6 @@ try {
     // echo $error_code;
     // echo $e->getMessage();
 
-    include(__DIR__.'/view/error.php');
+    include(__DIR__ . '/view/error.php');
     die();
 }
-
-
