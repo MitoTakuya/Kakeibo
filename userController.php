@@ -3,6 +3,7 @@
 require_once __DIR__ . '/class/AutoLoader.php';
 $loader = AutoLoader::registerDirectory(__DIR__);
 $loader = AutoLoader::register();
+Config::is_ie();
 session_start();
 UserLogin::notLogin();
 
