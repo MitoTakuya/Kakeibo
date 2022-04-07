@@ -155,21 +155,21 @@ require_once __DIR__.'/../categoryController.php';
 		<div>
 			<label>日付</label>
 		</div>
-			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" required>
+			<input type="date" class="mb-2" id="edit_payment_at" name="payment_at" style="width:100%;" required>
 		<div>
 			<label>タイトル</label>
 		</div>
-			<input type="text" class="mb-2" id="edit_title"  name="title" required>
+			<input type="text" class="mb-2" id="edit_title"  name="title" style="width:100%;" required>
 		<div class="amount">
 			<label>金額</label>
 		</div>
 		<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);" 
-			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" required>
+			pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" style="width:100%;" required>
 		<div class="pb-2">
 			<div>
 				<label>メモ</label>
 			</div>
-			<textarea name="content" id="edit_memo" cols="35" rows="5"></textarea><br>
+			<textarea name="content" id="edit_memo" cols="35" rows="5" style="width:100%;"></textarea><br>
 		</div>
 		<button class="btn btn-primary" type="submit" name="update" id="update">更新</button>
 		<button class="btn btn-danger" id="close" type="button">キャンセル</button>
