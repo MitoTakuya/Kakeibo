@@ -25,7 +25,6 @@ class DbConnectorUsers extends DbConnector
             // 親クラスのメソッドで結果を取り出す
             self::fetch($pdo_method);
             return self::$temp_result;
-
         } catch (PDOException $e) {
             throw $e;
         }
@@ -48,11 +47,11 @@ class DbConnectorUsers extends DbConnector
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
             self::$temp_result;
-                if (self::$temp_result['cnt'] > 0) {
-            return "登録済みのメールアドレスです。";
-                }
+            if (self::$temp_result['cnt'] > 0) {
+                return "登録済みのメールアドレスです。";
+            }
         } catch (PDOException $e) {
-        throw $e;
+            throw $e;
         }
     }
 
@@ -73,10 +72,9 @@ class DbConnectorUsers extends DbConnector
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
             self::$temp_result;
-                if (self::$temp_result['cnt'] > 0) {
-            return "登録済みのメールアドレスです。";
+            if (self::$temp_result['cnt'] > 0) {
+                return "登録済みのメールアドレスです。";
             }
-    
         } catch (PDOException $e) {
             throw $e;
         }
@@ -87,7 +85,7 @@ class DbConnectorUsers extends DbConnector
         string $user_name,
         string $password,
         string $mail,
-        string $user_image, 
+        string $user_image,
         int $group_id
     ) {
         try {
@@ -103,13 +101,11 @@ class DbConnectorUsers extends DbConnector
 
             // トランザクション終了
             self::$pdo->commit();
-
         } catch (PDOException $e) {
             self::$pdo->rollBack();
             return self::TRANSACTION_ERROR;
         }
     }
-
 
     // ユーザー詳細ページ
     public static function fetchUsersFullRecords(int $group_id)
@@ -121,7 +117,8 @@ class DbConnectorUsers extends DbConnector
             self::$temp_where_clause = 'WHERE `group_id`=:group_id && `is_deleted`!=1';
 
             // SQL文の句を作る
-            self::$temp_selected_col = "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
+            self::$temp_selected_col =
+                "users.id as user_id, users.user_name, users.mail, users.password, users.user_image, is_deleted, user_groups.*";
             self::$temp_join_clause = 'INNER JOIN user_groups ON users.group_id = user_groups.id';
 
             // SQL文を実行する

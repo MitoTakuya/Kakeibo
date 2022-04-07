@@ -123,7 +123,8 @@ class UserRegistory
     }
 
     // ユーザーグループバリデーション
-    public static function checkUserGroup() {
+    public static function checkUserGroup()
+    {
         if (!isset($_POST['group_name']) || str_replace(array(" ", "　"), "", $_POST['group_name']) === '') {
             self::$user_errors['group_name'] = 'グループ名を入力してください。';
         } elseif (mb_strlen($_POST['group_name']) > 30) {
@@ -140,7 +141,8 @@ class UserRegistory
     }
 
     // ユーザー情報バリデーション
-    public static function checkUser() {
+    public static function checkUser()
+    {
         if (!isset($_POST['user_name']) || str_replace(array(" ", "　"), "", $_POST['user_name']) === '') {
             self::$user_errors['user_name'] = '名前を入力してください。';
         } elseif (mb_strlen($_POST['user_name']) > 30) {

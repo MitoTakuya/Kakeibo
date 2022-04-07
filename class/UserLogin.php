@@ -6,7 +6,7 @@ class UserLogin
 
     // ログイン入力確認
     public static function loginConfirmation()
-    {        
+    {
         // メールアドレスが入力されているか確認
         if (trim($_POST['mail']) === "") {
             self::$user_errors['login_mail'] = "メールアドレスを入力してください。";
@@ -53,7 +53,7 @@ class UserLogin
     // 未ログインならログインページに
     public static function checkLogin()
     {
-        if(!isset($_SESSION['id'])) {
+        if (!isset($_SESSION['id'])) {
             header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/login.php');
             exit();
         }
@@ -62,7 +62,7 @@ class UserLogin
     // ログイン済みならトップページに
     public static function notLogin()
     {
-        if(isset($_SESSION['id'])) {
+        if (isset($_SESSION['id'])) {
             header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/dashboard.php');
             exit();
         }

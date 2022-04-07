@@ -1,18 +1,18 @@
 const user_new = new Vue({
-  el:'#app',
+  el: '#app',
   data: {
-    group:'new_group',
-    url:'',
+    group: 'new_group',
+    url: '',
   },
-  methods:{
-    uploadFile(){
+  methods: {
+    uploadFile() {
       const file = this.$refs.preview.files[0];
       this.url = URL.createObjectURL(file)
     }
   },
 });
 
-$(function() {
+$(function () {
   $('#exampleModal').on('show.bs.modal', function () {
     var user_name = $('#user_name').val()
     var mail = $('#mail').val()
@@ -37,6 +37,6 @@ $(document).ready(function () {
       $('#form input[type="file"]').val() !== ""
     ) {
       $submitBtn.prop('disabled', false);
-    } 
+    }
   });
 });

@@ -2,8 +2,9 @@
 require_once __DIR__.'/../class/Config.php';
 Config::not_ie()
 ?>
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,6 +12,7 @@ Config::not_ie()
     <link rel="stylesheet" href="../stylesheet/css/ie.css">
     <title>Error</title>
 </head>
+
 <body>
     <div id="header-bar">
         <div id="header-inner">このブラウザでは動作保証対象外となります。 
@@ -29,4 +31,5 @@ Config::not_ie()
         </div>
     </div>
 </body>
+
 </html>
