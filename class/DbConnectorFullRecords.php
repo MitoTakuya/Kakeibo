@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . '/DbConnector.php';
 class DbConnectorFullRecords extends DbConnector
 {
     protected static $target_table = 'full_records';
