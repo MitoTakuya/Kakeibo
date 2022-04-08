@@ -75,7 +75,6 @@ try {
     ];
 
     $jsonized_outgo_list =  json_encode($to_json, JSON_UNESCAPED_UNICODE);
-    DbConnector::disconnectDB();
 } catch (Exception $e) {
     // 接続失敗時にエラー画面を読み込む
     $error_code = $e->getCode();
