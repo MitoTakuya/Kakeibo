@@ -45,25 +45,9 @@ try {
 
     /********** 日付のselect-option用のデータを用意する **********/
     // 最も購入日付が古いレコードの日付を取得する（無ければ当日が取得される）
-    $registration_date = DbConnectorMain::fetchOldestDate($group_id);
-    $registration_date = new DateTime($registration_date);
-
-    // 現在日時を取得する
-    $carrent_date = new DateTime();
-
-    // 登録日から最新月までの月のリストを作成する
-    while ($registration_date <= $carrent_date->modify('last day of')) {
-        $past_dates[] = array(
-            'year' => $registration_date->format('Y'),
-            'month' => $registration_date->format('n'),
-            'year_month' => $registration_date->format('Ym')
-        );
-        // echo $registration_date->format('Ymd')."<br>";
-        $registration_date->modify('+1 months');
-    }
+    $past_dates = DbConnectorMain::makeDateList($group_id);
     // print_r($past_dates);
-    // 降順に変更する
-    $past_dates = array_reverse($past_dates);
+
 
     // scriptタグに埋め込むために下記のようなjsonに変換する
     /* e.g.
