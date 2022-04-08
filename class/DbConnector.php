@@ -296,7 +296,7 @@ abstract class DbConnector
         }
     }
 
-    public static function adOrderClause(bool $desc = false, string $column)
+    public static function addOrderClause(bool $desc = false, string $column)
     {
         if ($desc) {
             self::$temp_orderby_clause .= ", `{$column}` DESC";
