@@ -8,8 +8,8 @@ session_start();
 UserLogin::notLogin();
 
 try {
-    DbConnector::connectDB();
     if (!empty($_POST) && isset($_POST['new_user'])) {
+        DbConnector::connectDB();
         $new_user = new UserRegistory();
         $user_errors = $new_user->inputConfirmation();
         if ($user_errors == "ok") {
@@ -18,6 +18,7 @@ try {
             exit();
         }
     } elseif (!empty($_POST) && isset($_POST['login_user'])) {
+        DbConnector::connectDB();
         // フォームとtokenが同じか確認
         Config::check_token();
         $login_user = new UserLogin();

@@ -12,6 +12,7 @@ const user_new = new Vue({
   },
 });
 
+// 確認用モーダル
 $(function () {
   $('#exampleModal').on('show.bs.modal', function () {
     var user_name = $('#user_name').val()
@@ -26,6 +27,14 @@ $(function () {
   })
 })
 
+$(document).keypress(function (e) {
+  // エンターキーだったら無効にする
+  if (e.key === 'Enter') {
+    return false;
+  }
+});
+
+// 確認ボタンの非活性
 $(document).ready(function () {
   const $submitBtn = $('#js-submit')
   $submitBtn.prop('disabled', true);
