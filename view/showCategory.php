@@ -38,7 +38,7 @@ require_once __DIR__.'/../categoryController.php';
             <?php endif; ?>
         </div>
         <div class="registory-box table-responsive">
-            <table class="table table-striped border border-5 border"
+            <table class="table table-striped border border-5 border table-sm"
                 data-category="<?= $category_id ?>">
                 <tbody>
                     <!-- 一覧の項目名 -->
@@ -65,7 +65,7 @@ require_once __DIR__.'/../categoryController.php';
                         <td class="text-center"><i class="fa-solid fa-plus" style="color: blue; font-size:24px;"></i>
                         </td>
                         <?php endif ;?>
-                        <td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25, '…')) ?>
+                        <td scope="row" id="title" class="text-center"><?= Config::h(mb_strimwidth($record["title"], 0, 25, '…')) ?>
                         </td>
                         <td scope="row" id="payment" class="text-right" style="width:110px;"><?= number_format($record["payment"]) ?>円
                         </td>

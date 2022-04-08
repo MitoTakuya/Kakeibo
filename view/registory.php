@@ -173,7 +173,7 @@ require_once __DIR__.'/../registoryController.php';
 			<?php endif; ?>
 			<div class="container mb-5">
 				<div class="registory-box table-responsive">
-					<table class="table table-striped border border-5">
+					<table class="table table-striped border border-5 table-sm">
 						<tbody>
 							<!-- 一覧の項目名 -->
 							<tr>
@@ -201,7 +201,7 @@ require_once __DIR__.'/../registoryController.php';
 								<td class="text-center"><i class="fa-solid fa-plus"
 										style="color: blue; font-size:24px;"></i></td>
 								<?php endif ;?>
-								<td scope="row" id="title"><?= Config::h(mb_strimwidth($record["title"], 0, 25, '…')) ?>
+								<td scope="row" id="title" class="text-center"><?= Config::h(mb_strimwidth($record["title"], 0, 25, '…')) ?>
 								</td>
 								<td scope="row" id="category_name" class="text-center"><?= $record["category_name"] ?>
 								</td>
