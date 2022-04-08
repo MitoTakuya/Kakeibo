@@ -116,8 +116,8 @@ abstract class DbConnector
             self::$temp_sql ="SELECT {$selected_col}
                                 FROM `{$target_table}` {$join_clause}
                                 {$where_clause}
-                                {$orderby_clause}
-                                {$groupby_clause}";
+                                {$groupby_clause}
+                                {$orderby_clause}";
             self::$temp_stmt = self::$pdo->prepare(self::$temp_sql);
             // echo self::$temp_sql."<br>";
 
