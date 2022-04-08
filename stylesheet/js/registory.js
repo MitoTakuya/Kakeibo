@@ -46,6 +46,7 @@ window.addEventListener('DOMContentLoaded', function () {
     if (delete_confirm === true) {
       //ボタンの親の親要素（tr）のid値を取得
       let record_id = $(this).parent().parent().attr("id");
+      const token = $('.table').data('token');
 
       //削除対象のレコード行を取得
       let element = $(this).parent().parent();
@@ -57,14 +58,14 @@ window.addEventListener('DOMContentLoaded', function () {
         type: 'POST',
         url: '../ajaxRegistory.php',
         datatype: "json",
-        data: { 'id': record_id, 'method': 'del_registory' }
+        data: { 'id': record_id, 'token': token, 'method': 'del_registory' }
 
       })
 
         .done(function (data) {
 
-          //DB接続エラーが発生したらエラー画面に遷移する。
-          if (data == "error") {
+          //数値以外のデータを受け取ったらエラー
+          if (isNaN(data)) {
             window.location.assign('error.php');
           }
 

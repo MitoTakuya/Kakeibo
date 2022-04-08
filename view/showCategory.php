@@ -39,7 +39,8 @@ require_once __DIR__.'/../categoryController.php';
         </div>
         <div class="registory-box table-responsive">
             <table class="table table-striped border border-5 border table-sm"
-                data-category="<?= $category_id ?>">
+                data-category="<?= $category_id ?>"
+                data-token="<?= $_SESSION['token'] ?>">
                 <tbody>
                     <!-- 一覧の項目名 -->
                     <tr>
