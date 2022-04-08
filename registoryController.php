@@ -26,7 +26,7 @@ try {
     $next =  $now + 1;
     //日付と更新時間の降順で一覧に表示
     DbConnector::makeOrderClause(desc: true, column:'payment_at');
-    DbConnector::adOrderClause(desc: true, column:'updated_at');
+    DbConnector::addOrderClause(desc: true, column:'updated_at');
     //ページ毎のレコード取得
     $records = DbConnectorFullRecords::fetchLimitedRecords(group_id: $group_id, limit: $limit, offset: $offset);
 
