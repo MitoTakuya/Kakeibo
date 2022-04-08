@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/init.php';
 
-try  {
+try {
     DbConnector::connectDB();
     // ajaxでPOSTされたときに以下を実行する。
-	if($_POST['id']) {
+    if ($_POST['id']) {
         //check_token()
         $record_id = $_POST['id'];
         $method = $_POST['method'];
@@ -19,9 +19,8 @@ try  {
             //jsonの動作を安定させる
             header('Content-type: application/json');
             //resultをjsonに変換する
-            echo json_encode($total_record);    
-
-        }elseif ($method === 'select') {
+            echo json_encode($total_record);
+        } elseif ($method === 'select') {
             
             //mainテーブルの対象レコード取得
             $result =  DbConnectorMain::fetchOne($record_id);
@@ -29,9 +28,7 @@ try  {
             header('Content-type: application/json');
             //resultをjsonに変換する
             echo json_encode($result);
-
-        }elseif ($method === 'del_category') {
-            
+        } elseif ($method === 'del_category') {
             $target_date = $_SESSION['target_date'];
             $category_id = (int)$_POST['category_id'];
             
@@ -43,26 +40,12 @@ try  {
             header('Content-type: application/json');
             //resultをjsonに変換する
             echo json_encode($total_record);
-
         }
-
-    } 
-}catch (Exception $e) {
-
-    header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['SCRIPT_NAME']).'/error.php');
-    exit();     
-    // switch ($e) {
-    //     case 2002:
-    //         $error_message = DbConnector::CONNECT_ERROR;
-    //         break;
-    //     case 1:
-    //         $error_message = DbConnector::CONNECT_ERROR;
-    //         break;
-    //     default:
-    //     $error_message = "予期せぬエラーが発生しました。";
-    //         break;
-    // }
-    // require_once __DIR__.'/view/error.php';
-    // die();
-
+    }
+} catch (Exception $e) {
+    // 接続失敗時にエラー画面を読み込む
+    $result = "error";
+    header('Content-type: application/json');
+    //resultをjsonに変換する
+    echo json_encode($result);
 }
