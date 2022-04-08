@@ -3,31 +3,36 @@
 #設定やバリデーション関連の処理を記述するクラスです。
 ############################################################
 
-class Config {
+class Config
+{
     //入力値のエスケープ処理　Config::h($変数) で使用可能
-    public static function h($str) {
+    public static function h($str)
+    {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
     //入力値の前後の空白を除去し、空の場合はfalseを返す
-    public static function delete_space($str) {
-        $replace = preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str);
+    public static function delete_space($str)
+    {
+        $replace = preg_replace('/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str);
         if (!$replace == '') {
             return $replace;
-        }else {
+        } else {
             return false;
         }
     }
 
     //トークンの作成　ログイン時に実行しセッションとして使用する。
-    public static function create_token() {
+    public static function create_token()
+    {
         $token_byte = openssl_random_pseudo_bytes(16);
         $csrf_token = bin2hex($token_byte);
         $_SESSION['token'] = $csrf_token;
     }
 
     //トークンチェック　データのPOST先で以下メソッドを実行して確認する。
-    public static function check_token() {
+    public static function check_token()
+    {
         if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
             $error_message = "不正な通信です。";
             require_once __DIR__.'/../view/error.php';
@@ -83,4 +88,4 @@ class Config {
             exit();
         }
     }
-} 
+}
