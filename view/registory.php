@@ -253,8 +253,9 @@ require_once __DIR__.'/../registoryController.php';
 						<!-- 総ページ数が11未満の時、省略開始・終了位置で「...」を表示する -->
 						<?php elseif ($max_page > 11 && ($i == 6 || $i == $max_page - 5)) :?>
 						<li class="page-item disabled"><a class="page-link" id="carrent_page">...</a></li>
-						
+						<!-- 省略する -->
 						<?php elseif ($i > 6 && $i < $max_page - 4) : continue;?>
+						<!-- それ以外 -->
 						<?php else :?>
 						<li class="page-item"><a class="page-link"
 								id="page-num<?= $i ?>"

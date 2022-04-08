@@ -156,12 +156,21 @@ require_once __DIR__.'/../categoryController.php';
                 </li>
                 <?php endif ;?>
                 <?php for ($i = 1; $i <= $max_page; $i++) :?>
+                <!-- 現在ページの前後 -->
                 <?php if ($i == $now) :?>
                 <li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
-                <?php elseif ($i == 6) :?>
+                <!-- 現在ページの前後 -->
+                <?php elseif ($i == $now + 1 || $i == $now - 1) :?>
+                <li class="page-item"><a class="page-link"
+                        id="page-num<?= $i ?>"
+                        href='showCategory.php?id=<?= $category_id ?>&page_id=<?= $i ?>'><?= $i ?></a></li>
+                <!-- 総ページ数が11未満の時、省略開始・終了位置で「...」を表示する -->
+                <?php elseif ($max_page > 11 && ($i == 6 || $i == $max_page - 5)) :?>
                 <li class="page-item disabled"><a class="page-link" id="carrent_page">...</a></li>
                 <?php continue;?>
+                <!-- 省略する -->
                 <?php elseif ($i > 6 && $i < $max_page - 4) : continue;?>
+                <!-- それ以外 -->
                 <?php else :?>
                 <li class="page-item"><a class="page-link"
                         id="page-num<?= $i ?>"
