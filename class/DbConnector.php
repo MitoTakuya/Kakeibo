@@ -9,11 +9,11 @@ abstract class DbConnector
     // 対象テーブル
     protected static $target_table = null;
 
-/***** 一時格納用の$temp_変数 ***************************************************
- * 一度 $temp_変数 にSQLを分割して格納し、DbConnector::fetch()でそれらを
- * 文字列結合して実行する。
- * 実行後、すべての$temp_変数は下記の値に初期化される。
-*******************************************************************************/
+    /***** 一時格納用の$temp_変数 ***************************************************
+     * 一度 $temp_変数 にSQLを分割して格納し、DbConnector::fetch()でそれらを
+     * 文字列結合して実行する。
+     * 実行後、すべての$temp_変数は下記の値に初期化される。
+    *******************************************************************************/
     /*----- $temp_to_bind について ---------------------------------------------------------------------------/
     | バインドしたい値を配列で代入するとself::bind()で一括でbindされる
     | $temp_to_bind[temp] = array('カラム名' => 値)の形で代入していく
@@ -42,9 +42,9 @@ abstract class DbConnector
     public const CONNECT_ERROR = 'データベースへの接続に失敗しました';
     public const TRANSACTION_ERROR = '処理に失敗しました';
 
-/*******************************************************************************
-* DBへの接続関連メソッド
-*******************************************************************************/
+    /*******************************************************************************
+    * DBへの接続関連メソッド
+    *******************************************************************************/
     // DBとの接続処理を行う (基本的に内部で呼び出す)
     public static function connectDB()
     {
@@ -65,13 +65,14 @@ abstract class DbConnector
     }
 
     // DBとの切断処理を行う
-    public static function disconnectDB() {
+    public static function disconnectDB()
+    {
         self::$pdo = null;
     }
 
-/*******************************************************************************
- * DB操作メソッド
- *******************************************************************************/
+    /*******************************************************************************
+     * DB操作メソッド
+     *******************************************************************************/
     // idを指定してレコードを1つ取り出すメソッド
     public static function fetchOne(int $target_id)
     {
@@ -132,7 +133,6 @@ abstract class DbConnector
 
             // 一時変数を初期化する
             self::resetTemps();
-
         } catch (PDOException $e) {
             self::resetTemps();
             // print('Error:'.$e->getMessage());
@@ -160,7 +160,6 @@ abstract class DbConnector
 
             // 一時変数を初期化する
             self::resetTemps();
-
         } catch (PDOException $e) {
             self::resetTemps();
             self::$pdo->rollBack();
@@ -169,7 +168,8 @@ abstract class DbConnector
     }
 
     // 子クラスで生成したset句を使ってinsert set文を実行するメソッド
-    protected static function insertOne() {
+    protected static function insertOne()
+    {
         try {
             // SQL文をセットする
             $target_table = static::$target_table;
@@ -185,7 +185,6 @@ abstract class DbConnector
 
             // 一時変数を初期化する
             self::resetTemps();
-
         } catch (PDOException $e) {
             self::resetTemps();
             // print('Error:'.$e->getMessage());
@@ -195,7 +194,8 @@ abstract class DbConnector
     }
 
     // 子クラスで生成したset句を使って update文を実行するメソッド
-    protected static function updateOne() {
+    protected static function updateOne()
+    {
         try {
             // SQL文をセットする
             $target_table = static::$target_table;
@@ -217,9 +217,9 @@ abstract class DbConnector
         }
     }
 
-/*******************************************************************************
- * SQL文を組み立てるメソッド
- *******************************************************************************/
+    /*******************************************************************************
+     * SQL文を組み立てるメソッド
+     *******************************************************************************/
     /*----- SQL文のWHERE句を組み立てる---------------------------------------------------/
     | self::$temp_to_bind[where] = array('カラム名' => 値, 'カラム名2' => 値2, ...) から
     | "WHERE `カラム名`=:カラム名 AND `カラム名2`=:カラム名2 AND ... `カラム名n`=:カラム名n"
@@ -234,7 +234,7 @@ abstract class DbConnector
 
         // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id AND `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_to_bind['where'] as $key => $input) {
+        foreach (self::$temp_to_bind['where'] as $key => $input) {
             // 句の頭以外を「AND」で区切る
             if ($i > 0) {
                 $temp_clause .= ' AND ';
@@ -267,7 +267,7 @@ abstract class DbConnector
 
         // // 入力された「[~id] => 1,...」の配列から、「`~id`=:~id, `~id`=:~id,...」の形の文字列をつくる
         $i = 0;
-        foreach(self::$temp_to_bind['set'] as $key => $input) {
+        foreach (self::$temp_to_bind['set'] as $key => $input) {
             // 句の頭以外を「,」で区切る
             if ($i > 0) {
                 $temp_clause .= ', ';
@@ -341,8 +341,7 @@ abstract class DbConnector
         unset($array['target_date']);
 
         // 値がnullの
-        $remove_null = function($vars)
-        {
+        $remove_null = function ($vars) {
             return ($vars <> null);
         };
         $result = array_filter($array, $remove_null);
@@ -350,17 +349,17 @@ abstract class DbConnector
         return $result;
     }
 
-/*******************************************************************************
- * 結合したSQL文に対して、
- * $temp_to_bindの各要素を取り出してbindValue()を一括で行うメソッド
- *******************************************************************************/
+    /*******************************************************************************
+     * 結合したSQL文に対して、
+     * $temp_to_bindの各要素を取り出してbindValue()を一括で行うメソッド
+     *******************************************************************************/
     protected static function bind()
     {
         // 一時変数に格納されている、引数として受け取った値をforeachで回す
         if (!is_null(self::$temp_to_bind)) {
             // print_r(self::$temp_to_bind);
             foreach (self::$temp_to_bind as $inputs) {
-                foreach($inputs as $column => $input) {
+                foreach ($inputs as $column => $input) {
                     // echo "<br>{$column} := {$input}<br>";
                     if (is_int($input)) {
                         self::$temp_stmt->bindValue($column, $input, PDO::PARAM_INT);
@@ -372,11 +371,11 @@ abstract class DbConnector
         }
     }
 
-/*******************************************************************************
- * PDOのfetch系メソッドでクエリ結果を取り出す
- * 取り出したクエリ結果はself::$temp_resultに代入される
- * DbConnecter::fetch()内で、可変関数から呼び出される
- *******************************************************************************/
+    /*******************************************************************************
+     * PDOのfetch系メソッドでクエリ結果を取り出す
+     * 取り出したクエリ結果はself::$temp_resultに代入される
+     * DbConnecter::fetch()内で、可変関数から呼び出される
+     *******************************************************************************/
     protected static function pdoFetchAllAssoc()
     {
         self::$temp_result = self::$temp_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -391,10 +390,10 @@ abstract class DbConnector
         self::$temp_result = self::$temp_stmt->fetchAll(PDO::FETCH_COLUMN|PDO::FETCH_GROUP);
     }
 
-/*******************************************************************************
- * SQL文実行に使った一時変数をすべて初期化する
- * self::fetch()を実行した後、不要になったSQL文の削除に使う
- *******************************************************************************/
+    /*******************************************************************************
+     * SQL文実行に使った一時変数をすべて初期化する
+     * self::fetch()を実行した後、不要になったSQL文の削除に使う
+     *******************************************************************************/
     protected static function resetTemps()
     {
         self::$temp_to_bind = null;
