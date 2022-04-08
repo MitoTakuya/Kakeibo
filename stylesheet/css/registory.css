@@ -8,7 +8,7 @@
   border: 1px solid #EBEFF1;
 }
 
-label {
+label, p {
   text-transform: uppercase;
   color: #FFF;
 }
@@ -103,3 +103,4 @@ label {
   top: 0;
   left: 0;
 }
+

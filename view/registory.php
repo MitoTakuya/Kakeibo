@@ -43,7 +43,7 @@ require_once __DIR__.'/../registoryController.php';
 									name="token">
 								<input type="hidden" value="1" name="type_id">
 								<div class="form-group">
-									<p><i class="fa fa-lock"></i>
+									<p><i class="fa-solid fa-calendar-days"></i>
 										<label>日付</label>
 										<input type="date" class="form-control" name="payment_at"
 											value="<?= date('Y-m-d') ?>"
@@ -51,7 +51,7 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><i class="fa fa-lock"></i>
+									<p><i class="fa-solid fa-pen"></i>
 										<label>タイトル　</label>
 										<?php if (!empty($error_messages["title"])): ?>
 										<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
@@ -60,7 +60,7 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><i class="fa fa-lock"></i>
+									<p><i class="fa-solid fa-tag"></i>
 										<label>カテゴリ</label>
 										<select id="outgoes" class="form-control" name="category_id">
 											<?php foreach ($category_outgoes as $key => $category_outgo) :?>
@@ -73,7 +73,7 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><i class="fa fa-lock"></i>
+									<p><i class="fa-solid fa-yen-sign"></i>
 										<label>金額　</label>
 										<?php if (!empty($error_messages["payment"])): ?>
 										<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
@@ -84,7 +84,7 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><i class="fa fa-lock"></i>
+									<p><i class="far fa-file-alt"></i>
 										<label>メモ　</label>
 										<?php if (!empty($error_messages["memo"])): ?>
 										<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
@@ -107,7 +107,7 @@ require_once __DIR__.'/../registoryController.php';
 										name="token">
 									<input type="hidden" value="2" name="type_id">
 									<div class="form-group">
-										<p><i class="fa fa-lock"></i>
+										<p><i class="fa-solid fa-calendar-days"></i>
 											<label>日付</label>
 											<input type="date" class="form-control" name="payment_at"
 												value="<?= date('Y-m-d') ?>"
@@ -115,7 +115,7 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><i class="fa fa-lock"></i>
+										<p><i class="fa-solid fa-pen"></i>
 											<label>タイトル　</label>
 											<?php if (!empty($error_messages["title"])): ?>
 											<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
@@ -124,7 +124,7 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><i class="fa fa-lock"></i>
+										<p><i class="fa-solid fa-tag"></i>
 											<label>カテゴリ</label>
 											<select id="incomes" class="form-control" name="category_id">
 												<?php foreach ($category_incomes as $key => $category_income) :?>
@@ -137,7 +137,7 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><i class="fa fa-lock"></i>
+										<p><i class="fa-solid fa-yen-sign"></i>
 											<label>金額　</label>
 											<?php if (!empty($error_messages["payment"])): ?>
 											<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
@@ -148,7 +148,7 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><i class="fa fa-lock"></i>
+										<p><i class="far fa-file-alt"></i>
 											<label>メモ　</label>
 											<?php if (!empty($error_messages["memo"])): ?>
 											<span class="text-danger"><?php echo $error_messages["memo"]; ?></span>
