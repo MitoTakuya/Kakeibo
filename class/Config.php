@@ -34,7 +34,6 @@ class Config
     public static function check_token()
     {
         if (empty($_SESSION['token']) || $_SESSION['token'] !== $_POST['token']) {
-            $error_message = "不正な通信です。";
             require_once __DIR__.'/../view/error.php';
             die();
         }
