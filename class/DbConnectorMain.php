@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/DbConnector.php';
-class DbConnectorMain extends DbConnector {
-
+class DbConnectorMain extends DbConnector
+{
     protected static $target_table = 'main';
 
     /**************************************************************************
@@ -10,7 +10,7 @@ class DbConnectorMain extends DbConnector {
     // mainテーブルのレコードを1つ追加する
     public static function insertRecord(
         string $title,
-        int $payment, 
+        int $payment,
         string $payment_at,
         int $user_id,
         int $type_id,
@@ -31,7 +31,6 @@ class DbConnectorMain extends DbConnector {
 
             // トランザクション終了
             self::$pdo->commit();
-
         } catch (PDOException $e) {
             // *rollback()はinsertOne()内で行う
             return self::TRANSACTION_ERROR;
@@ -63,7 +62,6 @@ class DbConnectorMain extends DbConnector {
 
             // トランザクション終了
             self::$pdo->commit();
-
         } catch (PDOException $e) {
             // *rollback()はupdateOne()内で行う
             // self::$pdo->rollBack();
@@ -71,9 +69,9 @@ class DbConnectorMain extends DbConnector {
         }
     }
 
-/**********************************************************
- * ダッシュボードで集計を表示するための関数
- **********************************************************/
+    /**********************************************************
+     * ダッシュボードで集計を表示するための関数
+     **********************************************************/
     // 今までの合計収支を返す ダッシュボードに表示する
     public static function fetchBalance(int $group_id)
     {
@@ -97,7 +95,6 @@ class DbConnectorMain extends DbConnector {
 
             $result = $income - $outgo;
             return $result;
-            
         } catch (PDOException $e) {
             throw $e;
         }
@@ -121,7 +118,6 @@ class DbConnectorMain extends DbConnector {
             // 親クラスのメソッドで結果を取り出す
             self::fetch($pdo_method);
             return self::$temp_result['outgo'];
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -146,7 +142,6 @@ class DbConnectorMain extends DbConnector {
             // 親クラスのメソッドで結果を取り出す
             self::fetch($pdo_method);
             return self::$temp_result['income'];
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -181,7 +176,6 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行し、結果を格納する
             self::fetch($pdo_method);
             return self::$temp_result['sum']; //格納されていなければ false を返す
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -192,7 +186,7 @@ class DbConnectorMain extends DbConnector {
         int $group_id,
         int $type_id = null,
         ?string $target_date = null
-    ){
+    ) {
         try {
             // 受け取った値に対応するwhere句を生成する
             self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
@@ -225,7 +219,6 @@ class DbConnectorMain extends DbConnector {
             $result[] = $categorized_income_list;
             
             return $result;
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -255,7 +248,6 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行する
             self::fetch();
             return self::$temp_result;
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -290,7 +282,6 @@ class DbConnectorMain extends DbConnector {
                 // レコードが存在しない場合
                 return date("Ymd");
             }
-
         } catch (PDOException $e) {
             // print('Error:'.$e->getMessage());
             throw $e;
@@ -303,7 +294,7 @@ class DbConnectorMain extends DbConnector {
         int $group_id,
         ?string $target_date = null,
         ?int $category_id = null
-    ){
+    ) {
         try {
             // バインド対象を一時変数に格納に格納する
             self::$temp_to_bind['where'] = self::validateInputs(get_defined_vars());
@@ -323,8 +314,68 @@ class DbConnectorMain extends DbConnector {
             // SQL文を実行し、結果を得る
             self::fetch($pdo_method);
             return self::$temp_result['records'];
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
 
-        }catch (PDOException $e){
+    // あるグループのrecord登録のある月の、月初を取得する
+    private static function getDateHavingRecords(
+        int $group_id,
+    ) {
+        try {
+            // バインド対象を一時変数に格納に格納する
+            self::$temp_to_bind['where'] = get_defined_vars();
+
+            // where句とselect対象を指定する
+            self::makeWhereClause();
+            self::$temp_selected_col = "DISTINCT DATE_FORMAT(payment_at, '%Y-%m-01') AS payment_at";
+            self::$temp_groupby_clause = "GROUP BY payment_at";
+
+            // SQL文を実行し、結果を得る
+            self::fetch();
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    public static function makeDateList(
+        int $group_id,
+    ) {
+        try {
+            // あるグループのrecord登録のある月の、月初日をすべて重複なく取得する
+            self::makeOrderClause(desc:true, column:'payment_at');
+            $date_having_records = DbConnectorMain::getDateHavingRecords($group_id);
+
+            // recordが無ければ当月だけの配列を返す
+            if (count($date_having_records) === 0) {
+                $past_dates[] = array('year' => date('Y'), 'month' => date('n'), 'year_month' => date('Ym'));
+                return $past_dates;
+            }
+
+            // もしレコードがなく、当月が含まれていなければ加える
+            $latest = strtotime($date_having_records[0]['payment_at']);
+            if (date('Ym') !== date('Ym', $latest)) {
+                $past_dates[] = array(
+                    'year' => date('Y'),
+                    'month' => date('n'),
+                    'year_month' => date('Ym')
+                );
+            }
+
+            // 日付を配列に直す
+            foreach ($date_having_records as $date) {
+                $parsed_date = strtotime($date['payment_at']);
+                $past_dates[] = array(
+                    'year' => date('Y', $parsed_date),
+                    'month' => date('n', $parsed_date),
+                    'year_month' => date('Ym', $parsed_date)
+                );
+                // echo $registration_date->format('Ymd')."<br>";
+            }
+            return $past_dates;
+        } catch (PDOException $e) {
             throw $e;
         }
     }
