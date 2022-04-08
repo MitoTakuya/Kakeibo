@@ -173,7 +173,8 @@ require_once __DIR__.'/../registoryController.php';
 			<?php endif; ?>
 			<div class="container mb-5">
 				<div class="registory-box table-responsive">
-					<table class="table table-striped border border-5 table-sm">
+					<table class="table table-striped border border-5 table-sm"
+						data-token="<?= $_SESSION['token'] ?>">
 						<tbody>
 							<!-- 一覧の項目名 -->
 							<tr>
