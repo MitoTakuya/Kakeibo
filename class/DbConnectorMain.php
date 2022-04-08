@@ -317,4 +317,65 @@ class DbConnectorMain extends DbConnector
             throw $e;
         }
     }
+
+    // あるグループのrecord登録のある月の、月初を取得する
+    private static function getDateHavingRecords(
+        int $group_id,
+    ) {
+        try {
+            // バインド対象を一時変数に格納に格納する
+            self::$temp_to_bind['where'] = get_defined_vars();
+
+            // where句とselect対象を指定する
+            self::makeWhereClause();
+            self::$temp_selected_col = "DISTINCT DATE_FORMAT(payment_at, '%Y-%m-01') AS payment_at";
+            self::$temp_groupby_clause = "GROUP BY payment_at";
+
+            // SQL文を実行し、結果を得る
+            self::fetch();
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
+
+    public static function makeDateList(
+        int $group_id,
+    ) {
+        try {
+            // あるグループのrecord登録のある月の、月初日をすべて重複なく取得する
+            self::makeOrderClause(desc:true, column:'payment_at');
+            $date_having_records = DbConnectorMain::getDateHavingRecords($group_id);
+
+            // recordが無ければ当月だけの配列を返す
+            if (count($date_having_records) === 0) {
+                $past_dates[] = array('year' => date('Y'), 'month' => date('n'), 'year_month' => date('Ym'));
+                return $past_dates;
+            }
+
+            // もしレコードがなく、当月が含まれていなければ加える
+            $latest = strtotime($date_having_records[0]['payment_at']);
+            if (date('Ym') > date('Ym', $latest)) {
+                $past_dates[] = array(
+                    'year' => date('Y'),
+                    'month' => date('n'),
+                    'year_month' => date('Ym')
+                );
+            }
+
+            // 日付を配列に直す
+            foreach ($date_having_records as $date) {
+                $parsed_date = strtotime($date['payment_at']);
+                $past_dates[] = array(
+                    'year' => date('Y', $parsed_date),
+                    'month' => date('n', $parsed_date),
+                    'year_month' => date('Ym', $parsed_date)
+                );
+                // echo $registration_date->format('Ymd')."<br>";
+            }
+            return $past_dates;
+        } catch (PDOException $e) {
+            throw $e;
+        }
+    }
 }
