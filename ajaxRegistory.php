@@ -10,7 +10,7 @@ try {
         $group_id = $_SESSION['group_id'];
         
         if ($method === 'del_registory') {
-            Config::check_token();
+            // Config::check_token();
             //mainテーブルの対象レコードを削除
             $result = DbConnectorMain::deleteOne($record_id);
             //削除後のトータルレコード件数を取得
@@ -28,7 +28,7 @@ try {
             //resultをjsonに変換する
             echo json_encode($result);
         } elseif ($method === 'del_category') {
-            Config::check_token();
+            // Config::check_token();
             $target_date = $_SESSION['target_date'];
             $category_id = (int)$_POST['category_id'];
             
