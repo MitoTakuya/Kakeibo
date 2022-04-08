@@ -356,7 +356,7 @@ class DbConnectorMain extends DbConnector
 
             // もしレコードがなく、当月が含まれていなければ加える
             $latest = strtotime($date_having_records[0]['payment_at']);
-            if (date('Ym') !== date('Ym', $latest)) {
+            if (date('Ym') > date('Ym', $latest)) {
                 $past_dates[] = array(
                     'year' => date('Y'),
                     'month' => date('n'),
