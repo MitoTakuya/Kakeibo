@@ -42,18 +42,11 @@ try {
 
 
     /********** 日付のselect-option用のデータを用意する **********/
-    // 最も購入日付が古いレコードの日付を取得する（無ければ当日が取得される）
+    // 最も支払い日付が古いレコードの日付から、現在までの年月のリストを配列で取得する
     $past_dates = DbConnectorMain::makeDateList($group_id);
     // print_r($past_dates);
 
-
-    // scriptタグに埋め込むために下記のようなjsonに変換する
-    /* e.g.
-    *   "[{ year : '2021', month : 12, year_month : 20211201},
-    *     { year : '2022', month : 1,  year_month : 20220101},... ]"
-    */
-
-    // javascript内に埋め込める形に直す
+    // scriptタグに埋め込むためにjsonに変換する
     $jsonized_past_dates = json_encode($past_dates);
 
 
