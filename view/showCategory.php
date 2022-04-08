@@ -158,6 +158,10 @@ require_once __DIR__.'/../categoryController.php';
                 <?php for ($i = 1; $i <= $max_page; $i++) :?>
                 <?php if ($i == $now) :?>
                 <li class="page-item disabled"><a class="page-link" id="carrent_page"><?= $now ?></a></li>
+                <?php elseif ($i == 6) :?>
+                <li class="page-item disabled"><a class="page-link" id="carrent_page">...</a></li>
+                <?php continue;?>
+                <?php elseif ($i > 6 && $i < $max_page - 4) : continue;?>
                 <?php else :?>
                 <li class="page-item"><a class="page-link"
                         id="page-num<?= $i ?>"
