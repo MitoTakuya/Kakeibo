@@ -80,7 +80,7 @@ require_once __DIR__.'/../registoryController.php';
 										<?php endif; ?>
 										<input type="text" onblur="addComma(this);"
 											pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="form-control" name="payment"
-											maxlength="13" min="1" required>
+											maxlength="9" min="1" required>
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
@@ -144,7 +144,7 @@ require_once __DIR__.'/../registoryController.php';
 											<?php endif; ?>
 											<input type="text" onblur="addComma(this);"
 												pattern="^((([1-9]\d*)(,\d{3})*)|0)$" class="form-control"
-												name="payment" maxlength="13" min="1" required>
+												name="payment" maxlength="9" min="1" required>
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
