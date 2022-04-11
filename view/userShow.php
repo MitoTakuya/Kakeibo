@@ -54,7 +54,6 @@ require_once __DIR__ . "/../userEditController.php";
 							まだ支出がありません。
 							<?php endif ; ?>
 						</h5>
-
 					</div>
 					<div class="mt-4"></div>
 					<?php
