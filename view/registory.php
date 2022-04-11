@@ -44,15 +44,15 @@ require_once __DIR__.'/../registoryController.php';
 								<input type="hidden" value="1" name="type_id">
 								<div class="form-group">
 									<p><i class="fa-solid fa-calendar-days"></i>
-										<label>日付</label>
+										<label>日付【必須】</label>
 										<input type="date" class="form-control" name="payment_at"
 											value="<?= date('Y-m-d') ?>"
 											required>
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><span class="label label-danger">必須</span><i class="fa-solid fa-pen"></i>
-										<label>タイトル　</label>
+									<p><i class="fa-solid fa-pen"></i>
+										<label>タイトル【必須】</label>
 										<?php if (!empty($error_messages["title"])): ?>
 										<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
 										<?php endif; ?>
@@ -60,8 +60,8 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><span class="label label-danger">必須</span><i class="fa-solid fa-tag"></i>
-										<label>カテゴリ</label>
+									<p><i class="fa-solid fa-tag"></i>
+										<label>カテゴリ【必須】</label>
 										<select id="outgoes" class="form-control" name="category_id">
 											<?php foreach ($category_outgoes as $key => $category_outgo) :?>
 											<option
@@ -73,8 +73,8 @@ require_once __DIR__.'/../registoryController.php';
 								</div>
 								<div class="divider"></div>
 								<div class="form-group">
-									<p><span class="label label-danger">必須</span><i class="fa-solid fa-yen-sign"></i>
-										<label>金額　</label>
+									<p><i class="fa-solid fa-yen-sign"></i>
+										<label>金額【必須】</label>
 										<?php if (!empty($error_messages["payment"])): ?>
 										<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
 										<?php endif; ?>
@@ -107,16 +107,16 @@ require_once __DIR__.'/../registoryController.php';
 										name="token">
 									<input type="hidden" value="2" name="type_id">
 									<div class="form-group">
-										<p><span class="label label-danger">必須</span><i class="fa-solid fa-calendar-days"></i>
-											<label>日付</label>
+										<p><i class="fa-solid fa-calendar-days"></i>
+											<label>日付【必須】</label>
 											<input type="date" class="form-control" name="payment_at"
 												value="<?= date('Y-m-d') ?>"
 												required>
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><span class="label label-danger">必須</span><i class="fa-solid fa-pen"></i>
-											<label>タイトル　</label>
+										<p><i class="fa-solid fa-pen"></i>
+											<label>タイトル【必須】</label>
 											<?php if (!empty($error_messages["title"])): ?>
 											<span class="text-danger"><?php echo $error_messages["title"]; ?></span>
 											<?php endif; ?>
@@ -124,8 +124,8 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><span class="label label-danger">必須</span><i class="fa-solid fa-tag"></i>
-											<label>カテゴリ</label>
+										<p><i class="fa-solid fa-tag"></i>
+											<label>カテゴリ【必須】</label>
 											<select id="incomes" class="form-control" name="category_id">
 												<?php foreach ($category_incomes as $key => $category_income) :?>
 												<option
@@ -137,8 +137,8 @@ require_once __DIR__.'/../registoryController.php';
 									</div>
 									<div class="divider"></div>
 									<div class="form-group">
-										<p><span class="label label-danger">必須</span><i class="fa-solid fa-yen-sign"></i>
-											<label>金額　</label>
+										<p><i class="fa-solid fa-yen-sign"></i>
+											<label>金額【必須】</label>
 											<?php if (!empty($error_messages["payment"])): ?>
 											<span class="text-danger"><?php echo $error_messages["payment"]; ?></span>
 											<?php endif; ?>
