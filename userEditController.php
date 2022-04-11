@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/init.php';
-
 try {
     DbConnector::connectDB();
     // ユーザー情報更新の際
@@ -19,6 +18,9 @@ try {
     // ユーザー詳細ページにアクセスした時
     if (isset($_SESSION['group_id'])) {
         $group_id = $_SESSION['group_id'];
+        // 今月の支出を取得
+        $user_payment = DbConnectorMain::userPayment($_SESSION['id']);
+        // ユーザー一覧レコード取得
         $user_show = DbConnectorUsers::fetchUsersFullRecords($group_id);
         foreach ($user_show as $row) {
             // ログイン中ユーザーを抽出
