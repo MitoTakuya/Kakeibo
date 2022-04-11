@@ -47,9 +47,18 @@ require_once __DIR__ . "/../userEditController.php";
 					</div>
 					<div class="mt-4"></div>
 					<div class="check">
-						<h5><i class="fas fa-yen-sign"></i> 今月の支出:
+						<h5><i class="fas fa-yen-sign"></i> 今月の支出（ユーザー）:
 							<?php if (isset($user_payment['payment'])): ?>
 							<?php echo $user_payment['payment']; ?>円
+							<?php else :?>
+							まだ支出がありません。
+							<?php endif ; ?>
+						</h5>
+					</div>
+					<div class="check">
+						<h5><i class="fas fa-yen-sign"></i> 今月の支出（グループ全体）:
+							<?php if (isset($group_payment['payment'])): ?>
+							<?php echo $group_payment['payment']; ?>円
 							<?php else :?>
 							まだ支出がありません。
 							<?php endif ; ?>
