@@ -64,7 +64,7 @@ require_once __DIR__ . "/../userController.php";
 						<div class="divider-form"></div>
 						<div class="form-group">
 							<p><i class="fas fa-pen"></i>
-								<label for="user_name">ニックネーム</label>
+								<label for="user_name">ニックネーム ※必須</label>
 								<input type="text" id="user_name" name="user_name" class="form-control"
 									value="<?php if (!empty($_POST['user_name'])) { echo Config::h($_POST['user_name']); } ?>" required>
 								<?php if (!empty($user_errors['user_name'])): ?>
@@ -76,7 +76,7 @@ require_once __DIR__ . "/../userController.php";
 						<div class="divider-form"></div>
 						<div class="form-group">
 							<p><i class="far fa-envelope"></i>
-								<label for="mail">メールアドレス</label>
+								<label for="mail">メールアドレス ※必須</label>
 								<input type="email" id="mail" name="mail" class="form-control"
 									value="<?php if (!empty($_POST['mail'])) { echo Config::h($_POST['mail']); } ?>">
 								<?php if (!empty($user_errors['mail'])): ?>
@@ -88,7 +88,7 @@ require_once __DIR__ . "/../userController.php";
 						<div class="divider-form"></div>
 						<div class="form-group">
 							<p><i class="fa fa-lock"></i>
-								<label for="password">パスワード</label>
+								<label for="password">パスワード ※必須</label>
 								<input type="password" id="password" name="password" class="form-control"
 									value="<?php if (!empty($_POST['password'])) { echo Config::h($_POST['password']); } ?>">
 								<?php if (!empty($user_errors['password'])): ?>
@@ -100,7 +100,7 @@ require_once __DIR__ . "/../userController.php";
 						<div class="divider-form"></div>
 						<div class="form-group">
 							<p><i class="fa fa-image"></i>
-								<label for="user_image">アイコン写真</label>
+								<label for="user_image">アイコン写真 ※必須</label>
 							<p><input type="file" name="user_image" ref="preview" @change="uploadFile"></p>
 							<?php if (!empty($user_errors['user_image'])): ?>
 							<span class="text-danger"><?php echo $user_errors['user_image']; ?></span>
@@ -122,12 +122,12 @@ require_once __DIR__ . "/../userController.php";
 
 								<div class="divider-form"></div>
 								<div v-if="group === 'new_group'">
-									<label for="group_form">新規家計簿名</label>
+									<label for="group_form">新規家計簿名 ※必須</label>
 									<input type="text" id="group_name" name="group_form" class="form-control"
 										key="value1">
 								</div>
 								<div v-if="group === 'existing_group'">
-									<label for="group_form">グループパスワード</label>
+									<label for="group_form">グループパスワード ※必須</label>
 									<input type="text" id="group_name" name="group_form" class="form-control"
 										key="value2">
 								</div>
