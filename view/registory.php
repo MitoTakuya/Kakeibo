@@ -305,7 +305,7 @@ require_once __DIR__.'/../registoryController.php';
 						<label>金額</label>
 					</div>
 					<input type="text" class="mb-2" id="edit_payment" onblur="addComma(this);"
-						pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="12" min="1" style="width:100%;"
+						pattern="^((([1-9]\d*)(,\d{3})*)|0)$" name="payment" maxlength="9" min="1" style="width:100%;"
 						required>
 					<div class="pb-2">
 						<div>
