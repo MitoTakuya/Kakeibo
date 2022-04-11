@@ -18,8 +18,10 @@ try {
     // ユーザー詳細ページにアクセスした時
     if (isset($_SESSION['group_id'])) {
         $group_id = $_SESSION['group_id'];
-        // 今月の支出を取得
+        // ログインユーザーの今月の支出を取得
         $user_payment = DbConnectorMain::userPayment($_SESSION['id']);
+        // グループの今月の支出を取得
+        $group_payment = DbConnectorMain::groupPayment($_SESSION['group_id']);
         // ユーザー一覧レコード取得
         $user_show = DbConnectorUsers::fetchUsersFullRecords($group_id);
         foreach ($user_show as $row) {

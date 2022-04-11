@@ -402,4 +402,27 @@ class DbConnectorMain extends DbConnector
             throw $e;
         }
     }
+
+    public static function groupPayment(int $group_id)
+    {
+        try {
+            // バインドするカラム名をstatic変数に代入する
+            self::$temp_to_bind['temp'] = get_defined_vars();
+            // where句をつくる
+            self::$temp_where_clause = 'WHERE `group_id`=:group_id && `type_id`=1 && month(payment_at) = month(now()) && year(payment_at) = year(now())';
+            // SQL文の句を作る
+            self::$temp_selected_col = " SUM(payment) as payment, DATE_FORMAT(payment_at, '%Y%m') as date";
+            self::$temp_groupby_clause = "GROUP BY `date`";
+            
+            // PDOメソッドの指定
+            $pdo_method = 'pdoFetchAssoc';
+            
+            // 親クラスのメソッドで結果を取り出す
+            self::fetch($pdo_method);
+            return self::$temp_result;
+        } catch (PDOException $e) {
+            // print('Error:'.$e->getMessage());
+            throw $e;
+        }
+    }
 }
